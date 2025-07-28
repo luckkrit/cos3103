@@ -9,7 +9,7 @@ transition: fade
 
 # DOWNLOAD SCHEMA & DATA
 
-[DOWNLOAD SCHEMA & DATA](../../sql/mysqlsampledatabase-classicmodels.sql)
+[DOWNLOAD SCHEMA & DATA](https://luckkrit.github.io/cos3103/sql/mysqlsampledatabase-classicmodels.sql)
 
 ---
 layout: section
