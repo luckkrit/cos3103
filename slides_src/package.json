@@ -5,7 +5,8 @@
   "scripts": {
     "build": "slidev build",
     "dev": "slidev --open",
-    "export": "slidev export"
+    "export": "slidev export",
+    "build_sql_select": "slidev build --base /cos3105/slides/sql_select/ --out ../public/slides/sql_select"
   },
   "dependencies": {
     "@slidev/cli": "^52.1.0",
