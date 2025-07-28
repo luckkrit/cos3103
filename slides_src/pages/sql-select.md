@@ -5,7 +5,11 @@ transition: fade
 
 # SQL - SELECT
 
-[DOWNLOAD SCHEMA & DATA](/cos3103/sql/mysqlsampledatabase-classicmodels.sql)
+---
+
+# DOWNLOAD SCHEMA & DATA
+
+[DOWNLOAD SCHEMA & DATA](/sql/mysqlsampledatabase-classicmodels.sql)
 
 ---
 layout: section
