@@ -468,7 +468,7 @@ flowchart TD
 
 ```
 
-<div class="w-[700px]">
+<div class="w-[400px] mx-auto">
 
 ![Types of JOIN](/images/sql_select/types_of_join.png)
 </div>
