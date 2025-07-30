@@ -9,7 +9,14 @@ transition: fade
 
 # SCHEMA & DATA
 
-[DOWNLOAD](https://luckkrit.github.io/cos3103/sql/mysqlsampledatabase-classicmodels.sql)
+- ER Diagram
+
+<div class="w-[400px] mx-auto">
+
+![CLASSIC MODEL](/images/sql_select/classic_model.png)
+</div>
+
+[DOWNLOAD SQL](https://luckkrit.github.io/cos3103/sql/mysqlsampledatabase-classicmodels.sql)
 
 ---
 layout: section
@@ -277,12 +284,27 @@ layout: two-cols
 
 - Query: Retrieve the contact of all employees who work on salesRepEmployeeNumber 1370, 1501, or 1504 
 
+- ตัวอย่างที่ 1
+
 ```sql
 SELECT contactLastName,   
         salesRepEmployeeNumber
 FROM    classicmodels.customers
 where   salesRepEmployeeNumber 
 			in (1370 ,1501 ,1504 )
+```
+
+- ตัวอย่างที่ 2
+
+```sql
+
+SELECT contactLastName,   
+        salesRepEmployeeNumber
+FROM    classicmodels.customers
+where   salesRepEmployeeNumber = 1370 
+or salesRepEmployeeNumber = 1501 
+or salesRepEmployeeNumber = 1504 
+
 ```
 
 ::right::
@@ -304,16 +326,38 @@ where   salesRepEmployeeNumber
         not in (1370 ,1501 ,1504 )
 ```
 
-- ให้ผลลัพธ์ที่ตรงข้ามกัน
+- ให้ผลลัพธ์ที่ตรงข้ามกัน คือ 76 แถว
 
-![NOT IN OPERATOR](/images/sql_select/not_in_operator.png)
+```sql
+SELECT count(*) 
+FROM    classicmodels.customers where   salesRepEmployeeNumber not in (1370 ,1501 ,1504 )
+```
+
+- อันก่อนหน้าคือ 24 แถว
+
+```sql
+SELECT count(*) 
+FROM    classicmodels.customers where   salesRepEmployeeNumber in (1370 ,1501 ,1504 )
+```
+
+- ถ้าเราดูจากตาราง customers ข้อมูลทั้งหมดจะเป็น 122
+
+```sql
+SELECT count(*) FROM    classicmodels.customers 
+```
+
+
+<!-- ![NOT IN OPERATOR](/images/sql_select/not_in_operator.png)
 
 - จากรูปข้างบน ถ้า 2 จำนวนมาบวกกันจะได้ 100 แถว แล้วถ้าเลือกข้อมูลทั้งหมดออกมา
 
 <div>
 
 ![SELECT ALL](/images/sql_select/select_all.png)
-</div>
+</div> -->
+
+---
+
 
 - อีก 22 แถวที่เหลือคือ ?
 
@@ -321,8 +365,6 @@ where   salesRepEmployeeNumber
 
 - อีก 22 แถวคือแถวที่มี salesRepEmployeeNumber เป็น NULL ดังนั้น NOT IN ไม่ได้รวม NULL ไปด้วย
 </v-clicks>
-
----
 
 - ถ้าต้องการให้รวมแถวที่มี salesRepEmployeeNumber ที่เป็น NULL ไปด้วยควรจะทำยังไง
 
@@ -353,35 +395,21 @@ where   salesRepEmployeeNumber
 
 ````
 
----
+- หรือถ้าเขียนให้ง่ายขึ้น
+
+```sql
+
+SELECT contactLastName,   
+        salesRepEmployeeNumber
+FROM    classicmodels.customers
+where   salesRepEmployeeNumber != 1370 
+and salesRepEmployeeNumber != 1501 
+and salesRepEmployeeNumber != 1504 
+or salesRepEmployeeNumber is NULL 
+```
 
 - จากตัวอย่างก่อนหน้า ใน IN (1370, 1501, 1504, NULL) จะไม่แสดงผลลัพธ์อะไรออกมา เพราะ SQL ไม่รู้จะเปรียบเทียบ NULL ยังไง
 
----
-
-IN กับ OR สามารถเขียนให้ผลลัพธ์ได้เหมือนกัน
-
-- ตัวอย่างที่ 1
-```sql
-
-SELECT contactLastName,   
-        salesRepEmployeeNumber
-FROM    classicmodels.customers
-where   salesRepEmployeeNumber 
-        in (1370 ,1501 ,1504 ) 
-
-```
-
-- ตัวอย่างที่ 2
-
-```sql
-
-SELECT contactLastName,   
-        salesRepEmployeeNumber
-FROM    classicmodels.customers
-where   salesRepEmployeeNumber = 1370 or salesRepEmployeeNumber = 1501 or salesRepEmployeeNumber = 1504 
-
-```
 
 
 ---
@@ -636,98 +664,12 @@ WHERE tab1.NUMID IS NULL;
 
 </v-clicks>
 
----
-
-# จากตัวอย่างก่อนหน้า ถ้าเพิ่ม column Name เข้าไป
-
-- tab1 and tab2
-
-```sql
-CREATE TABLE tab1 (     numid INT PRIMARY KEY,     NAME varchar(255) );
-
-INSERT INTO tab1 (numid,NAME) VALUES  (12,'twelve'),(14,'fourteen'),(10,'ten'),(11,'eleven');
-
-CREATE TABLE tab2 (     numid INT PRIMARY KEY,     NAME varchar(255) );
-
-INSERT INTO tab2 (numid,NAME) VALUES  (13,'thirteen'),(15,'fifteen'),(11,'eleven'),(12,'twelve');
-
-```
-
----
-
-# Cartesians vs JOIN vs Cross JOIN
-
-
-- Cartesians
-
-```sql
-SELECT * FROM tab1, tab2; 
-```
-
-- JOIN
-
-```sql
-SELECT * FROM tab1 JOIN tab2;
-```
-
-- CROSS JOIN
-
-```sql
-SELECT * FROM tab1 CROSS JOIN tab2;
-```
-
-- ผลลัพธ์ทั้ง 3 ถือว่า Equivalent กัน (เฉพาะ JOIN ที่ไม่มี ON)
 
 ---
 layout: two-cols
 ---
 
-# Natural JOIN vs INNER JOIN
-
-- Natural JOIN จะแสดงเฉพาะ column และข้อมูลที่ตรงกันเท่านั้น (ตัดข้อมูลที่ซ้ำกันออก)
-
-```sql
-SELECT * FROM tab1 NATURAL JOIN tab2;
-```
-
-<div class="w-[350px] mx-auto">
-
-![Natural Join](/images/sql_select/natural_inner_join.png)
-</div>
-
-::right::
-
-# &nbsp;
-
-- INNER JOIN จะแสดง column ของทั้ง 2 ตาราง แต่ข้อมูลจะถูกกรองด้วยเงื่อนไข
-
-```sql
-SELECT * FROM tab1 INNER JOIN tab2 
-ON tab1.numid = tab2.numid; 
-```
-
-<div class="w-[350px] mx-auto">
-
-![Inner Join](/images/sql_select/natural_inner_join2.png)
-</div>
-
----
-
-# Equi JOIN 
-
-
-- EQUI JOIN - Uses only = operator:
-
-```sql
-SELECT * FROM tab1 INNER JOIN tab2 ON tab1.numid = tab2.numid;
-SELECT * FROM tab1 LEFT JOIN tab2 ON tab1.numid = tab2.numid;
-```
-
----
-layout: two-cols
----
-
-# ตัวอย่างข้อมูล
+# SQL Order of Operations (JOIN)
 
 ```sql
 -- Create Department table
@@ -861,7 +803,7 @@ JOIN departments d ON e.department = d.dept_name
 
 # SQL Order of Operations (JOIN)
 
-- ตามด้วย WHERE 
+- ตามด้วย SELECT
 
 ```sql
 SELECT e.employee_id, e.last_name  
@@ -962,3 +904,211 @@ where a.ordernumber =  b.orderNumber and a.customerNumber = 103
 - จาก SQL ทั้ง 2 มีข้อดี - ข้อเสียอย่างไร? โดยถ้าวัดจาก 
   1. แบบไหนทำงานได้เร็วกว่า
   2. แบบไหนอ่านง่ายกว่า
+
+---
+layout: two-cols
+---
+
+# Multiple JOIN
+
+- Find orderDetails and their product details for each customer (รายละเอียดการสั่งซื้อของลูกค้าแต่ละคน)
+
+<div class="w-[300px] mx-auto">
+
+![MULTIPLE JOIN](/images/sql_select/multiple_join.png)
+</div>
+
+::right::
+
+# &nbsp;
+
+````md magic-move
+
+```sql
+SELECT *
+FROM   orders as o
+
+```
+
+```sql
+SELECT *
+FROM   orders as o
+INNER JOIN orderdetails as d 
+              on o.orderNumber = d.orderNumber
+
+```
+
+```sql
+SELECT * 
+FROM   orders as o
+INNER JOIN orderdetails as d 
+              on o.orderNumber = d.orderNumber
+INNER JOIN products as p 
+            on d.productCode = p.productCode
+
+```
+
+```sql
+SELECT *
+FROM   orders as o
+INNER JOIN orderdetails as d 
+              on o.orderNumber = d.orderNumber
+INNER JOIN products as p 
+            on d.productCode = p.productCode
+INNER JOIN customers as c 
+            on  o.customerNumber = c.customerNumber
+
+```
+
+```sql
+SELECT o.orderNumber, o.orderDate, 
+       c.customerName, d.orderLineNumber, 
+       p.productName, d.quantityOrdered, 
+       d.priceEach 
+FROM   orders as o
+INNER JOIN orderdetails as d 
+              on o.orderNumber = d.orderNumber
+INNER JOIN products as p 
+            on d.productCode = p.productCode
+INNER JOIN customers as c 
+            on  o.customerNumber = c.customerNumber
+
+```
+
+````
+
+
+<Precedence v-click.hide="1" :steps="['FROM']" />
+<Precedence v-click.at="1" v-click.hide="4" :steps="['FROM','JOIN']" />
+<Precedence v-click.at="4" :steps="['FROM','JOIN', 'SELECT']" />
+
+---
+layout: two-cols
+---
+
+- แสดงใบ order ทั้งหมดที่ลูกค้าซื้อสินค้าหมายเลข “S10_1678” ที่มีค่าราคาขาย (priceEach) ต่ำกว่าราคาขายปลีกที่ร้านระบุ
+  - NOTE: ราคาขายปลีกที่แนะนำของผู้ผลิตคือ (MSRP)  
+
+- ไม่จำเป็นต้อง JOIN กับ orders เพราะอะไร?
+
+<div class="w-[120px] mx-auto">
+
+![ORDER PRODUCT](/images/sql_select/order_product.png)
+</div>
+  
+::right::
+
+````md magic-move
+```sql
+SELECT 
+    *
+FROM
+    products p
+
+```
+
+```sql
+SELECT 
+    *
+FROM
+    products p
+INNER JOIN orderdetails o  
+ON p.productcode = o.productcode 
+AND p.msrp > o.priceEach
+
+```
+
+```sql
+SELECT 
+    *
+FROM
+    products p
+INNER JOIN orderdetails o  
+ON p.productcode = o.productcode 
+AND p.msrp > o.priceEach
+WHERE      p.productcode = 'S10_1678';
+
+```
+
+```sql
+SELECT o.orderNumber, o.orderDate, 
+       c.customerName, d.orderLineNumber, 
+       p.productName, d.quantityOrdered, 
+       d.priceEach 
+FROM
+    products p
+INNER JOIN orderdetails o  
+ON p.productcode = o.productcode 
+AND p.msrp > o.priceEach
+WHERE      p.productcode = 'S10_1678';
+
+```
+````
+
+<Precedence v-click.hide="1" :steps="['FROM']" />
+<Precedence v-click.at="1" v-click.hide="2"  :steps="['FROM','JOIN']" />
+<Precedence v-click.at="2" v-click.hide="3" :steps="['FROM','JOIN', 'WHERE']" />
+<Precedence v-click.at="3" :steps="['FROM','JOIN', 'WHERE','SELECT']" />
+
+---
+layout: two-cols
+---
+
+# SELF JOIN
+
+- List employee info and their direct report (not include president)
+- จาก SQL นี้สามารถสรุปได้ว่า พนักงานจะขึ้นตรงกับหัวหน้างานคนไหนบ้าง ถ้าคนที่มี NULL แสดงว่า เป็น President
+
+```sql
+SELECT E.employeeNumber,E.firstName, E.jobTitle, 
+        E.reportsTo, S.firstName as S_firstName, 
+        S.jobTitle as S_jobTitle ,        
+        S.reportsTo as S_reportsTo
+FROM employees  E 
+join  employees S ON  E.reportsTo=S.employeeNumber;
+
+```
+
+
+::right::
+
+
+<div class="w-[200px] mx-auto">
+
+![SELF JOIN ER](/images/sql_select/self_join_er.png)
+</div>
+
+<div class="w-[400px]">
+
+![SELF JOIN](/images/sql_select/self_join.png)
+</div>
+---
+layout: two-cols
+---
+
+# SELF JOIN
+
+- List employee info and their direct report : (count) 
+
+```sql
+SELECT count(*)
+FROM employees  E 
+join  employees S ON  E.reportsTo=S.employeeNumber;
+
+```
+
+::right::
+
+
+<div class="w-[200px] mx-auto">
+
+![SELF JOIN ER](/images/sql_select/self_join_er.png)
+</div>
+
+<div class="w-[100px] mx-auto">
+
+![SELF JOIN2](/images/sql_select/self_join2.png)
+</div>
+
+
+---

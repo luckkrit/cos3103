@@ -225,3 +225,91 @@ flowchart TD
 
 - When joins are using, there should be connection between two or more than two tables and each table has a relation with other while subquery means query inside another query, has no need to relation, it works on columns and conditions.
 
+
+---
+
+
+# จากตัวอย่างก่อนหน้า ถ้าเพิ่ม column Name เข้าไป
+
+- tab1 and tab2
+
+```sql
+CREATE TABLE tab1 (     numid INT PRIMARY KEY,     NAME varchar(255) );
+
+INSERT INTO tab1 (numid,NAME) VALUES  (12,'twelve'),(14,'fourteen'),(10,'ten'),(11,'eleven');
+
+CREATE TABLE tab2 (     numid INT PRIMARY KEY,     NAME varchar(255) );
+
+INSERT INTO tab2 (numid,NAME) VALUES  (13,'thirteen'),(15,'fifteen'),(11,'eleven'),(12,'twelve');
+
+```
+
+---
+
+# Cartesians vs JOIN vs Cross JOIN
+
+
+- Cartesians
+
+```sql
+SELECT * FROM tab1, tab2; 
+```
+
+- JOIN
+
+```sql
+SELECT * FROM tab1 JOIN tab2;
+```
+
+- CROSS JOIN
+
+```sql
+SELECT * FROM tab1 CROSS JOIN tab2;
+```
+
+- ผลลัพธ์ทั้ง 3 ถือว่า Equivalent กัน (เฉพาะ JOIN ที่ไม่มี ON)
+
+---
+layout: two-cols
+---
+
+# Natural JOIN vs INNER JOIN
+
+- Natural JOIN จะแสดงเฉพาะ column และข้อมูลที่ตรงกันเท่านั้น (ตัดข้อมูลที่ซ้ำกันออก)
+
+```sql
+SELECT * FROM tab1 NATURAL JOIN tab2;
+```
+
+<div class="w-[350px] mx-auto">
+
+![Natural Join](/images/sql_select/natural_inner_join.png)
+</div>
+
+::right::
+
+# &nbsp;
+
+- INNER JOIN จะแสดง column ของทั้ง 2 ตาราง แต่ข้อมูลจะถูกกรองด้วยเงื่อนไข
+
+```sql
+SELECT * FROM tab1 INNER JOIN tab2 
+ON tab1.numid = tab2.numid; 
+```
+
+<div class="w-[350px] mx-auto">
+
+![Inner Join](/images/sql_select/natural_inner_join2.png)
+</div>
+
+---
+
+# Equi JOIN 
+
+
+- EQUI JOIN - Uses only = operator:
+
+```sql
+SELECT * FROM tab1 INNER JOIN tab2 ON tab1.numid = tab2.numid;
+SELECT * FROM tab1 LEFT JOIN tab2 ON tab1.numid = tab2.numid;
+```
