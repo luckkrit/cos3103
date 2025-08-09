@@ -7,7 +7,7 @@ background: https://cover.sli.dev
 fonts:
     sans: Sarabun
 titleTemplate: "%s - COS3103"
-src: ./pages/sql-select.md
+src: ./pages/sql-storedproc-views.md
 transition: none
 ---
 
