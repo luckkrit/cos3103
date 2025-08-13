@@ -945,7 +945,7 @@ SELECT @shipping;
 
 ````md magic-move
 
-```sql 
+```sql {*}
 CREATE  PROCEDURE get_order_by_cust(
     IN cust_no INT,
     OUT shipped INT,
@@ -954,17 +954,17 @@ CREATE  PROCEDURE get_order_by_cust(
     OUT disputed INT)
 BEGIN
         -- shipped
-        SELECT count() INTO shipped FROM orders WHERE customerNumber = cust_no AND status = 'Shipped';
+        SELECT count(*) INTO shipped FROM orders WHERE customerNumber = cust_no AND status = 'Shipped';
         -- canceled
-        SELECT count() INTO canceled FROM orders WHERE customerNumber = cust_no AND status = 'Canceled';
+        SELECT count(*) INTO canceled FROM orders WHERE customerNumber = cust_no AND status = 'Canceled';
         -- resolved
-        SELECT count() INTO resolved FROM orders WHERE customerNumber = cust_no AND status = 'Resolved';
+        SELECT count(*) INTO resolved FROM orders WHERE customerNumber = cust_no AND status = 'Resolved';
         -- disputed
-        SELECT count() INTO disputed FROM orders WHERE customerNumber = cust_no AND status = 'Disputed';
+        SELECT count(*) INTO disputed FROM orders WHERE customerNumber = cust_no AND status = 'Disputed';
 END
 ```
 
-```sql
+```sql {*}
 -- single query
 CREATE PROCEDURE `get_order_by_cust`(
     IN cust_no INT,
@@ -985,7 +985,7 @@ BEGIN
 END
 ```
 
-```sql
+```sql {*}
 -- Alternative using COUNT with IF:
 CREATE PROCEDURE `get_order_by_cust`(
     IN cust_no INT,
@@ -1005,7 +1005,7 @@ BEGIN
 END
 ```
 
-```sql
+```sql {*}
 -- To handle NULL values safely:
 CREATE PROCEDURE `get_order_by_cust`(
     IN cust_no INT,
