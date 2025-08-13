@@ -1649,7 +1649,7 @@ SELECT * FROM aod_company.deptsal;
 - A trigger to update the total salary of a department when an employee tuple is modified:
 
 
-```sql {*|7|8|9|10|11|12|13|14|15|16}
+```sql {*|6|7|8|9|10|11|12|13|14|15}
 
 DELIMITER !
 CREATE TRIGGER update_salary2
