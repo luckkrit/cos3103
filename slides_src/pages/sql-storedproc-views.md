@@ -1035,6 +1035,8 @@ CALL get_order_by_cust(141,@shipped,@canceled,@resolved,@disputed);
 SELECT @shipped,@canceled,@resolved,@disputed;
 ```
 
+- https://www.geeksforgeeks.org/sql/ifnull-vs-coalesce/
+
 ---
 
 # Handle NULL
