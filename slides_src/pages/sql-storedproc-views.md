@@ -1037,13 +1037,13 @@ CALL get_order_by_cust(141,@shipped,@canceled,@resolved,@disputed);
 SELECT @shipped,@canceled,@resolved,@disputed;
 ```
 
-- https://www.geeksforgeeks.org/sql/ifnull-vs-coalesce/
 
 ---
 
 # Handle NULL
 
 - `COALESCE` comes from the English word meaning "to come together" or "to merge/unite into one".
+- https://www.geeksforgeeks.org/sql/ifnull-vs-coalesce/
 
 ```sql
 SELECT COALESCE(NULL, NULL, 'Hello', 'World');  
