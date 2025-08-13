@@ -1246,6 +1246,79 @@ CLOSE cursor_name; -- Free the resources.
 
 - <span v-mark.highlight.red>MySQL cursor is read-only, non-scrollable and asensitive.</span>
 
+
+---
+
+# Example Cursor
+
+- Result is 1 line
+
+```sql
+CREATE DEFINER=`root`@`localhost` PROCEDURE `TestCursor`()
+BEGIN
+    declare doublePrice double;
+    declare priceVal double;
+    DECLARE curPrice
+        CURSOR FOR
+            SELECT priceEach FROM orderdetails;
+                OPEN curPrice;
+					FETCH curPrice into priceVal;
+				SET doublePrice = priceVal * 2;
+				CLOSE curPrice;
+	select doublePrice;
+END
+```
+
+
+---
+
+# Example Cursor
+
+- How to make it full result?
+
+````md magic-move
+
+```sql
+CREATE DEFINER=`root`@`localhost` PROCEDURE `TestCursor`()
+BEGIN
+    declare doublePrice double;
+    declare priceVal double;
+    DECLARE curPrice
+        CURSOR FOR
+            SELECT priceEach FROM orderdetails;
+                OPEN curPrice;
+					FETCH curPrice into priceVal;
+				SET doublePrice = priceVal * 2;
+				CLOSE curPrice;
+	select doublePrice;
+END
+```
+
+```sql
+CREATE DEFINER=`root`@`localhost` PROCEDURE `TestCursor`()
+BEGIN
+    declare doublePrice double;
+    declare priceVal double;
+    DECLARE done INT DEFAULT 0; -- flag
+    DECLARE curPrice CURSOR FOR SELECT priceEach FROM orderdetails;
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1; -- loop until not found then set done = 1
+	CREATE TEMPORARY TABLE tmp_prices (price DOUBLE,double_price DOUBLE);
+                OPEN curPrice;
+                    read_loop: LOOP        
+						FETCH curPrice into priceVal;
+						IF done THEN
+							LEAVE read_loop;
+						END IF;
+							SET doublePrice = priceVal * 2;
+							INSERT INTO tmp_prices(price, double_price) VALUES(priceVal, doublePrice);
+					END LOOP;
+				CLOSE curPrice;
+	-- Output all results at once
+	SELECT * FROM tmp_prices;
+END
+```
+````
+
 ---
 layout: two-cols
 ---
@@ -1379,6 +1452,17 @@ CALL sumCommission( 0.1 , 0.4);
 
 ![Result of table 1](/images/sql-storedproc-views/result_table1.png)
 ![Result of table 2](/images/sql-storedproc-views/result_table2.png)
+
+---
+
+- Use `group_concat`
+- https://bobcares.com/blog/exploring-group_concat-in-mysql-and-its-alternatives/
+
+```sql
+select  group_concat(';',agent_code) as agent_code_L from agents 
+```
+
+![Group Concat](/images/sql-storedproc-views/group_concat.png)
 
 ---
 
