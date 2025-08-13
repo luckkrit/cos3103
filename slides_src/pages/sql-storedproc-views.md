@@ -826,7 +826,9 @@ END IF;
 
 ---
 
-# WHILE Loop
+# WHILE Loop 
+
+- Full code found in subroutine
 
 ```sql {*|10,14}
 CREATE PROCEDURE LoadCalendars(
@@ -1141,6 +1143,10 @@ END
 
 ```sql
 CALL LoadCalendars('2019-01-01',31);
+```
+
+```sql
+select date_add('2025-08-13', interval 1 day)
 ```
 </div>
 
