@@ -786,6 +786,8 @@ END
 
 
 ---
+layout: two-cols
+---
 
 # IF - THEN
 
@@ -806,6 +808,20 @@ BEGIN
         SET pCustomerLevel = 'PLATINUM';
     END IF;
 END
+```
+
+::right::
+
+- IF - ELSEIF - ELSE
+
+```sql
+IF expression THEN
+   statements;
+ELSEIF elseif-expression THEN
+   elseif-statements;
+ELSE
+  else-statements;
+END IF;
 ```
 
 ---
