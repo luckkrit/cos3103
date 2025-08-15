@@ -1251,6 +1251,24 @@ CLOSE cursor_name; -- Free the resources.
 
 # Example Cursor
 
+```sql
+CREATE DEFINER=`root`@`localhost` PROCEDURE `TestCursor2`()
+BEGIN
+    declare x int;
+    DECLARE curX
+    CURSOR FOR SELECT 1;
+	OPEN curX;
+	FETCH curX into x;	
+	CLOSE curX;
+    select x;
+END
+```
+
+
+---
+
+# Example Cursor
+
 - Result is 1 line
 
 ```sql
