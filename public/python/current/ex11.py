@@ -85,20 +85,21 @@ class User:
         return users
 
 
-db = Database()
-user = User(db=db)
-affected_rows = user.add_user("Krit2","aaacc@gmail.com")
-print(f"Add user = {affected_rows}")
+if __name__ == '__main__':
+    db = Database()
+    user = User(db=db)
+    affected_rows = user.add_user("Krit2","aaacc@gmail.com")
+    print(f"Add user = {affected_rows}")
 
-find_user = user.get_user_by_email("aaacc@gmail.com")
-print(f"Find user = {find_user}")
+    find_user = user.get_user_by_email("aaacc@gmail.com")
+    print(f"Find user = {find_user}")
 
-find_user = user.get_user_by_name("Krit")
-print(f"Find user = {find_user}")
+    find_user = user.get_user_by_name("Krit")
+    print(f"Find user = {find_user}")
 
-users = user.get_users()
-print(f"All users = {find_user}")
+    users = user.get_users()
+    print(f"All users = {find_user}")
 
-affected_rows = user.update_user(6,name="Krit", email="AABBCC@gmail.com")
-print(f"Update user = {find_user}")
+    affected_rows = user.update_user(6,name="Krit", email="AABBCC@gmail.com")
+    print(f"Update user = {find_user}")
 
