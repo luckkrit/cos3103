@@ -545,6 +545,7 @@ class User:
 
     def add_user(self,name, email):
         affected_rows = self.db.execute_non_query("INSERT INTO users (name, email) VALUES (%s, %s)",(name, email))
+        return affected_rows
 
     def update_user(self, id, name, email):
         affected_rows = self.db.execute_non_query("UPDATE users SET name = %s, email = %s WHERE id = %s",(name, email, id))
