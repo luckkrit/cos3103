@@ -10,10 +10,8 @@
     "export_sql_select": "slidev export --with-clicks --format pptx --output ./slides-export/sql_select",
     "build_sql_storedproc_views": "slidev build --base /cos3103/slides/sql_storedproc_views/ --out ../public/slides/sql_storedproc_views",
     "export_sql_storedproc_views": "slidev export --with-clicks --format pptx --output ./slides-export/sql_storedproc_views",
-    "build_sql_python": "slidev build --base /cos3103/slides/sql_python/ --out ../public/slides/sql_python",
-    "build_sql_csharp": "slidev build --base /cos3103/slides/sql_csharp/ --out ../public/slides/sql_csharp",
-    "export_sql_python": "slidev export --with-clicks --format pdf --output ./slides-export/sql_python",
-    "export_sql_csharp": "slidev export --with-clicks --format pdf --output ./slides-export/sql_csharp"
+    "build_sql_python_csharp": "slidev build --base /cos3103/slides/sql_python_csharp/ --out ../public/slides/sql_python_csharp",
+    "export_sql_python_csharp": "slidev export --with-clicks --timeout 60000 --wait 30000 --format pdf --output ./slides-export/sql_python_csharp"
   },
   "dependencies": {
     "@slidev/cli": "^52.1.0",

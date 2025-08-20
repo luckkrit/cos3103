@@ -7,7 +7,7 @@ background: https://cover.sli.dev
 fonts:
     sans: Sarabun
 titleTemplate: "%s - COS3103"
-src: ./pages/sql-python.md
+src: ./pages/sql-python-csharp.md
 transition: none
 ---
 
