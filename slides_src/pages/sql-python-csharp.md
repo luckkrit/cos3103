@@ -432,6 +432,39 @@ connection.close()
 
 ---
 
+# Answers
+
+```sql
+SELECT customerNumber, checkNumber, paymentDate, amount
+FROM payments 
+WHERE YEAR(paymentDate) = 2004 AND amount > 10000;
+```
+
+```sql
+SELECT officeCode, city, state, territory, phone
+FROM offices 
+WHERE country = 'USA'
+ORDER BY state, city;
+```
+
+```sql
+SELECT p.productName, p.productCode, pl.textDescription, pl.htmlDescription, pl.image
+FROM products p
+INNER JOIN productlines pl ON p.productLine = pl.productLine
+ORDER BY pl.productLine, p.productName;
+```
+
+```sql
+SELECT c.customerName, c.customerNumber, 
+       COALESCE(SUM(pay.amount), 0) as totalPaid
+FROM customers c
+LEFT JOIN payments pay ON c.customerNumber = pay.customerNumber
+GROUP BY c.customerNumber, c.customerName
+ORDER BY totalPaid DESC;
+```
+
+---
+
 # Insert
 
 ```python
