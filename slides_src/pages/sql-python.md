@@ -186,6 +186,58 @@ connection.close() # Close connection
 
 ---
 
+# Not specify database name during connection
+
+````md magic-move
+
+```python
+import pymysql
+
+# Connect without specifying database
+connection = pymysql.connect(
+    host='localhost',
+    user='username',
+    password='password'
+    # No database specified
+)
+
+cursor = connection.cursor()
+
+# Select database using SQL command
+cursor.execute("USE shop_db")
+
+# Now you can run queries on tables in shop_db
+cursor.execute("SELECT * FROM products")
+results = cursor.fetchall()
+```
+
+```python
+import pymysql
+
+connection = pymysql.connect(
+    host='localhost',
+    user='username',
+    password='password'
+)
+
+# Select database using PyMySQL method
+connection.select_db('shop_db')
+
+cursor = connection.cursor()
+cursor.execute("SELECT * FROM products")
+results = cursor.fetchall()
+```
+
+```python
+# You can also use fully qualified table names without USE
+cursor.execute("SELECT * FROM shop_db.products")
+cursor.execute("SELECT * FROM shop_db.orders")
+```
+
+````
+
+---
+
 # Create Table
 
 ```python
