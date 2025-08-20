@@ -20,6 +20,10 @@ transition: fade
 
 [DOWNLOAD SQL2](https://luckkrit.github.io/cos3103/sql/sub_query-db-aco_db.sql)
 
+[Download Python Demo App](https://luckkrit.github.io/cos3103/python.zip)
+
+[Download C# Demo App](https://luckkrit.github.io/cos3103/DemoApp.zip)
+
 ---
 
 # Requirements
@@ -868,6 +872,63 @@ conn.Close();
 
 ---
 
+# Use using 
+
+- Automatic Resource Disposal
+- because close() connection is just stop using resource but dispose() is stop and free memory
+
+```csharp
+using System;
+using System.Data.SqlClient;
+
+string connectionString = "Server=localhost;Database=MyDB;Integrated Security=true;";
+
+using (SqlConnection connection = new SqlConnection(connectionString))
+{
+    connection.Open();
+    
+    string sql = "SELECT Id, Name, Email FROM Users";
+    using (SqlCommand command = new SqlCommand(sql, connection))
+    {
+        using (SqlDataReader reader = command.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                int id = reader.GetInt32("Id");
+                string name = reader.GetString("Name");
+                string email = reader.GetString("Email");
+                
+                Console.WriteLine($"ID: {id}, Name: {name}, Email: {email}");
+            }
+        }
+    }
+}
+```
+
+---
+
+# Use using
+
+```csharp
+// BAD - Manual disposal (error-prone)
+SqlConnection connection = new SqlConnection(connectionString);
+connection.Open();
+// ... do work
+connection.Close();  // What if an exception occurs before this?
+connection.Dispose();
+
+// GOOD - Automatic disposal
+using (SqlConnection connection = new SqlConnection(connectionString))
+{
+    connection.Open();
+    // ... do work
+} // Automatically calls Dispose() even if exceptions occur
+
+```
+
+---
+
 # Example Projects
+
 
 [Download](https://luckkrit.github.io/cos3103/DemoApp.zip)
