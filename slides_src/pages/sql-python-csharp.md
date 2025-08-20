@@ -16,13 +16,7 @@ transition: fade
 ![CLASSIC MODEL](/images/sql_select/classic_model.png)
 </div>
 
-[DOWNLOAD SQL](https://luckkrit.github.io/cos3103/sql/mysqlsampledatabase-classicmodels.sql)
-
-[DOWNLOAD SQL2](https://luckkrit.github.io/cos3103/sql/sub_query-db-aco_db.sql)
-
-[Download Python Demo App](https://luckkrit.github.io/cos3103/python.zip)
-
-[Download C# Demo App](https://luckkrit.github.io/cos3103/DemoApp.zip)
+[DOWNLOAD SQL](https://luckkrit.github.io/cos3103/sql/mysqlsampledatabase-classicmodels.sql) &nbsp; [DOWNLOAD SQL2](https://luckkrit.github.io/cos3103/sql/sub_query-db-aco_db.sql) &nbsp; [Download Python Demo App](https://luckkrit.github.io/cos3103/python.zip) &nbsp; [Download C# Demo App](https://luckkrit.github.io/cos3103/DemoApp.zip)
 
 ---
 
