@@ -7,7 +7,7 @@ background: https://cover.sli.dev
 fonts:
     sans: Sarabun
 titleTemplate: "%s - COS3103"
-src: ./pages/sql-transaction.md
+src: ./pages/nosql-tutorial.md
 transition: none
 ---
 

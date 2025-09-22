@@ -18,3 +18,6 @@ db.collection('users').document('user123').set({
     'name': 'Jane Smith',
     'email': 'jane@example.com'
 })
+
+print(db.collection('users').document(doc_ref[1].id))
+print(db.collection('users').document("user123"))
