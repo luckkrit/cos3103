@@ -550,6 +550,8 @@ result = products.insert_many(product_list)
 print(f"Inserted {len(result.inserted_ids)} products")
 ```
 
+- Example 9
+
 ---
 
 # Querying Products from collection products2
@@ -830,4 +832,7 @@ for result in results:
 7. Count customers by country
 8. Show countries with more than 10 customers
 9. Sort by customer count
+
+
+
 

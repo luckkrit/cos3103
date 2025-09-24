@@ -9,5 +9,7 @@ fonts:
 titleTemplate: "%s - COS3103"
 src: ./pages/nosql-tutorial.md
 transition: none
+addons:
+    - slidev-component-zoom
 ---
 

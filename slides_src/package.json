@@ -15,15 +15,20 @@
     "build_sql_transaction": "slidev build --base /cos3103/slides/sql_python_csharp/ --out ../public/slides/sql_transaction",
     "export_sql_transaction": "slidev export --with-clicks --timeout 60000 --wait 30000 --format pdf --output ./slides-export/sql_transaction",
     "build_nosql_tutorial": "slidev build --base /cos3103/slides/nosql_tutorial/ --out ../public/slides/nosql_tutorial",
-    "export_nosql_tutorial": "slidev export --with-clicks --timeout 60000 --wait 30000 --format pdf --output ./slides-export/nosql_tutorial"
+    "export_nosql_tutorial": "slidev export --with-clicks --timeout 60000 --wait 30000 --format pdf --output ./slides-export/nosql_tutorial",
+    "clean_nosql_tutorial": "del-cli -f ../public/slides/nosql_tutorial",
+    "clean_build_nosql_tutorial": "concurrently \"npm run clean_nosql_tutorial\" \"npm run build_nosql_tutorial\""
   },
   "dependencies": {
     "@slidev/cli": "^52.2.4",
     "@slidev/theme-default": "latest",
     "@slidev/theme-seriph": "latest",
+    "slidev-component-zoom": "^1.1.0",
     "vue": "^3.5.18"
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
+    "del-cli": "^7.0.0",
     "playwright-chromium": "^1.54.1"
   }
 }
