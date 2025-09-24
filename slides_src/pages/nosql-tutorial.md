@@ -20,13 +20,14 @@ transition: fade
 
 # Setup MongoDB & Migration tools
 
-- Setup MongoDB https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-8.0.13-signed.msi
+- Setup MongoDB https://www.mongodb.com/try/download/community
 
 - Download MySQL Connector/J 9.4.0 https://dev.mysql.com/downloads/connector/j/
 
 - MongoDB Relational Migrator https://www.mongodb.com/try/download/relational-migrator
 
-- Migrate classicmodels in MySQL to MongoDB
+- Migrate classicmodels in MySQL to MongoDB https://www.youtube.com/watch?v=Z6D5Ge4M2KU
+
 
 ---
 
@@ -197,7 +198,7 @@ multi_contact_customer = {
 
 ---
 
-# Creating collections and documents
+# Creating collections and documents - example 5
 
 - Insert one ducment to customers2 (created automatically) 
 
@@ -229,7 +230,7 @@ print(f"Inserted customer with ID: {result.inserted_id}")
 layout: two-cols
 ---
 
-# Creating collections and documents
+# Creating collections and documents - example 5
 
 - Insert multiple documents to customers2
 
@@ -286,7 +287,7 @@ for customer in all_customers:
     pprint(customer)
 ```
 
-- Find customers in France
+- Find customers in France - example 2
 
 ```python
 
@@ -297,23 +298,31 @@ for customer in french_customers:
 
 ```
 
+- Find one customer - example 15
+
+```python
+db = client['classic']
+customers = db['customers']
+customer = customers.find_one()
+```
+
 ---
 
 # Exercise
 
 - From collection customers
 
-1. Find customer by customerNumber is 103
-2. Find customers where state is NULL
-3. Find customers where city is San Francisco
-4. Find customers where postalCode is 97562 
-5. Find customers where salesRepEmployeeNumber is '1166' or 1166. Which one gets results?
+1. Find customers where salesRepEmployeeNumber is '1166' or 1166. Which one gets results?
+2. Find customer by customerNumber is 103
+3. Find customers where state is NULL
+4. Find customers where city is San Francisco
+5. Find customers where postalCode is 97562 
 
 ---
 
 # Finding Documents (cont.)
 
-- Find customers with high credit limits from collection customers2
+- Find customers with high credit limits from collection customers2 - Example 6
 
 ```python
 # Find customers with high credit limits
@@ -406,8 +415,12 @@ has_contact = customers.find({"contact.firstName": {"$exists": True}})
 gift_stores = customers.find({"name": {"$regex": "Gift", "$options": "i"}})  # Case insensitive
 
 # Print results with count
-print(f"Gift stores found: {gift_stores.count()}")
-for store in gift_stores:
+gift_stores = customers.find(query)
+count_gift_stores = customers.count_documents(query)  # Case insensitive
+
+# Print results with count
+print(f"Gift stores found: {count_gift_stores}")
+for store in count_gift_stores:
     print(f"- {store['name']}")
 ```
 
@@ -425,7 +438,7 @@ for store in gift_stores:
 
 # Projection - Selecting Fields
 
-- Show only name and country
+- Show only name and country - Example 7
 
 ```python
 # Show only name and country
@@ -440,7 +453,7 @@ for customer in name_country:
 
 ```
 
-- Exclude specific fields
+- Exclude specific fields - Example 8
 
 ```python
 # Exclude specific fields
@@ -541,7 +554,7 @@ print(f"Inserted {len(result.inserted_ids)} products")
 
 # Querying Products from collection products2
 
-- Find vintage cars
+- Find vintage cars - Example 10
 
 ```python
 # Find vintage cars
@@ -597,7 +610,7 @@ print(f"\nPremium vintage cars in stock: {count_premium_vintage}")
 
 ---
 
-# Sorting
+# Sorting - Example 11
 
 - ascending
 
