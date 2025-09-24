@@ -18,17 +18,23 @@ transition: fade
 
 ---
 
-- PyMongo
+# Setup MongoDB & Migration tools
+
+- Setup MongoDB https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-8.0.13-signed.msi
+
+- Download MySQL Connector/J 9.4.0 https://dev.mysql.com/downloads/connector/j/
+
+- MongoDB Relational Migrator https://www.mongodb.com/try/download/relational-migrator
+
+- Migrate classicmodels in MySQL to MongoDB
+
+---
+
+# Install PyMongo
 
 ```bash
 pip install pymongo
 ```
-
-- MongoDB Relational Migrator https://www.mongodb.com/try/download/relational-migrator
-
-- Download MySQL Connector/J 9.4.0 https://dev.mysql.com/downloads/connector/j/
-
-- Migrate classicmodels in MySQL to MongoDB
 
 
 ---
