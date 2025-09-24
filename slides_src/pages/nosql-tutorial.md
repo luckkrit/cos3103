@@ -284,7 +284,7 @@ print(f"Inserted {len(result.inserted_ids)} customers")
 # Find all customers
 all_customers = customers.find()
 for customer in all_customers:
-    pprint(customer)
+    print(customer)
 ```
 
 - Find customers in France - example 2
