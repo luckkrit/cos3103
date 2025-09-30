@@ -1,0 +1,1 @@
+python -m jupyter nbconvert --to slides pymongo.ipynb --post serve
