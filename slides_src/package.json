@@ -20,9 +20,9 @@
     "export_nosql_tutorial2": "slidev export --with-clicks --timeout 60000 --wait 30000 --format pdf --output ./slides-export/nosql_tutorial2",
     "clean_nosql_tutorial": "del-cli -f ../public/slides/nosql_tutorial",
     "clean_build_nosql_tutorial": "concurrently \"npm run clean_nosql_tutorial\" \"npm run build_nosql_tutorial\"",
-    "build_sql_dml": "slidev build --base /cos3103/slides/2_68/sql_dml --out ../public/slides/2_68/sql_dml",
+    "build_sql_dml": "slidev build cos3103 --base /cos3103/slides/2_68/sql_dml --out ../public/slides/2_68/sql_dml",
     "clean_sql_dml": "del-cli -f ../public/slides/2_68/sql_dml",
-    "export_sql_dml": "slidev export --with-clicks --timeout 60000 --wait 30000 --format pdf --output ./slides-export/sql_dml",
+    "export_sql_dml": "slidev export cos3103 --with-clicks --timeout 60000 --wait 60000 --format pdf --output ./slides-export/sql_dml",
     "clean_build_sql_dml": "concurrently \"npm run clean_sql_dml\" \"npm run build_sql_dml\""
   },
   "dependencies": {
