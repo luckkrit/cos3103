@@ -578,7 +578,7 @@ execute(lambda client: find_users_by_height(
     client=client,
     filter={'$and': [
         {'$or': [
-            {'height': {'$lt': 160}},{'height': {'$gt': 165}}
+            {'height': {'$lt': 165}},{'height': {'$gt': 160}}
         ]},
         {'age': {'$gt':30,'$lt':35}} 
     ]}
