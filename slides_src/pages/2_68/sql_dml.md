@@ -13,12 +13,12 @@ layout: full
 
 <div v-drag="[876,391,100,100]">
 
-<QRCode value="https://luckkrit.github.io/cos3103/images/2_68/sql_dml/download_pg.gif" :size="100" />
+<QRCode value="https://luckkrit.github.io/cos3103/slides/2_68/sql_dml/images/2_68/sql_dml/setup_pg1.gif" :size="100" />
 </div>
 
 ![Download PG](/images/2_68/sql_dml/download_pg.gif){class="mx-auto w-[750px]"}
 
-https://luckkrit.github.io/cos3103/images/2_68/sql_dml/download_pg.gif
+https://luckkrit.github.io/cos3103/slides/2_68/sql_dml/images/2_68/sql_dml/setup_pg1.gif
 
 ---
 layout: full
@@ -28,12 +28,12 @@ layout: full
 
 <div v-drag="[876,391,100,100]">
 
-<QRCode value="https://luckkrit.github.io/cos3103/images/2_68/sql_dml/setup_pg1.gif" :size="100" />
+<QRCode value="https://luckkrit.github.io/cos3103/slides/2_68/sql_dml/images/2_68/sql_dml/setup_pg1.gif" :size="100" />
 </div>
 
 ![Setup PG1](/images/2_68/sql_dml/setup_pg1.gif){class="mx-auto w-[500px]"}
 
-https://luckkrit.github.io/cos3103/images/2_68/sql_dml/setup_pg1.gif
+https://luckkrit.github.io/cos3103/slides/2_68/sql_dml/images/2_68/sql_dml/setup_pg1.gif
 
 ---
 layout: full
@@ -43,11 +43,11 @@ layout: full
 
 <div v-drag="[876,391,100,100]">
 
-<QRCode value="https://luckkrit.github.io/cos3103/images/2_68/sql_dml/setup_pg2.gif" :size="100" />
+<QRCode value="https://luckkrit.github.io/cos3103/slides/2_68/sql_dml/images/2_68/sql_dml/setup_pg2.gif" :size="100" />
 </div>
 
 ![Setup PG2](/images/2_68/sql_dml/setup_pg2.gif){class="mx-auto w-[600px]"}
-https://luckkrit.github.io/cos3103/images/2_68/sql_dml/setup_pg2.gif
+https://luckkrit.github.io/cos3103/slides/2_68/sql_dml/images/2_68/sql_dml/setup_pg2.gif
 
 
 
@@ -59,15 +59,14 @@ layout: full
 
 <div v-drag="[876,391,100,100]">
 
-<QRCode value="https://luckkrit.github.io/cos3103/images/2_68/sql_dml/setup_pg3.gif" :size="100" />
+<QRCode value="https://luckkrit.github.io/cos3103/slides/2_68/sql_dml/images/2_68/sql_dml/setup_pg3.gif" :size="100" />
 </div>
 
 ![Setup PG3](/images/2_68/sql_dml/setup_pg3.gif){class="mx-auto w-[500px]"}
-https://luckkrit.github.io/cos3103/images/2_68/sql_dml/setup_pg3.gif
+https://luckkrit.github.io/cos3103/slides/2_68/sql_dml/images/2_68/sql_dml/setup_pg3.gif
 
 
 ---
-
 
 [PostGIS Extension]{class="text-2xl"}
 
@@ -80,6 +79,11 @@ CREATE EXTENSION postgis;
 [Classic Models Schema]{class="text-2xl"}
 
 - Download: https://luckkrit.github.io/cos3103/sql/postgresql-classicmodels.sql
+
+<div v-drag="[764,199,100,100]">
+
+<QRCode value="https://luckkrit.github.io/cos3103/sql/postgresql-classicmodels.sql" :size="100" />
+</div>
 
 [Search Path]{class="text-2xl"}
 

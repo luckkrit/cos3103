@@ -1,0 +1,1 @@
+import{z as r,f as l,o as a,j as c,n}from"./modules/vue-BUIn9o9v.js";import{u}from"./slidev/context-DY-As-9a.js";const p={__name:"default",props:{color:{default:"white"}},setup(e){u();const o=e,s=r(()=>`neversink-${o.color}-scheme`);return(t,m)=>(a(),l("div",{class:n(["slidev-layout default slidecolor",s.value])},[c(t.$slots,"default")],2))}};export{p as _};
