@@ -336,7 +336,7 @@ SELECT <attribute list>
 ```
 
 - Attribute list may include
-    - * (wildcard)
+    - `*` (wildcard)
     - Keywords such as `AS` and `DISTINCT`
     - Arithmetic expression
     - String functions
