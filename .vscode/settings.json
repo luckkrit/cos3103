@@ -1,0 +1,17 @@
+{
+  "sqltools.connections": [
+    {
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "postgresql",
+      "database": "postgres",
+      "username": "postgres",
+      "pgOptions": {
+        "options": "-c search_path=public,classicmodels"
+      }
+    }
+  ]
+}
