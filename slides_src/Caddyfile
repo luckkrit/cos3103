@@ -1,0 +1,6 @@
+3103.localhost {
+    reverse_proxy localhost:3030
+}
+3104.localhost {
+    reverse_proxy localhost:3030
+}
