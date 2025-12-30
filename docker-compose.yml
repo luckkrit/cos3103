@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  slidev:
+    image: node:20-alpine
+    working_dir: /app/slides_src
+    volumes:
+      - ./slides_src:/app/slides_src
+      - slidev_modules:/app/slides_src/node_modules
+    ports:
+      - "3030:3030"
+    command: sh -c "npm install && npm run cos3103"
+volumes:
+  slidev_modules:
