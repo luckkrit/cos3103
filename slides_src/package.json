@@ -8,7 +8,7 @@
     "cos3103": "concurrently \"npm run start:3103\" \"npm run start:proxy\" \"npm run open:browser\" --kill-others-on-fail --handle-input",
     "start:3103": "slidev cos3103",
     "start:proxy": "wait-on http://localhost:3030 && caddy run --config Caddyfile",
-    "open:browser": "wait-on http://localhost:3030 && start \"\" https://3103.localhost",
+    "open:browser": "ping 127.0.0.1 -n 30 && start \"\" https://3103.localhost",
     "export": "slidev export",
     "build_sql_select": "slidev build --base /cos3103/slides/sql_select/ --out ../public/slides/sql_select",
     "export_sql_select": "slidev export --with-clicks --format pptx --output ./slides-export/sql_select",

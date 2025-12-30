@@ -13,5 +13,6 @@
         "options": "-c search_path=public,classicmodels"
       }
     }
-  ]
+  ],
+  "slidev.include": ["**/slides.md", "slides_src/cos3103.md"]
 }
