@@ -5,8 +5,9 @@
   "scripts": {
     "build": "slidev build",
     "dev": "slidev --open",
-    "cos3103": "concurrently \"npm run start:3103\" \"npm run start:proxy\" \"npm run open:browser\" --kill-others-on-fail --handle-input",
-    "start:3103": "slidev cos3103",
+    "cos3103": "slidev cos3103 --remote",
+    "cos3103:window": "concurrently \"npm run start:3103\" \"npm run start:proxy\" \"npm run open:browser\" --kill-others-on-fail --handle-input",
+    "start:3103": "slidev cos3103 --remote",
     "start:proxy": "wait-on http://localhost:3030 && caddy run --config Caddyfile",
     "open:browser": "ping 127.0.0.1 -n 30 && start \"\" https://3103.localhost",
     "export": "slidev export",

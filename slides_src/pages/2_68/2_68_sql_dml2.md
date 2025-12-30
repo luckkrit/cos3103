@@ -1517,3 +1517,7 @@ layout: two-cols-title
 </div>
 
 ::default::
+
+---
+
+[Basic outer & inner Correlated Subquery]{class="text-2xl"}
