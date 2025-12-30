@@ -62,5 +62,43 @@
       "</div>"
     ],
     "description": "Wrap selected text with class"
+  },
+  "MD Magic Move": {
+    "prefix": "mdmm",
+    "body": ["````md magic-move", "", "````"],
+    "description": "md magic-move"
+  },
+  "v-show click=0": {
+    "prefix": "vsh0",
+    "body": ["<div v-show=\"\\$slidev.nav.clicks == 0\">", "", "</div>"],
+    "description": "v-show click=0"
+  },
+  "v-show click=1": {
+    "prefix": "vsh1",
+    "body": ["<div v-show=\"\\$slidev.nav.clicks == 1\">", "", "</div>"],
+    "description": "v-show click=1"
+  },
+  "Admonition in neversink theme": {
+    "prefix": "admo",
+    "body": [
+      "<Admonition title=\"Info\" color=\"teal-light\" width=\"300px\" v-drag>",
+      "$0",
+      "</Admonition>"
+    ],
+    "description": "Admonition in neversink theme"
+  },
+  "StickyNote in neversink theme": {
+    "prefix": "stck",
+    "body": [
+      "<StickyNote color=\"amber-light\" textAlign=\"left\" width=\"180px\" title=\"Title\" v-drag>",
+      "$0",
+      "</StickyNote>"
+    ],
+    "description": "StickyNote in neversink theme"
+  },
+  "Box in neversink theme": {
+    "prefix": "boxx",
+    "body": ["<Box v-drag>", "$0", "</Box>"],
+    "description": "Box in neversink theme"
   }
 }

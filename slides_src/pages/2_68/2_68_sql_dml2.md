@@ -111,7 +111,7 @@ graph TB
     D --> H["<b>Uses:</b> =, >, <, <=, >=, <><br/><b>Example:</b><br/>WHERE salary > (SELECT AVG(salary)...)"]
     E --> I["<b>Uses:</b> = with tuples<br/><b>Example:</b><br/>WHERE (dept, salary) = (SELECT...)"]
     F --> J["<b>Uses:</b> IN, ANY, ALL, EXISTS<br/><b>Example:</b><br/>WHERE id IN (SELECT...)"]
-    G --> K["<b>Uses:</b> Derived Table or IN with tuple<br/><b>Example:</b><br/>FROM (SELECT...) AS alias<br/>WHERE(dept, salary) IN (SELECT...)"]
+    G --> K["<b>Uses:</b> Derived Table or IN with tuple<br/><b>Example:</b><br/>FROM (SELECT...) AS alias<br/>or<br/>WHERE(dept, salary) IN (SELECT...)"]
     
     style A fill:#e8e3f3,stroke:#333,stroke-width:2px
     style B fill:#fff4dd,stroke:#333,stroke-width:2px
@@ -854,7 +854,7 @@ FROM classicmodels.customers where country = 'USA')
 
 <div v-show="$slidev.nav.clicks == 1">
 
-- For performance, which one is better?
+- For performance/read ability, which one is better?
 
 ```sql
 SELECT DISTINCT e.employeenumber, 
@@ -1164,28 +1164,356 @@ false
 </div>
 
 ---
-
-
+layout: two-cols-title
 ---
 
+::title::
+[Multiple Row Subquery]{class="text-2xl"}
 
-[Summary]{class="text-2xl"}
+- Using `< ANY`
+- Find products cheaper than ANY Classic Cars product
 
+::left::
 
-| Subquery Type                  | Result Dimensions       | Common Term | Operators Used                | Best Usage                                                             |
-| ------------------------------ | ----------------------- | ----------- | ----------------------------- | ---------------------------------------------------------------------- |
-| Single-Row                     | 1 Row, 1 Column         | Scalar      | =, >, <, <=, >=, <>           | Use in SELECT lists or WHERE clauses where a single value is expected. |
-| Multiple-Row                   | Many Rows, 1 Column     | Column      | IN, ANY, ALL, EXISTS          | Use in WHERE clauses to check against a list of values.                |
-| Single-Row (Multiple-Column)   | 1 Row, Many Columns     | Row         | =, IN (with row constructors) | Used to compare multiple columns at once: (col1, col2) = (subquery).   |
-| Multiple-Row (Multiple-Column) | Many Rows, Many Columns | Table       | FROM clause, JOIN             | Used as a "derived table" or temporary data source for the main query. |
+````md magic-move
+
+```sql
+
+SELECT
+    buyPrice
+FROM
+    products
+WHERE
+    productLine = 'Classic Cars'
+```
+
+```sql
+SELECT 
+    productCode,
+    productName,
+    productLine,
+    buyPrice
+FROM 
+    products
+WHERE 
+    buyPrice < ANY (
+        SELECT buyPrice 
+        FROM products 
+        WHERE productLine = 'Classic Cars'
+    )
+```
+````
+::right::
+
+<div v-show="$slidev.nav.clicks == 0">
+
+<CsvTable><pre>
+"buyprice"
+98.58
+85.68
+103.42
+95.34
+95.59
+89.14
+75.16
+83.05
+</pre></CsvTable>
+
+</div>
+
+<div v-show="$slidev.nav.clicks == 1">
+
+<CsvTable><pre>
+"productcode"	"productname"	"productline"	"buyprice"
+"S10_1678"	"1969 Harley Davidson Ultimate Chopper"	"Motorcycles"	48.81
+"S10_1949"	"1952 Alpine Renault 1300"	"Classic Cars"	98.58
+"S10_2016"	"1996 Moto Guzzi 1100i"	"Motorcycles"	68.99
+"S10_4698"	"2003 Harley-Davidson Eagle Drag Bike"	"Motorcycles"	91.02
+"S10_4757"	"1972 Alfa Romeo GTA"	"Classic Cars"	85.68
+"S12_1099"	"1968 Ford Mustang"	"Classic Cars"	95.34
+"S12_1108"	"2001 Ferrari Enzo"	"Classic Cars"	95.59
+"S12_1666"	"1958 Setra Bus"	"Trucks and Buses"	77.9
+"S12_2823"	"2002 Suzuki XREO"	"Motorcycles"	66.27
+"S12_3148"	"1969 Corvair Monza"	"Classic Cars"	89.14
+"S12_3380"	"1968 Dodge Charger"	"Classic Cars"	75.16
+</pre></CsvTable>
+
+</div>
+
+::default::
+
+---
+layout: two-cols-title
 ---
 
-[Summary]{class="text-2xl"}
+::title::
+[Multiple Row Subquery]{class="text-2xl"}
+
+- Using `= ANY`
+- Find employees whose office is NOT in the USA
+
+::left::
+
+````md magic-move
+
+```sql
+SELECT
+    officeCode
+FROM
+    offices
+WHERE
+    country != 'USA'
+```
+
+```sql
+SELECT 
+    e.employeeNumber,
+    e.firstName,
+    e.lastName,
+    e.jobTitle,
+    o.city,
+    o.country
+FROM 
+    employees e
+    JOIN offices o ON e.officeCode = o.officeCode
+WHERE 
+    o.officeCode = ANY (
+        SELECT officeCode
+        FROM offices
+        WHERE country != 'USA'
+    )
+```
+
+````
+
+::right::
+
+<div v-show="$slidev.nav.clicks == 0">
+<CsvTable><pre>
+"officecode"
+"4"
+"5"
+"6"
+"7"
+</pre></CsvTable>
+</div>
+
+<div v-show="$slidev.nav.clicks == 1">
+<CsvTable><pre>
+
+"employeenumber"	"firstname"	"lastname"	"jobtitle"	"city"	"country"
+1088	"William"	"Patterson"	"Sales Manager (APAC)"	"Sydney"	"Australia"
+1102	"Gerard"	"Bondur"	"Sale Manager (EMEA)"	"Paris"	"France"
+1337	"Loui"	"Bondur"	"Sales Rep"	"Paris"	"France"
+1370	"Gerard"	"Hernandez"	"Sales Rep"	"Paris"	"France"
+1401	"Pamela"	"Castillo"	"Sales Rep"	"Paris"	"France"
+1501	"Larry"	"Bott"	"Sales Rep"	"London"	"UK"
+1504	"Barry"	"Jones"	"Sales Rep"	"London"	"UK"
+1611	"Andy"	"Fixter"	"Sales Rep"	"Sydney"	"Australia"
+1612	"Peter"	"Marsh"	"Sales Rep"	"Sydney"	"Australia"
+1619	"Tom"	"King"	"Sales Rep"	"Sydney"	"Australia"
+1621	"Mami"	"Nishi"	"Sales Rep"	"Tokyo"	"Japan"
+1625	"Yoshimi"	"Kato"	"Sales Rep"	"Tokyo"	"Japan"
+1702	"Martin"	"Gerard"	"Sales Rep"	"Paris"	"France"
+</pre></CsvTable>
+</div>
+
+::default::
+
+---
+layout: two-cols-title
+---
+
+::title::
+[Multiple Row Subquery]{class="text-2xl"}
+
+- Using `> ANY`
+- Find customers who have made payments greater than ANY payment from USA customers
+
+::left::
+
+````md magic-move
+
+```sql
+
+SELECT
+    amount
+FROM
+    payments p2
+    JOIN customers c2 ON 
+    p2.customerNumber = c2.customerNumber
+WHERE
+    c2.country = 'USA'
+```
+
+```sql
+SELECT 
+    c.customerNumber,
+    c.customerName,
+    c.country,
+    p.amount
+FROM 
+    customers c
+    JOIN payments p ON c.customerNumber = p.customerNumber
+WHERE 
+    p.amount > ANY (
+        SELECT amount
+        FROM payments p2
+        JOIN customers c2 
+        ON p2.customerNumber = c2.customerNumber
+        WHERE c2.country = 'USA'
+    )
+```
+
+````
 
 
-| Clause | Single-Row | Multiple-Row | Notes                                                                                                                         |
-| ------ | ---------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| SELECT | ✅          | ❌            | Usually called a Scalar Subquery. It must return exactly one value to fit into a specific cell.                               |
-| FROM   | ✅          | ✅            | Known as a Derived Table. Since it acts like a temporary table, it can have as many rows as you want (like your first image). |
-| WHERE  | ✅          | ✅            | Single: Use =, >, etc.  Multiple: Use IN, ANY, ALL, or EXISTS.                                                                |
-| HAVING | ✅          | ✅            | Used to filter grouped data. Same rules as the WHERE clause.                                                                  |
+::right::
+
+<div v-show="$slidev.nav.clicks == 0">
+
+<CsvTable><pre>
+"amount"
+14191.12
+32641.98
+33347.88
+101244.59
+85410.87
+11044.3
+83598.04
+47142.7
+</pre></CsvTable>
+</div>
+
+<div v-show="$slidev.nav.clicks == 1">
+
+<CsvTable><pre>
+"customernumber"	"customername"	"country"	"amount"
+103	"Atelier graphique"	"France"	6066.78
+103	"Atelier graphique"	"France"	14571.44
+112	"Signal Gift Stores"	"USA"	14191.12
+112	"Signal Gift Stores"	"USA"	32641.98
+112	"Signal Gift Stores"	"USA"	33347.88
+114	"Australian Collectors, Co."	"Australia"	45864.03
+114	"Australian Collectors, Co."	"Australia"	82261.22
+114	"Australian Collectors, Co."	"Australia"	7565.08
+114	"Australian Collectors, Co."	"Australia"	44894.74
+119	"La Rochelle Gifts"	"France"	19501.82
+</pre></CsvTable>
+</div>
+
+::default::
+
+---
+layout: two-cols-title
+---
+
+::title::
+[Multiple Row Subquery]{class="text-2xl"}
+
+- Using `DISTINCT`
+
+::left::
+
+````md magic-move
+
+```sql
+
+SELECT DISTINCT -- without DISTINCT = 1010 rows
+    od2.quantityOrdered
+FROM
+    orderdetails od2
+    JOIN products p2 ON od2.productCode = p2.productCode
+WHERE
+    p2.productLine = 'Classic Cars'
+```
+
+```sql
+SELECT 
+    od.orderNumber,
+    od.productCode,
+    p.productName,
+    p.productLine,
+    od.quantityOrdered
+FROM 
+    orderdetails od
+    JOIN products p ON od.productCode = p.productCode
+WHERE 
+    od.quantityOrdered > ANY (
+        SELECT DISTINCT od2.quantityOrdered
+        FROM orderdetails od2
+        JOIN products p2 ON od2.productCode = p2.productCode
+        WHERE p2.productLine = 'Classic Cars'
+    )
+```
+
+````
+
+::right::
+
+<div v-show="$slidev.nav.clicks == 0">
+<CsvTable><pre>
+"quantityordered"
+29
+34
+70
+10
+90
+35
+45
+39
+36
+31
+50
+60
+97
+66
+</pre></CsvTable>
+
+</div>
+
+<div v-show="$slidev.nav.clicks == 1">
+<CsvTable><pre>
+"ordernumber"	"productcode"	"productname"	"productline"	"quantityordered"
+10100	"S18_1749"	"1917 Grand Touring Sedan"	"Vintage Cars"	30
+10100	"S18_2248"	"1911 Ford Town Car"	"Vintage Cars"	50
+10100	"S18_4409"	"1932 Alfa Romeo 8C2300 Spider Sport"	"Vintage Cars"	22
+10100	"S24_3969"	"1936 Mercedes Benz 500k Roadster"	"Vintage Cars"	49
+10101	"S18_2325"	"1932 Model A Ford J-Coupe"	"Vintage Cars"	25
+10101	"S18_2795"	"1928 Mercedes-Benz SSK"	"Vintage Cars"	26
+10101	"S24_1937"	"1939 Chevrolet Deluxe Coupe"	"Vintage Cars"	45
+10101	"S24_2022"	"1938 Cadillac V-16 Presidential Limousine"	"Vintage Cars"	46
+10102	"S18_1342"	"1937 Lincoln Berline"	"Vintage Cars"	39
+</pre></CsvTable>
+
+</div>
+
+::default::
+
+---
+layout: two-cols-title
+---
+
+::title::
+[SQL Correlated Subqueries]{class="text-2xl"}
+
+- Correlated Subqueries retrieve data from a table referenced in the outer query. 
+- They are termed "correlated" because the subquery's execution is influenced by the outer query's rows. 
+- when using correlated subqueries, it's essential to employ a table alias (or correlation name) to clarify the table reference intended for use within the subquery.
+
+
+::left::
+
+<div class="w-fit mx-auto">
+
+![2_68_sql_dml2_2025-12-30-20-57-23](/images/2_68_sql_dml2/2_68_sql_dml2_2025-12-30-20-57-23.png){.max-h-50vh}
+</div>
+
+::right::
+
+<div class="w-fit mx-auto">
+
+![2_68_sql_dml2_2025-12-30-20-57-45](/images/2_68_sql_dml2/2_68_sql_dml2_2025-12-30-20-57-45.png){.max-h-50vh}
+</div>
+
+::default::
