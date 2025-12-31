@@ -1521,3 +1521,9 @@ layout: two-cols-title
 ---
 
 [Basic outer & inner Correlated Subquery]{class="text-2xl"}
+
+
+<div class="w-fit mx-auto">
+
+![2_68_sql_dml2-1](/images/2_68_sql_dml2/2_68_sql_dml2-1.png){.max-h-50vh}
+</div>

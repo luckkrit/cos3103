@@ -23,9 +23,9 @@
   "pasteImage.insertPattern": "![${imageFileNameWithoutExt}](${imageFilePath})",
   "pasteImage.showFilePathConfirmInputBox": true,
   "pasteImage.filePathConfirmInputBoxMode": "onlyName",
-  "remote.extensionKind": { "mushan.vscode-paste-image": ["ui"] }
-  // "markdown.copyFiles.destination": {
-  //   "*.md": "../../public/images/${documentBaseName}/${documentBaseName}.png"
-  // },
-  // "markdown.copyFiles.overwriteBehavior": "overwrite"
+  "remote.extensionKind": { "mushan.vscode-paste-image": ["ui", "workspace"] },
+  "markdown.copyFiles.destination": {
+    "*.md": "../../public/images/${documentBaseName}/${documentBaseName}.png"
+  },
+  "markdown.copyFiles.overwriteBehavior": "nameIncrementally"
 }

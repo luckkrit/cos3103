@@ -100,5 +100,12 @@
     "prefix": "boxx",
     "body": ["<Box v-drag>", "$0", "</Box>"],
     "description": "Box in neversink theme"
+  },
+  "Slidev Image Name Fix": {
+    "prefix": "fixname",
+    "body": [
+      "${TM_SELECTED_TEXT/!\\[.*\\]\\(.*?public(\\/.*\\/([^\\/]+)\\.[a-z]+)\\).*/![$2]($1)/}"
+    ],
+    "description": "Vim-friendly: Sets alt-text to filename and strips public path"
   }
 }
