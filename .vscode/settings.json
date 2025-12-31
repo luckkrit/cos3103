@@ -14,5 +14,18 @@
       }
     }
   ],
-  "slidev.include": ["**/slides.md", "slides_src/cos3103.md"]
+  "slidev.include": ["**/slides.md", "slides_src/cos3103.md"],
+  "pasteImage.path": "${projectRoot}/slides_src/public/images/${currentFileNameWithoutExt}",
+  "pasteImage.basePath": "${projectRoot}/slides_src/public",
+  "pasteImage.prefix": "/",
+  "pasteImage.namePrefix": "${currentFileNameWithoutExt}_",
+  "pasteImage.defaultName": "Y-MM-DD-HH-mm-ss",
+  "pasteImage.insertPattern": "![${imageFileNameWithoutExt}](${imageFilePath})",
+  "pasteImage.showFilePathConfirmInputBox": true,
+  "pasteImage.filePathConfirmInputBoxMode": "onlyName",
+  "remote.extensionKind": { "mushan.vscode-paste-image": ["ui"] }
+  // "markdown.copyFiles.destination": {
+  //   "*.md": "../../public/images/${documentBaseName}/${documentBaseName}.png"
+  // },
+  // "markdown.copyFiles.overwriteBehavior": "overwrite"
 }
