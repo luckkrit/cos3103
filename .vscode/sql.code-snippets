@@ -107,5 +107,34 @@
       "${TM_SELECTED_TEXT/!\\[.*\\]\\(.*?public(\\/.*\\/([^\\/]+)\\.[a-z]+)\\).*/![$2]($1)/}"
     ],
     "description": "Vim-friendly: Sets alt-text to filename and strips public path"
+  },
+  "Wrap img with class": {
+    "prefix": "imgf",
+    "body": [
+      "<div class=\"w-fit mx-auto\">",
+      "",
+      "${TM_SELECTED_TEXT/!\\[.*\\]\\(.*?public(\\/.*\\/([^\\/]+)\\.[a-z]+)\\).*/![$2]($1)/}{.max-h-50vh$0}",
+      "</div>"
+    ],
+    "description": "Wrap selected image with class"
+  },
+  "Wrap with v-click": {
+    "prefix": "vclk",
+    "body": ["<div v-click>", "", "${TM_SELECTED_TEXT}", "</div>"],
+    "description": "Wrap with v-click"
+  },
+  "Wrap with flex 2 columns": {
+    "prefix": "f2cl",
+    "body": [
+      "<div class=\"flex gap-2\">",
+      "<div class=\"w-1/2\">",
+      "${TM_SELECTED_TEXT}",
+      "</div>",
+      "<div class=\"w-1/2\">",
+      "",
+      "</div>",
+      "</div>"
+    ],
+    "description": "Wrap flex 2 columns"
   }
 }

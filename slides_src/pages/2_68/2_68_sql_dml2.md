@@ -1527,3 +1527,1028 @@ layout: two-cols-title
 
 ![2_68_sql_dml2-1](/images/2_68_sql_dml2/2_68_sql_dml2-1.png){.max-h-50vh}
 </div>
+
+---
+
+[Correlated Subquery Example]{class="text-2xl"}
+
+<div class="w-fit mx-auto">
+
+![2_68_sql_dml2](/images/2_68_sql_dml2/2_68_sql_dml2.png){.max-h-50vh}
+</div>
+
+---
+layout: two-cols-title
+---
+
+::title::
+[Correlated Subquery Example]{class="text-2xl"}
+
+ - Selects payments where the amount is greater than the average payment for that specific customer
+
+
+::left::
+
+````md magic-move
+
+```sql
+SELECT p.customerNumber, p.checkNumber, p.amount, 
+    p.customerNumber as customer
+FROM payments p
+WHERE p.amount > (
+    -- Subquery: Calculates the average 
+    -- payment amount for payments made
+    -- by the customer of the current row 
+    -- in the outer query
+    SELECT AVG(p2.amount)
+    FROM payments p2
+    WHERE p2.customerNumber 
+    = p.customerNumber -- average per customer
+)
+ORDER BY p.customerNumber;
+```
+
+```sql
+
+SELECT
+    AVG(p2.amount)
+FROM
+    payments p2
+WHERE
+    p2.customerNumber 
+    = 103 -- Example average of customer 103
+```
+
+````
+
+::right::
+
+<div v-show="$slidev.nav.clicks == 0">
+
+<CsvTable><pre>
+"customernumber"	"checknumber"	"amount"	"customer"
+103	"JM555205"	14571.44	103
+112	"HQ55022"	32641.98	112
+112	"ND748579"	33347.88	112
+114	"GG31455"	45864.03	114
+114	"MA765515"	82261.22	114
+119	"LN373447"	47924.19	119
+119	"NG94694"	49523.67	119
+121	"DB889831"	50218.95	121
+121	"MA302151"	34638.14	121
+124	"AE215433"	101244.59	124
+124	"BG255406"	85410.87	124
+124	"ET64396"	83598.04	124
+124	"KI131716"	111654.4	124
+</pre></CsvTable>
+</div>
+
+
+<div v-show="$slidev.nav.clicks == 1">
+
+<CsvTable><pre>
+"avg"
+7438.1200000000000000
+</pre></CsvTable>
+</div>
+
+::default::
+
+---
+
+[Correlated Subquery]{class="text-2xl"}
+
+- Using `EXISTS`
+
+```sql
+EXISTS(subquery)
+```
+
+- The `EXISTS` operator is used to [test for the existence of any record in a subquery.]{.text-red-500} 
+
+- The `EXISTS` operator returns `TRUE` [if the subquery returns one or more records.]{.text-red-500}
+
+
+---
+
+[Correlated Subquery - EXISTS Example]{class="text-2xl"}
+
+
+<div class="w-fit mx-auto">
+
+![2_68_sql_dml2-2](/images/2_68_sql_dml2/2_68_sql_dml2-2.png){.max-h-45vh}
+</div>
+
+---
+layout: two-cols-title
+---
+
+::title::
+[Correlated Subquery - EXISTS Example]{class="text-2xl"}
+
+::left::
+
+```sql
+SELECT * FROM employees
+WHERE EXISTS (
+	SELECT * FROM employees as e
+	WHERE e.employeenumber = 1002
+)
+```
+::right::
+
+```sql
+SELECT * FROM employees
+WHERE EXISTS (
+	SELECT 1 FROM employees as e
+	WHERE e.employeenumber = 1002
+)
+```
+::default::
+
+<CsvTable><pre>
+"employeenumber"	"lastname"	"firstname"	"extension"	"email"	"reportsto"	"jobtitle"	"officecode"
+1002	"Murphy"	"Diane"	"x5800"	"dmurphy@classicmodelcars.com"		"President"	"1"
+1056	"Patterson"	"Mary"	"x4611"	"mpatterso@classicmodelcars.com"	1002	"VP Sales"	"1"
+1076	"Firrelli"	"Jeff"	"x9273"	"jfirrelli@classicmodelcars.com"	1002	"VP Marketing"	"1"
+1088	"Patterson"	"William"	"x4871"	"wpatterson@classicmodelcars.com"	1056	"Sales Manager (APAC)"	"6"
+1102	"Bondur"	"Gerard"	"x5408"	"gbondur@classicmodelcars.com"	1056	"Sale Manager (EMEA)"	"4"
+1143	"Bow"	"Anthony"	"x5428"	"abow@classicmodelcars.com"	1056	"Sales Manager (NA)"	"1"
+1165	"Jennings"	"Leslie"	"x3291"	"ljennings@classicmodelcars.com"	1143	"Sales Rep"	"1"
+1166	"Thompson"	"Leslie"	"x4065"	"lthompson@classicmodelcars.com"	1143	"Sales Rep"	"1"
+1188	"Firrelli"	"Julie"	"x2173"	"jfirrelli@classicmodelcars.com"	1143	"Sales Rep"	"2"
+1216	"Patterson"	"Steve"	"x4334"	"spatterson@classicmodelcars.com"	1143	"Sales Rep"	"2"
+1286	"Tseng"	"Foon Yue"	"x2248"	"ftseng@classicmodelcars.com"	1143	"Sales Rep"	"3"
+1323	"Vanauf"	"George"	"x4102"	"gvanauf@classicmodelcars.com"	1143	"Sales Rep"	"3"
+1337	"Bondur"	"Loui"	"x6493"	"lbondur@classicmodelcars.com"	1102	"Sales Rep"	"4"
+</pre></CsvTable>
+
+<StickyNote color="amber-light" textAlign="left" width="180px" title="Note" v-drag="[737,92,180,88]">
+
+- If there are some rows, return TRUE
+</StickyNote>
+
+---
+layout: two-cols-title
+---
+
+::title::
+[Correlated Subquery - EXISTS Example]{class="text-2xl"}
+
+::left::
+
+```sql
+SELECT * FROM employees
+WHERE EXISTS (
+	SELECT * FROM employees as e
+	WHERE e.employeenumber = 1001
+)
+```
+
+::right::
+
+```sql
+SELECT * FROM employees
+WHERE EXISTS (
+	SELECT 1 FROM employees as e
+	WHERE e.employeenumber = 1001
+)
+```
+
+::default::
+
+<CsvTable><pre>
+"employeenumber"	"lastname"	"firstname"	"extension"	"email"	"officecode"	"reportsto"	"jobtitle"
+NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
+</pre></CsvTable>
+
+<StickyNote color="amber-light" textAlign="left" width="180px" title="Note" v-drag="[737,92,180,92]">
+
+- If there are no rows, return FALSE
+</StickyNote>
+
+---
+
+[Correlated Subquery - EXISTS Example]{class="text-2xl"}
+
+<div class="w-fit mx-auto">
+
+![2_68_sql_dml2-3](/images/2_68_sql_dml2/2_68_sql_dml2-3.png){.max-h-50vh}
+</div>
+
+https://www.programiz.com/sql/online-compiler?preset=Customers1,%20Orders1&ref=a3eaa786
+
+---
+layout: two-cols-title
+---
+
+::title::
+[Correlated Subquery]{class="text-2xl"}
+- Using `NOT EXISTS` 
+
+::left::
+
+```sql
+SELECT * FROM employees
+WHERE NOT EXISTS (
+	SELECT * FROM employees as e
+	WHERE e.employeenumber = 1001
+)
+```
+
+::right::
+
+```sql
+SELECT * FROM employees
+WHERE NOT EXISTS (
+	SELECT 1 FROM employees as e
+	WHERE e.employeenumber = 1001
+)
+```
+
+::default::
+
+<CsvTable><pre>
+"employeenumber"	"lastname"	"firstname"	"extension"	"email"	"reportsto"	"jobtitle"	"officecode"
+1002	"Murphy"	"Diane"	"x5800"	"dmurphy@classicmodelcars.com"		"President"	"1"
+1056	"Patterson"	"Mary"	"x4611"	"mpatterso@classicmodelcars.com"	1002	"VP Sales"	"1"
+1076	"Firrelli"	"Jeff"	"x9273"	"jfirrelli@classicmodelcars.com"	1002	"VP Marketing"	"1"
+1088	"Patterson"	"William"	"x4871"	"wpatterson@classicmodelcars.com"	1056	"Sales Manager (APAC)"	"6"
+1102	"Bondur"	"Gerard"	"x5408"	"gbondur@classicmodelcars.com"	1056	"Sale Manager (EMEA)"	"4"
+1143	"Bow"	"Anthony"	"x5428"	"abow@classicmodelcars.com"	1056	"Sales Manager (NA)"	"1"
+</pre></CsvTable>
+
+
+---
+layout: two-cols-title
+---
+
+::title::
+[Correlated Subquery - NOT EXISTS Example]{class="text-2xl"}
+
+::left::
+
+```sql
+SELECT * FROM employees as e
+WHERE NOT EXISTS (
+	SELECT 1 FROM customers as c
+	WHERE e.employeenumber = c.salesrepemployeenumber
+)
+```
+
+::right::
+<CsvTable><pre>
+"employeenumber"	"lastname"	"firstname"	"extension"	"email"	"reportsto"	"jobtitle"	"officecode"
+1076	"Firrelli"	"Jeff"	"x9273"	"jfirrelli@classicmodelcars.com"	1002	"VP Marketing"	"1"
+1143	"Bow"	"Anthony"	"x5428"	"abow@classicmodelcars.com"	1056	"Sales Manager (NA)"	"1"
+1056	"Patterson"	"Mary"	"x4611"	"mpatterso@classicmodelcars.com"	1002	"VP Sales"	"1"
+1102	"Bondur"	"Gerard"	"x5408"	"gbondur@classicmodelcars.com"	1056	"Sale Manager (EMEA)"	"4"
+1625	"Kato"	"Yoshimi"	"x102"	"ykato@classicmodelcars.com"	1621	"Sales Rep"	"5"
+1002	"Murphy"	"Diane"	"x5800"	"dmurphy@classicmodelcars.com"		"President"	"1"
+1619	"King"	"Tom"	"x103"	"tking@classicmodelcars.com"	1088	"Sales Rep"	"6"
+1088	"Patterson"	"William"	"x4871"	"wpatterson@classicmodelcars.com"	1056	"Sales Manager (APAC)"	"6"
+</pre></CsvTable>
+
+::default::
+
+---
+
+[Correlated Subquery - EXISTS Example]{class="text-2xl"}
+
+```sql
+SELECT customernumber, customername,state, country
+FROM customers c
+WHERE country = 'USA'
+AND creditlimit > 10000
+AND EXISTS (
+SELECT * FROM employees e
+WHERE e.employeenumber = c.salesrepemployeenumber
+)
+```
+
+<CsvTable><pre>
+"customernumber"	"customername"	"state"	"country"
+112	"Signal Gift Stores"	"NV"	"USA"
+124	"Mini Gifts Distributors Ltd."	"CA"	"USA"
+129	"Mini Wheels Co."	"CA"	"USA"
+131	"Land of Toys Inc."	"NY"	"USA"
+151	"Muscle Machine Inc"	"NY"	"USA"
+157	"Diecast Classics Inc."	"PA"	"USA"
+161	"Technics Stores Inc."	"CA"	"USA"
+173	"Cambridge Collectables Co."	"MA"	"USA"
+175	"Gift Depot Inc."	"CT"	"USA"
+181	"Vitachrome Inc."	"NY"	"USA"
+198	"Auto-Moto Classics Inc."	"MA"	"USA"
+</pre></CsvTable>
+
+---
+layout: two-cols-title
+---
+
+::title::
+[Correlated Subquery Example]{class="text-2xl"}
+
+- find customers who placed at least one sales order with the total value greater than 60K 
+
+::left::
+
+````md magic-move
+
+```sql
+SELECT
+    customerNumber,
+    customerName
+FROM
+    customers
+WHERE
+    EXISTS (
+        SELECT
+            orderNumber,
+            SUM(priceEach * quantityOrdered)
+        FROM
+            orderdetails
+            INNER JOIN orders USING (orderNumber)
+        WHERE
+            customerNumber = customers.customerNumber
+        GROUP BY
+            orderNumber
+        HAVING
+            SUM(priceEach * quantityOrdered) > 60000
+    );
+```
+
+```sql
+-- USING IN OPERATOR
+SELECT customerNumber, customerName 
+FROM customers 
+WHERE  customerNumber IN (
+           SELECT orders.customerNumber 
+           FROM orderdetails 
+           INNER JOIN orders on orderdetails.orderNumber 
+           = orders.orderNumber
+           GROUP BY orders.orderNumber 
+           HAVING SUM(priceEach * quantityOrdered) > 60000
+    );
+
+```
+
+````
+
+::right::
+
+<div class="w-fit mx-auto">
+
+![2_68_sql_dml2-4](/images/2_68_sql_dml2/2_68_sql_dml2-4.png){.max-h-30vh}
+</div>
+
+<CsvTable><pre>
+"customernumber"	"customername"
+148	"Dragon Souveniers, Ltd."
+259	"Toms Spezialit"
+298	"Vida Sport, Ltd"
+</pre></CsvTable>
+
+::default::
+
+---
+layout: two-cols-title
+---
+
+::title::
+[EXISTS VS. IN OPERATOR]{class="text-2xl"}
+
+::left::
+
+```sql
+SELECT customerNumber, customerName 
+FROM customers c 
+WHERE  EXISTS (
+	select 1 FROM orders o 
+	WHERE o.customernumber 
+	= c.customernumber
+);
+```
+
+<CsvTable><pre>
+"customernumber"	"customername"
+103	"Atelier graphique"
+112	"Signal Gift Stores"
+114	"Australian Collectors, Co."
+119	"La Rochelle Gifts"
+121	"Baane Mini Imports"
+124	"Mini Gifts Distributors Ltd."
+125	"Havel & Zbyszek Co"
+128	"Blauer See Auto, Co."
+129	"Mini Wheels Co."
+131	"Land of Toys Inc."
+</pre></CsvTable>
+
+<Box v-drag="[100,507,173,40]">
+Table CUSTOMERS 
+</Box>
+
+<StickyNote color="amber-light" textAlign="left" width="180px" title="EXISTS" v-drag="[300,84,172,143]">
+
+- Checks if any rows exist that satisfy the subquery condition (returns TRUE/FALSE)
+</StickyNote>
+
+::right::
+
+```sql
+SELECT customerNumber, customerName 
+FROM customers c 
+WHERE  customerNumber IN (
+	select o.customernumber FROM
+	orders o
+);
+```
+
+<CsvTable><pre>
+"customernumber"	"status"
+363	"Shipped"
+128	"Shipped"
+181	"Shipped"
+121	"Shipped"
+141	"Shipped"
+145	"Shipped"
+278	"Shipped"
+131	"Shipped"
+385	"Shipped"
+486	"Shipped"
+</pre></CsvTable>
+
+<Box v-drag="[511,496,150,40]">
+Table ORDERS 
+</Box>
+
+<StickyNote color="green-light" textAlign="left" width="180px" title="IN" v-drag="[734,84,180,121]">
+
+- Checks if a value matches any value in a list or subquery result
+</StickyNote>
+::default::
+
+---
+
+[IN VS. EXISTS OPERATOR]{class="text-2xl"}
+
+<div class="w-fit mx-auto">
+
+![2_68_sql_dml2-5](/images/2_68_sql_dml2/2_68_sql_dml2-5.png){.max-h-50vh}
+</div>
+
+
+---
+layout: two-cols-title
+---
+
+::title::
+[NULL VALUE]{class="text-2xl"}
+
+- What is the output?
+
+::left::
+
+```sql
+select *
+from orders as o 
+where exists (select NULL);
+```
+
+::right::
+
+```sql
+select *
+from orders as o 
+where o.ordernumber IN ( NULL);
+```
+
+::default::
+
+---
+
+[Nested Subqueries]{class="text-2xl"}
+
+- Execution order: innermost → outermost
+
+```sql {7|4-8|*}{lines:true}
+SELECT name, salary -- Level 1
+FROM employees
+WHERE salary > (
+    SELECT AVG(salary) -- Level 2
+    FROM employees
+    WHERE dept_id = (
+        SELECT id FROM departments WHERE name = 'HR' -- Level 3
+    )
+)
+```
+
+<div>
+    Level 3: Find id of HR department → 5
+</div>
+
+<div v-click.at="+1">
+    Level 2: Find the average salary of HR department → $50,000
+</div>
+
+<div v-click.at="+2">
+    Level 1: List employees whose salary is greater than HR's average (> $50,000)
+</div>
+
+
+---
+layout: two-cols-title
+---
+
+::title::
+[Nested Subquries Example]{class="text-2xl"}
+
+- Example 1: Products ordered by customers in USA
+
+::left::
+
+```sql {10-12|7-13|4-14|*}{lines:true}
+SELECT productName, productLine -- Level 1
+FROM products
+WHERE productCode IN (
+    SELECT productCode -- Level 2
+    FROM orderdetails
+    WHERE orderNumber IN (
+        SELECT orderNumber -- Level 3
+        FROM orders
+        WHERE customerNumber IN (
+            SELECT customerNumber -- Level 4
+            FROM customers
+            WHERE country = 'USA'
+        )
+    )
+);
+```
+
+
+::right::
+
+<div>
+    Level 4: Find all USA customers → 103, 112, 114...
+</div>
+
+<div v-click.at="+1">
+    Level 3: Find orders by those customers → 10123, 10298...
+</div>
+
+<div v-click.at="+2">
+    Level 2: Find products in those orders → S10_1678, S18_1749...
+</div>
+
+<div v-click.at="+3">
+    Level 1: Get product details
+</div>
+::default::
+
+
+---
+layout: two-cols-title
+---
+
+::title::
+[Nested Subquries Example]{class="text-2xl"}
+- Example 2: Employees managing salespeople with high-value customers
+
+::left::
+
+```sql {10-12|7-13|4-14|*}{lines:true}
+SELECT firstName, lastName, jobTitle -- Level 1
+FROM employees
+WHERE employeeNumber IN (
+    SELECT reportsTo -- Level 2
+    FROM employees
+    WHERE employeeNumber IN (
+        SELECT salesRepEmployeeNumber -- Level 3
+        FROM customers
+        WHERE customerNumber IN (
+            SELECT customerNumber -- Level 4
+            FROM payments
+            WHERE amount > 100000
+        )
+    )
+);
+```
+
+::right::
+
+<div>
+    Level 4: Find customers with payments > $100k
+</div>
+
+<div v-click.at="+1">
+    Level 3: Find their sales reps
+</div>
+
+<div v-click.at="+2">
+    Level 2: Find who those reps report to (managers)
+</div>
+
+<div v-click.at="+3">
+    Level 1: Get manager details
+</div>
+
+::default::
+
+---
+layout: two-cols-title
+---
+
+::title::
+[Subqueries]{class="text-2xl"}
+
+- In `FROM` clause
+- Find which order has the most products ordered
+
+::left::
+
+```sql
+SELECT lineitems.orderNumber,lineitems.items
+FROM ( 
+    SELECT orderNumber,                  
+              COUNT(orderNumber) AS items              
+    FROM orderdetails              
+    GROUP BY orderNumber 
+) AS lineitems
+WHERE lineitems.items=(    
+        SELECT max(lineitems2.items)	
+        FROM ( 
+            SELECT orderNumber,               
+                COUNT(orderNumber) AS items              
+            FROM orderdetails                       
+            GROUP BY orderNumber
+        ) AS lineitems2 
+)
+```
+
+::right::
+
+<div class="flex gap-2">
+
+<div class="w-1/2">
+<div class="w-fit mx-auto">
+
+![2_68_sql_dml2-6](/images/2_68_sql_dml2/2_68_sql_dml2-6.png){.max-h-30vh}
+</div>
+</div>
+
+<div class="w-1/2">
+
+<CsvTable><pre>
+"ordernumber"	"items"
+10168	18
+10332	18
+10316	18
+10398	18
+10360	18
+10159	18
+10165	18
+10386	18
+10106	18
+10275	18
+10222	18
+</pre></CsvTable>
+</div>
+</div>
+
+::default::
+
+
+---
+layout: two-cols-title
+---
+
+::title::
+[ROW_NUMBER() Function]{class="text-2xl"}
+
+```sql
+ROW_NUMBER() OVER (
+    [PARTITION BY column1, column2, ...]
+    ORDER BY column3 [ASC|DESC]
+)
+```
+
+- The `ROW_NUMBER()` is a `window function` that assigns a sequential integer to each row within the partition of a result set. The row number starts with 1 for the first row in each partition. 
+
+::left::
+
+```sql
+Select od.orderNumber,od.priceEach 
+from orderdetails as od
+order by od.orderNumber  desc;
+```
+
+<CsvTable><pre>
+"ordernumber"	"priceeach"
+10425	94.92
+10425	50.32
+10425	83.79
+10425	31.82
+10425	127.79
+10425	53.75
+10425	107.76
+</pre></CsvTable>
+
+::right::
+
+```sql
+select  od.orderNumber,od.priceEach,  
+     row_number() over(order by 
+     od.orderNumber desc ) as rownumber 
+from orderdetails as od;
+```
+
+<CsvTable><pre>
+"ordernumber"	"priceeach"	"rownumber"
+10425	94.92	1
+10425	50.32	2
+10425	83.79	3
+10425	31.82	4
+10425	127.79	5
+10425	53.75	6
+</pre></CsvTable>
+
+::default::
+
+---
+layout: two-cols-title
+---
+
+::title::
+[ROW_NUMBER() Function]{class="text-2xl"}
+
+::left::
+
+```sql
+select od.orderNumber,od.priceEach 
+from   orderdetails as od
+order by od.orderNumber ,
+               od.priceEach desc;
+```
+
+<CsvTable><pre>
+"ordernumber"	"priceeach"
+10100	136
+10100	75.46
+10100	55.09
+10100	35.29
+10101	167.06
+10101	108.06
+10101	44.35
+10101	32.53
+10102	95.55
+10102	43.13
+</pre></CsvTable>
+
+::right::
+
+<div class="flex gap-2">
+
+<div class="w-3/4">
+
+```sql
+select  od.orderNumber,od.priceEach, 
+row_number() 
+over(order by od.orderNumber , 
+od.priceEach desc ) as rownumber 
+from orderdetails as od;
+```
+
+<CsvTable><pre>
+"ordernumber"	"priceeach"	"rownumber"
+10100	136	1
+10100	75.46	2
+10100	55.09	3
+10100	35.29	4
+10101	167.06	5
+10101	108.06	6
+10101	44.35	7
+10101	32.53	8
+10102	95.55	9
+10102	43.13	10
+</pre></CsvTable>
+
+</div>
+
+<div class="w-1/4">
+
+<div class="w-fit mx-auto">
+
+![2_68_sql_dml2-7](/images/2_68_sql_dml2/2_68_sql_dml2-7.png){.max-h-50vh}
+</div>
+</div>
+
+</div>
+
+::default::
+
+---
+
+[ROW_NUMBER() Function]{class="text-2xl"}
+
+- Assign row numbers to order details, partitioned by orderNumber and ordered by priceEach descending
+
+```sql
+select  *, 
+row_number() over(partition by od.orderNumber order by od.priceEach desc) as rownumber 
+from orderdetails as od
+
+```
+
+<CsvTable><pre>
+"ordernumber"	"productcode"	"quantityordered"	"priceeach"	"orderlinenumber"	"rownumber"
+10100	"S18_1749"	30	136	3	1
+10100	"S18_4409"	22	75.46	4	2
+10100	"S18_2248"	50	55.09	2	3
+10100	"S24_3969"	49	35.29	1	4
+10101	"S18_2795"	26	167.06	1	1
+10101	"S18_2325"	25	108.06	4	2
+10101	"S24_2022"	46	44.35	2	3
+10101	"S24_1937"	45	32.53	3	4
+10102	"S18_1342"	39	95.55	2	1
+10102	"S18_1367"	41	43.13	1	2
+</pre></CsvTable>
+
+---
+
+[ROW_NUMBER() Function]{class="text-2xl"}
+
+- Show the most expensive product in each order
+
+```sql
+select * 
+from 
+  (select  *, 
+        row_number() over(partition by od.orderNumber order by od.priceEach desc) as rownumber 
+     from orderdetails as od) as od2
+where od2.rownumber=1
+```
+
+<CsvTable><pre>
+"ordernumber"	"productcode"	"quantityordered"	"priceeach"	"orderlinenumber"	"rownumber"
+10100	"S18_1749"	30	136	3	1
+10101	"S18_2795"	26	167.06	1	1
+10102	"S18_1342"	39	95.55	2	1
+10103	"S10_1949"	26	214.3	11	1
+10104	"S18_3232"	23	165.95	13	1
+10105	"S12_1108"	41	205.72	15	1
+10106	"S18_1662"	36	134.04	12	1
+10107	"S10_4698"	27	172.36	4	1
+10108	"S12_1099"	33	165.38	6	1
+10109	"S18_3232"	46	160.87	5	1
+</pre></CsvTable>
+
+---
+
+[WITH Clause]{class="text-2xl"}
+
+```sql
+WITH <temp_table_CTE_name1> (column_1, column_2,…,column_n)
+AS (
+     SELECT ... (CTE quey 1)
+     )
+   , [<temp_table_CTE_name2> (column_1, column_2,…,column_n)
+AS (
+     SELECT ...
+       FROM temp_table_expression_name1 (CTE quey 2)
+        ...
+     )]
+
+--Outer Main query with temporary table CTE
+SELECT expression_A, expression_B, ...
+FROM temp_table_expression_name
+```
+
+- The SQL WITH clause is reference is considered as the temporary because the result is not permanently stored in the database system,
+- The SQL WITH dataset acts as the temporary view or table that is only available till the duration of the scope of execution of SELECT, INSERT, UPDATE, DELETE, or MERGE statements,
+- It is not supported by all database management system
+
+---
+layout: two-cols-title
+---
+
+::title::
+[WITH Clause]{class="text-2xl"}
+
+- `CTE` : For show order details of high order
+
+<StickyNote color="amber-light" textAlign="left" width="180px" title="Note" v-drag="[477,54,241,62]">
+Common Table Expressions (CTE)
+</StickyNote>
+
+::left::
+
+```sql
+WITH
+    cte_order AS (
+        SELECT
+            orderNumber,
+            COUNT(orderNumber) AS items
+        FROM
+            orderdetails
+        GROUP BY
+            orderNumber
+    )
+SELECT
+    *
+FROM
+    cte_order
+where
+    cte_order.items = (
+        select
+            max(items)
+        from
+            cte_order
+    );
+
+```
+
+::right::
+
+<div class="flex gap-2">
+<div class="w-1/2">
+
+<CsvTable><pre>
+"ordernumber"	"items"
+10168	18
+10332	18
+10316	18
+10398	18
+10360	18
+10159	18
+10165	18
+10386	18
+10106	18
+10275	18
+10222	18
+</pre></CsvTable>
+</div>
+<div class="w-1/2">
+
+<div class="w-fit mx-auto">
+
+![2_68_sql_dml2-8](/images/2_68_sql_dml2/2_68_sql_dml2-8.png){.max-h-50vh}
+</div>
+</div>
+</div>
+
+::default::
+
+---
+layout: two-cols-title
+---
+
+::title::
+[Subqueries in a FROM clause]{class="text-2xl"}
+
+- For show order details of high order
+
+::left::
+
+```sql
+SELECT lineitems.orderNumber,lineitems.items
+FROM ( SELECT orderNumber,                  
+              COUNT(orderNumber) AS items    
+             FROM orderdetails              
+             GROUP BY orderNumber ) AS lineitems
+ WHERE    lineitems.items=(    
+          SELECT max(lineitems2.items)	
+          FROM ( SELECT orderNumber,         
+                   COUNT(orderNumber) AS items 
+                 FROM orderdetails          
+          GROUP BY orderNumber) AS lineitems2 )
+```
+
+::right::
+
+<div class="flex gap-2">
+<div class="w-1/2">
+
+<CsvTable><pre>
+"ordernumber"	"items"
+10168	18
+10332	18
+10316	18
+10398	18
+10360	18
+10159	18
+10165	18
+10386	18
+10106	18
+10275	18
+10222	18
+</pre></CsvTable>
+</div>
+<div class="w-1/2">
+
+<div class="w-fit mx-auto">
+
+![2_68_sql_dml2-8](/images/2_68_sql_dml2/2_68_sql_dml2-8.png){.max-h-50vh}
+</div>
+</div>
+</div>
+
+::default::
