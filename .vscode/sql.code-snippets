@@ -136,5 +136,10 @@
       "</div>"
     ],
     "description": "Wrap flex 2 columns"
+  },
+  "Wrap with %%sql": {
+    "prefix": "%%sql",
+    "body": ["%%sql", "$0"],
+    "description": "Wrap flex 2 columns"
   }
 }
