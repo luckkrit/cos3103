@@ -2514,6 +2514,22 @@ SELECT * FROM A NATURAL JOIN B;
 -- Result: CROSS JOIN (Cartesian product!)
 ```
 
+<StickyNote color="amber-light" textAlign="left" width="180px" title="CROSS JOIN (= CARTESIAN PRODUCT)" v-drag="[46,290,296,139]">
+
+- Every row from A × every row from B
+- No join condition
+- Size: A rows × B rows
+</StickyNote>
+
+<StickyNote color="green-light" textAlign="left" width="180px" title="NATURAL JOIN" v-drag="[481,285,369,180]">
+
+
+- Automatically joins on columns with the same name
+- Has an implicit join condition
+- Only returns matched rows
+- Like INNER JOIN but with automatic column selection
+</StickyNote>
+
 ---
 
 [LEFT OUTER JOIN]{class="text-2xl"}
