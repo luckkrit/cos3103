@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "fhv4rRwKPPs=",
+  "success": true,
+  "projectFilePath": "D:\\Backup\\nodejs\\astro-starlight\\cos3103\\public\\csharp\\cos3103\\cos3103.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\luckk\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.0\\microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\luckk\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\10.0.0\\microsoft.extensions.logging.abstractions.10.0.0.nupkg.sha512",
+    "C:\\Users\\luckk\\.nuget\\packages\\npgsql\\10.0.1\\npgsql.10.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}
