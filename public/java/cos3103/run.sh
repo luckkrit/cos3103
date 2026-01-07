@@ -1,2 +1,2 @@
-.\mvnw clean compile
-.\mvnw exec:java
+./mvnw clean compile
+./mvnw exec:java
