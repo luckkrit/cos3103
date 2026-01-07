@@ -2927,7 +2927,7 @@ WHERE customerNumber is NULL ;
 
 ---
 
-[CROSS JOIN]{class="text-2xl"}
+[CROSS JOIN = CARTESIAN PRODUCT]{class="text-2xl"}
 
 
 <div class="w-fit mx-auto">
