@@ -2927,8 +2927,12 @@ WHERE customerNumber is NULL ;
 
 ---
 
-[CROSS JOIN = CARTESIAN PRODUCT]{class="text-2xl"}
+[CROSS JOIN]{class="text-2xl"}
 
+<StickyNote color="amber-light" textAlign="left" width="180px" title="Note" v-drag="[610,22,263,60]">
+
+CROSS JOIN = CARTESIAN PRODUCT
+</StickyNote>
 
 <div class="w-fit mx-auto">
 
