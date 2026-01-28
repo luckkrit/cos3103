@@ -18,22 +18,22 @@
   "Wrap with csvtable": {
     "prefix": "csvt",
     "body": ["<CsvTable><pre>", "$0", "</pre></CsvTable>"],
-    "description": "Wraps selected text with defined strings"
+    "description": "Wraps selected text with defined strings",
   },
   "Wrap with sql`": {
     "prefix": "sql`",
     "body": ["```sql", "$0", "```"],
-    "description": "Wraps selected text with defined strings"
+    "description": "Wraps selected text with defined strings",
   },
   "Wrap with text-2xl": {
     "prefix": "t2xl",
     "body": ["[${TM_SELECTED_TEXT}$0]{class=\"text-2xl\"}"],
-    "description": "Wraps selected text with defined strings"
+    "description": "Wraps selected text with defined strings",
   },
   "Wrap with imgw": {
     "prefix": "imgw",
     "body": ["<div class=\"w-fit mx-auto\">", "", "$0", "</div>"],
-    "description": "Wraps selected text with defined strings"
+    "description": "Wraps selected text with defined strings",
   },
   "Two-cols-title layout": {
     "prefix": "tcl-",
@@ -49,9 +49,9 @@
       "",
       "::right::",
       "",
-      "::default::"
+      "::default::",
     ],
-    "description": "Two cols title layout"
+    "description": "Two cols title layout",
   },
   "Wrap with class": {
     "prefix": "imgc",
@@ -59,54 +59,54 @@
       "<div class=\"w-fit mx-auto\">",
       "",
       "${TM_SELECTED_TEXT}{.max-h-50vh$0}",
-      "</div>"
+      "</div>",
     ],
-    "description": "Wrap selected text with class"
+    "description": "Wrap selected text with class",
   },
   "MD Magic Move": {
     "prefix": "mdmm",
     "body": ["````md magic-move", "", "````"],
-    "description": "md magic-move"
+    "description": "md magic-move",
   },
   "v-show click=0": {
     "prefix": "vsh0",
     "body": ["<div v-show=\"\\$slidev.nav.clicks == 0\">", "", "</div>"],
-    "description": "v-show click=0"
+    "description": "v-show click=0",
   },
   "v-show click=1": {
     "prefix": "vsh1",
     "body": ["<div v-show=\"\\$slidev.nav.clicks == 1\">", "", "</div>"],
-    "description": "v-show click=1"
+    "description": "v-show click=1",
   },
   "Admonition in neversink theme": {
     "prefix": "admo",
     "body": [
       "<Admonition title=\"Info\" color=\"teal-light\" width=\"300px\" v-drag>",
       "$0",
-      "</Admonition>"
+      "</Admonition>",
     ],
-    "description": "Admonition in neversink theme"
+    "description": "Admonition in neversink theme",
   },
   "StickyNote in neversink theme": {
     "prefix": "stck",
     "body": [
       "<StickyNote color=\"amber-light\" textAlign=\"left\" width=\"180px\" title=\"Title\" v-drag>",
       "$0",
-      "</StickyNote>"
+      "</StickyNote>",
     ],
-    "description": "StickyNote in neversink theme"
+    "description": "StickyNote in neversink theme",
   },
   "Box in neversink theme": {
     "prefix": "boxx",
     "body": ["<Box v-drag>", "$0", "</Box>"],
-    "description": "Box in neversink theme"
+    "description": "Box in neversink theme",
   },
   "Slidev Image Name Fix": {
     "prefix": "fixname",
     "body": [
-      "${TM_SELECTED_TEXT/!\\[.*\\]\\(.*?public(\\/.*\\/([^\\/]+)\\.[a-z]+)\\).*/![$2]($1)/}"
+      "${TM_SELECTED_TEXT/!\\[.*\\]\\(.*?public(\\/.*\\/([^\\/]+)\\.[a-z]+)\\).*/![$2]($1)/}",
     ],
-    "description": "Vim-friendly: Sets alt-text to filename and strips public path"
+    "description": "Vim-friendly: Sets alt-text to filename and strips public path",
   },
   "Wrap img with class": {
     "prefix": "imgf",
@@ -114,14 +114,14 @@
       "<div class=\"w-fit mx-auto\">",
       "",
       "${TM_SELECTED_TEXT/!\\[.*\\]\\(.*?public(\\/.*\\/([^\\/]+)\\.[a-z]+)\\).*/![$2]($1)/}{.max-h-50vh$0}",
-      "</div>"
+      "</div>",
     ],
-    "description": "Wrap selected image with class"
+    "description": "Wrap selected image with class",
   },
   "Wrap with v-click": {
     "prefix": "vclk",
     "body": ["<div v-click>", "", "${TM_SELECTED_TEXT}", "</div>"],
-    "description": "Wrap with v-click"
+    "description": "Wrap with v-click",
   },
   "Wrap with flex 2 columns": {
     "prefix": "f2cl",
@@ -133,13 +133,27 @@
       "<div class=\"w-1/2\">",
       "",
       "</div>",
-      "</div>"
+      "</div>",
     ],
-    "description": "Wrap flex 2 columns"
+    "description": "Wrap flex 2 columns",
   },
   "Wrap with %%sql": {
     "prefix": "%%sql",
     "body": ["%%sql", "$0"],
-    "description": "Wrap flex 2 columns"
-  }
+    "description": "Wrap flex 2 columns",
+  },
+  "Speech bubble": {
+    "prefix": "spchbble",
+    "body": [
+      "<SpeechBubble position=\"r\" color=\"sky\" shape=\"round\" maxWidth=\"300px\" v-drag>",
+      "$0",
+      "</SpeechBubble>",
+    ],
+    "description": "Speech bubble",
+  },
+  "Kawaii IceCream": {
+    "prefix": "kwicecream",
+    "body": ["<IceCream :size=\"140\" mood=\"sad\" color=\"#FDA7DC\" v-drag/>"],
+    "description": "Speech bubble",
+  },
 }

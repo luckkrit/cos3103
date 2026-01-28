@@ -72,6 +72,11 @@ FROM		<table list>
 
 - we want to write a query to identify all students who get **better marks** than that of the student who's [StudentID is 'V002', but we do not know the marks of 'V002']{.text-red-500}
 
+<StickyNote color="amber-light" textAlign="left" width="180px" title="Note" v-drag="[224,412,520,80]">
+
+- ถ้าเรารู้แค่ตารางซ้ายอย่างเดียว จะไม่สามารถตอบคำถามนี้ได้ ต้องมาดูตารางทางขวาเพิ่มเติม
+</StickyNote>
+
 ---
 
 [Subquery Concept]{class="text-2xl"}
@@ -142,7 +147,6 @@ graph TB
 
 ---
 
-
 [Single Row Subqueries]{class="text-2xl"}
 
 - In `WHERE` clause
@@ -172,6 +176,9 @@ where
 "Diane Murphy"	1002	"dmurphy@classicmodelcars.com"
 </pre></CsvTable>
 
+<Box color="amber-light" v-drag="[731,24,150,40]" custom="text-center">
+⚠ Page 10 - 11
+</Box>
 
 ---
 layout: two-cols-title
@@ -266,6 +273,10 @@ where quantityordered > (select avg(quantityordered) from orderdetails where ord
 10103	42
 </pre></CsvTable>
 
+<Box color="amber-light" v-drag="[731,24,150,40]" custom="text-center">
+⚠ Page 12 - 13
+</Box>
+
 ---
 layout: two-cols-title
 ---
@@ -348,6 +359,11 @@ where customernumber = 347
 group by customernumber
 ```
 
+
+<Box color="amber-light" v-drag="[731,24,150,40]" custom="text-center">
+⚠ Page 14 - 15
+</Box>
+
 ---
 layout: two-cols-title
 ---
@@ -429,6 +445,151 @@ HAVING AVG(o.quantityOrdered ) >
 
 ---
 
+[Exercise]{class="text-2xl"}
+
+1. **Finding Above-Average Products**
+Write a query to display the product code, product name, and buy price of all products that have a buy price greater than the average buy price of all products.
+2. **High Credit Customers**
+Write a query to find all customers whose credit limit is higher than the credit limit of customer number 103. Display the customer number, customer name, and credit limit.
+3. **Most Expensive Products**
+Write a query to find all products that have an MSRP equal to the maximum MSRP in the database. Display the product code, product name, product line, and MSRP.
+4. **Customer with Maximum Credit**
+Write a query to display the customer number, customer name, and credit limit of the customer who has the same credit limit as the maximum credit limit in the database.
+5. **Office Location Query**
+Write a query to find all employees who work in the same officeCode as the office with officeCode '1'. Display the employee number, first name, last name.
+
+---
+
+[Exercise]{class="text-2xl"}
+
+6. **Product Lines with Above-Average Products**
+Write a query to find product lines that have an average buy price greater than the overall average buy price of all products. Display the product line and its average buy price.
+7. **Customers with More Orders than Customer 103**
+Write a query to find customers who have placed more orders than customer number 103. Display the customer number, customer name, and total number of orders.
+8. **Offices with More Employees than Office '4'**
+Write a query to find offices that have more employees than office code '4'. Display the office code, city, and employee count.
+9. **Premium Product Lines**
+Write a query to find product lines where the maximum MSRP in that product line is greater than the average MSRP of all products. Display the product line and the maximum MSRP.
+10. **Customers with Higher Total Payments than Customer 103**
+Write a query to find customers whose total payment amount exceeds the total payment amount of customer 103. Display the customer number, customer name, and total payment amount.
+
+---
+
+[Answer]{class="text-2xl"}
+
+1. **Finding Above-Average Products**
+
+```sql
+SELECT productCode, productName, buyPrice
+FROM products
+WHERE buyPrice > (SELECT AVG(buyPrice) FROM products);
+```
+
+2. **High Credit Customers**
+
+```sql
+SELECT customerNumber, customerName, creditLimit
+FROM customers
+WHERE creditLimit > (SELECT creditLimit 
+                     FROM customers 
+                     WHERE customerNumber = 103);
+```
+
+3. **Most Expensive Products**
+
+```sql
+SELECT productCode, productName, productLine, MSRP
+FROM products
+WHERE MSRP = (SELECT MAX(MSRP) FROM products);
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+4. **Customer with Maximum Credit**
+
+```sql
+SELECT customerNumber, customerName, creditLimit
+FROM customers
+WHERE creditLimit = (SELECT MAX(creditLimit) FROM customers);
+```
+
+5. **Office Location Query**
+
+```sql
+SELECT employeeNumber, firstName, lastName
+FROM employees
+WHERE officeCode = (SELECT officeCode 
+                    FROM offices 
+                    WHERE officeCode = '1');
+```
+
+6. **Product Lines with Above-Average Products**
+
+```sql
+SELECT productLine, AVG(buyPrice) AS avgBuyPrice
+FROM products
+GROUP BY productLine
+HAVING AVG(buyPrice) > (SELECT AVG(buyPrice) FROM products);
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+7. **Customers with More Orders than Customer 103**
+
+```sql
+SELECT c.customerNumber, c.customerName, COUNT(o.orderNumber) AS totalOrders
+FROM customers c
+JOIN orders o ON c.customerNumber = o.customerNumber
+GROUP BY c.customerNumber, c.customerName
+HAVING COUNT(o.orderNumber) > (SELECT COUNT(*) 
+                                FROM orders 
+                                WHERE customerNumber = 103);
+```
+
+8. **Offices with More Employees than Office '4'**
+
+```sql
+SELECT o.officeCode, o.city, COUNT(e.employeeNumber) AS empCount
+FROM offices o
+JOIN employees e ON o.officeCode = e.officeCode
+GROUP BY o.officeCode, o.city
+HAVING COUNT(e.employeeNumber) > (SELECT COUNT(*) 
+                                   FROM employees 
+                                   WHERE officeCode = '4');
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+9. **Premium Product Lines**
+
+```sql
+SELECT productLine, MAX(MSRP) AS minMSRP
+FROM products
+GROUP BY productLine
+HAVING MAX(MSRP) > (SELECT AVG(MSRP) FROM products);
+```
+
+10. **Customers with Higher Total Payments than Customer 103**
+
+```sql
+SELECT c.customerNumber, c.customerName, SUM(p.amount) AS totalPayment
+FROM customers c
+JOIN payments p ON c.customerNumber = p.customerNumber
+GROUP BY c.customerNumber, c.customerName
+HAVING SUM(p.amount) > (SELECT SUM(amount) 
+                        FROM payments 
+                        WHERE customerNumber = 103);
+```
+
+
+---
+
 [Multiple Row Subqueries]{class="text-2xl"}
 
 - In `FROM` clause
@@ -450,6 +611,18 @@ select quantityordered from (select quantityordered from orderdetails where quan
 <div class="text-5xl" v-drag="[490,202,69,55]">
 🤨
 </div>
+
+<v-click>
+
+```sql
+select quantityordered,ordernumber from (select quantityordered,ordernumber from orderdetails where quantityordered < 10)
+```
+
+
+</v-click>
+
+
+
 
 ---
 
@@ -486,7 +659,7 @@ layout: two-cols-title
 ---
 
 ::title::
-[Single Row Subqueries]{class="text-2xl"}
+[Multiple and Single Row Subqueries]{class="text-2xl"}
 
 - Mixed with table and `Subquery`
 
@@ -555,6 +728,10 @@ FROM ( SELECT orderNumber,
 
 ::default::
 
+<Box color="amber-light" v-drag="[731,24,150,40]" custom="text-center">
+⚠ Page 26 - 28
+</Box>
+
 ---
 layout: two-cols-title
 ---
@@ -588,6 +765,15 @@ SELECT orderNumber,
 ```
 
 ::default::
+
+```txt
+ERROR:  aggregate function calls cannot be nested
+LINE 2:     MAX(count(orderNumber)),
+                ^ 
+
+SQL state: 42803
+Character: 29
+```
 
 
 ---
@@ -627,6 +813,277 @@ SELECT orderNumber,
 
 ::default::
 
+---
+
+[Exercise]{class="text-2xl"}
+
+1. **Customer Order Summary**
+Write a query to find the average number of orders per customer. First create a derived table that shows the count of orders for each customer, then calculate the average from that result.
+
+2. **Top Product Lines by Revenue**
+Write a query to find product lines and their total revenue, then display only those product lines whose revenue is above 500,000. Use a subquery in the FROM clause to calculate revenue (quantityOrdered * priceEach) for each product line.
+
+3. **Employee Office Summary**
+Write a query to show each office's city along with the average number of customers handled by employees in that office. Use a derived table to first count customers per employee.
+
+4. **High-Value Orders**
+Write a query to find the customer name and order number for orders that have a total value greater than 50,000. Use a subquery in the FROM clause to calculate the total value (SUM of quantityOrdered * priceEach) for each order.
+
+5. **Product Performance Ranking**
+Write a query to display product codes, product names, and their total quantity ordered. Then show only products that are in the top 10 by quantity ordered. Use a derived table to calculate total quantities.
+---
+
+[Answer]{class="text-2xl"}
+
+1. **Customer Order Summary**
+
+```sql
+SELECT AVG(orderCount) AS avgOrdersPerCustomer
+FROM (SELECT customerNumber, COUNT(*) AS orderCount
+      FROM orders
+      GROUP BY customerNumber) AS customerOrders;
+```
+
+2. **Top Product Lines by Revenue**
+
+```sql
+SELECT productLine, totalRevenue
+FROM (SELECT p.productLine, 
+             SUM(od.quantityOrdered * od.priceEach) AS totalRevenue
+      FROM products p
+      JOIN orderdetails od ON p.productCode = od.productCode
+      GROUP BY p.productLine) AS productLineRevenue
+WHERE totalRevenue > 500000;
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+3. **Employee Office Summary**
+
+```sql
+SELECT o.city, AVG(custCount) AS avgCustomersPerEmployee
+FROM offices o
+JOIN (SELECT e.officeCode, e.employeeNumber, COUNT(c.customerNumber) AS custCount
+      FROM employees e
+      LEFT JOIN customers c ON e.employeeNumber = c.salesRepEmployeeNumber
+      GROUP BY e.officeCode, e.employeeNumber) AS empCustomers
+ON o.officeCode = empCustomers.officeCode
+GROUP BY o.city;
+```
+
+4. **High-Value Orders**
+
+```sql
+SELECT c.customerName, ov.orderNumber, ov.orderTotal
+FROM customers c
+JOIN (SELECT o.orderNumber, o.customerNumber, 
+             SUM(od.quantityOrdered * od.priceEach) AS orderTotal
+      FROM orders o
+      JOIN orderdetails od ON o.orderNumber = od.orderNumber
+      GROUP BY o.orderNumber, o.customerNumber) AS ov
+ON c.customerNumber = ov.customerNumber
+WHERE ov.orderTotal > 50000;
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+5. **Product Performance Ranking**
+
+```sql
+SELECT p.productCode, p.productName, ps.totalQuantity
+FROM products p
+JOIN (SELECT productCode, SUM(quantityOrdered) AS totalQuantity
+      FROM orderdetails
+      GROUP BY productCode) AS ps
+ON p.productCode = ps.productCode
+ORDER BY ps.totalQuantity DESC
+LIMIT 10;
+```
+
+---
+
+[Challenge]{class="text-2xl"}
+
+1. **Above-Average Order Value Customers**
+Write a query to find ***customers*** whose ***average order value*** is greater than the overall average order value across all orders. Display customer number, customer name, and their average order value. Use a derived table to calculate order values.
+
+<IceCream :size="140" mood="happy" color="#FDA7DC" v-drag="[571,229,80,140]" />
+
+
+<SpeechBubble position="r" color="sky" shape="round" maxWidth="300px" v-drag="[237,219,333,125]">
+
+1. What does it want? 
+2. What tables are being used?
+</SpeechBubble>
+
+---
+
+[Answer]{class="text-2xl"}
+
+1. **Above-Average Order Value Customers**
+
+```sql
+select c.customernumber, c.customername,od.avgordervalue 
+from customers c 
+left join 
+	(select o.customernumber, avg(d.quantityordered * d.priceeach) as avgordervalue 
+		from orders o left join orderdetails d on o.ordernumber = d.ordernumber 
+			group by customernumber) od 
+on od.customernumber = c.customernumber
+where od.avgordervalue > (select avg(quantityordered * priceeach) from orderdetails)
+```
+
+---
+
+[Challenge]{class="text-2xl"}
+
+2. **Top Performing Product Lines**
+Write a query to find product lines whose total revenue exceeds the average revenue per product line. Display the product line name and total revenue. Use a subquery in FROM clause to calculate revenue per product line, and a single-row subquery to find the average.
+
+---
+
+[Answer]{class="text-2xl"}
+
+2. **Top Performing Product Lines**
+
+```sql
+select a.productline, a.totalrevenue 
+from 
+	(select pl.productline,
+		sum(od.quantityordered * od.priceeach) as totalrevenue
+		 
+			from productlines pl 
+				left join products p on p.productline = pl.productline 
+					left join orderdetails od on p.productcode = od.productcode 
+						group by pl.productline) a 
+where a.totalrevenue >
+(
+	select avg(totalrevenue)
+	from (select pl2.productline,
+		sum(od2.quantityordered * od2.priceeach) as totalrevenue
+		 
+			from productlines pl2 
+				left join products p2 on p2.productline = pl2.productline 
+					left join orderdetails od2 on p2.productcode = od2.productcode 
+						group by pl2.productline) b 
+)
+```
+
+---
+
+[Challenge]{class="text-2xl"}
+
+3. **Offices with High-Value Employee Performance**
+Write a query to find offices where the total number of customers handled by all employees in that office is greater than the average number of customers per office. Display office code, city, and total customer count.
+
+
+---
+
+[Answer]{class="text-2xl"}
+
+
+- แบบที่ 1
+
+```sql
+select o2.officecode,o2.city,a.totalcustomer 
+from (
+	select e2.officecode, count(c2.customernumber) as totalcustomer
+		from employees e2 
+			left join customers c2 on e2.employeenumber = c2.salesrepemployeenumber 
+				group by e2.officecode
+) a 
+left join offices o2 on a.officecode = o2.officecode
+		
+where a.totalcustomer > 
+	
+		(select avg(countcustomer) from (
+			select count(c2.customernumber) as countcustomer
+				from employees e2 
+					left join customers c2 on e2.employeenumber = c2.salesrepemployeenumber 
+							left join offices o2 on e2.officecode = o2.officecode
+				group by o2.officecode) b)
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+- แบบที่ 2
+
+```sql
+SELECT a.officecode, a.city, a.totalcustomer 
+FROM (
+    SELECT o2.officecode, o2.city, COUNT(c2.customernumber) AS totalcustomer
+    FROM employees e2 
+        LEFT JOIN customers c2 ON e2.employeenumber = c2.salesrepemployeenumber 
+        LEFT JOIN offices o2 ON e2.officecode = o2.officecode
+    GROUP BY o2.officecode, o2.city 
+) a 
+WHERE a.totalcustomer > 
+    (SELECT AVG(countcustomer) 
+     FROM (
+         SELECT COUNT(c3.customernumber) AS countcustomer
+         FROM employees e3 
+             LEFT JOIN customers c3 ON e3.employeenumber = c3.salesrepemployeenumber 
+             LEFT JOIN offices o3 ON e3.officecode = o3.officecode
+         GROUP BY o3.officecode) b  
+    );
+```
+
+---
+
+[Challenge]{class="text-2xl"}
+
+4. **Premium Orders Comparison**
+
+Write a query to find orders that have more order line items than the average number of line items per order. Display the order number, customer name, and number of line items. Use a derived table to count line items per order.
+
+---
+
+[Answer]{class="text-2xl"}
+
+```sql
+SELECT c.customerName, oli.orderNumber, oli.itemCount
+FROM customers c
+JOIN orders o ON c.customerNumber = o.customerNumber
+JOIN (SELECT orderNumber, COUNT(*) AS itemCount
+      FROM orderdetails
+      GROUP BY orderNumber) AS oli
+ON o.orderNumber = oli.orderNumber
+WHERE oli.itemCount > (SELECT AVG(itemCount)
+                       FROM (SELECT COUNT(*) AS itemCount
+                             FROM orderdetails
+                             GROUP BY orderNumber) AS avgItems);
+```
+
+---
+
+[Challenge]{class="text-2xl"}
+
+5. **Product Sales Above Company Average**
+
+Write a query to find products whose total quantity sold is greater than the average total quantity sold per product. Display product code, product name, and total quantity sold. Use a derived table for product quantities.
+
+---
+
+[Answer]{class="text-2xl"}
+
+```sql
+SELECT p.productCode, p.productName, ps.totalQty
+FROM products p
+JOIN (SELECT productCode, SUM(quantityOrdered) AS totalQty
+      FROM orderdetails
+      GROUP BY productCode) AS ps
+ON p.productCode = ps.productCode
+WHERE ps.totalQty > (SELECT AVG(totalQty)
+                     FROM (SELECT SUM(quantityOrdered) AS totalQty
+                           FROM orderdetails
+                           GROUP BY productCode) AS avgQty);
+```
 
 ---
 
