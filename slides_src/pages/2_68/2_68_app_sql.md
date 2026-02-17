@@ -274,3 +274,8 @@ public class App {
 
 - Compile `mvn compile`
 - Run `mvn exec:java`
+
+<div class="w-fit mx-auto">
+
+![2_68_app_sql_2026-02-18-04-35-51](/images/2_68_app_sql/2_68_app_sql_2026-02-18-04-35-51.png){.max-h-40vh}
+</div>
