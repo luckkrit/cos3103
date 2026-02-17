@@ -1182,6 +1182,10 @@ WHERE ordernumber IN
 WHERE productCode = 'S10_1678' )
 ```
 
+<Box color="amber-light" v-drag="[731,24,150,40]" custom="text-center">
+⚠ Page 46 - 47
+</Box>
+
 ---
 layout: two-cols-title
 ---
@@ -1421,11 +1425,15 @@ expression operator SOME (array expression)
 ````md magic-move
 
 ```sql
+-- A list of constants.
 SELECT 1 IN (1,2,3,4,5)
 ```
 
 ```sql
-SELECT 1 IN (VALUES (1,2,3,4,5))
+-- A virtual table/subquery. 
+-- Don't forget to wrap VALUES with () 
+-- when use with IN
+SELECT 1 IN (VALUES (1),(2),(3),(4),(5)); 
 ```
 
 ```sql
@@ -1548,6 +1556,8 @@ true
 </div>
 
 ::default::
+
+https://www.postgresql.org/docs/current/queries-values.html
 
 ---
 
@@ -1946,6 +1956,663 @@ WHERE
 </div>
 
 ::default::
+
+---
+
+[Exercise]{class="text-2xl"}
+
+- Using IN
+
+1. Find all customers who have had at least one payment
+
+```sql
+-- Write a query to find customerName and city for customers 
+-- whose customerNumber is IN the payments table
+```
+
+2. List products that have been ordered
+
+```sql
+-- Find productName and productLine for all products 
+-- whose productCode appears IN the orderdetails table
+```
+
+3. Find employees who work in offices located in the USA
+
+```sql
+-- Display firstName, lastName, and jobTitle of employees 
+-- whose officeCode is IN offices with country = 'USA'
+```
+
+4. Find orders placed by customers from Germany
+
+```sql
+-- List orderNumber and orderDate for orders 
+-- whose customerNumber is IN customers with country = 'Germany'
+```
+
+---
+
+[Exercise]{class="text-2xl"}
+
+- Using NOT IN
+
+5. Find customers who have never placed an order
+
+```sql
+-- List customerName and country for customers 
+-- whose customerNumber is NOT IN the orders table
+```
+
+6. List products that have never been ordered
+
+```sql
+-- Find productName and buyPrice for products 
+-- whose productCode is NOT IN the orderdetails table
+```
+
+7. Find employees who are not sales representatives
+
+```sql
+-- Display employeeNumber, firstName, and lastName for employees
+-- whose jobTitle is NOT IN ('Sales Rep', 'Sales Manager')
+```
+
+8. Find product lines that don't have any products priced above $100
+
+```sql
+-- List DISTINCT productLine names 
+-- that are NOT IN the set of productLines with products having buyPrice > 100
+```
+
+---
+
+[Exercise]{class="text-2xl"}
+
+- Using ANY
+
+9. Find products more expensive than ANY product in the 'Classic Cars' product line
+
+```sql
+-- List productName and buyPrice for products with buyPrice greater than 
+-- ANY product in the 'Classic Cars' productLine
+-- (This will show products more expensive than the cheapest Classic Car)
+```
+
+10. Find customers from countries that have ANY office
+
+```sql
+-- Display customerName and country for customers whose country equals 
+-- ANY country that appears in the offices table
+```
+
+11. Find products cheaper than ANY 'Planes' product
+
+```sql
+-- List productName, productLine, and buyPrice for products 
+-- with buyPrice less than ANY product in the 'Planes' productLine
+-- (excluding Planes themselves)
+```
+
+---
+
+[Exercise]{class="text-2xl"}
+
+12. Find customers who bought products from multiple distinct product lines
+
+```sql
+-- List customerName for customers who have ordered products from 
+-- at least 3 DISTINCT productLines
+-- Hint: Use a subquery with COUNT(DISTINCT productLine) and HAVING clause
+```
+
+13. Find the distinct cities where we have both customers and offices
+
+```sql
+-- List DISTINCT cities that appear in both the customers table 
+-- and the offices table using IN with a DISTINCT subquery
+```
+
+14. Find all distinct countries where we have customers but no offices
+
+```sql
+-- List DISTINCT country names from customers 
+-- that are NOT IN the distinct countries from offices table
+```
+
+15. Find employees who manage offices in countries with more than 5 distinct customers
+
+```sql
+-- Display firstName, lastName, and city (from offices) for employees 
+-- whose officeCode is IN offices where the office's country has 
+-- more than 5 DISTINCT customers
+-- Hint: You'll need multiple subqueries with DISTINCT and GROUP BY
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+1. Customers who have made payments
+
+```sql
+SELECT customerName, city
+FROM customers
+WHERE customerNumber IN (
+    SELECT DISTINCT customerNumber 
+    FROM payments
+);
+```
+
+2. Products that have been ordered
+
+```sql
+SELECT productName, productLine
+FROM products
+WHERE productCode IN (
+    SELECT DISTINCT productCode 
+    FROM orderdetails
+);
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+3. Employees in USA offices
+
+```sql
+SELECT firstName, lastName, jobTitle
+FROM employees
+WHERE officeCode IN (
+    SELECT officeCode 
+    FROM offices 
+    WHERE country = 'USA'
+);
+```
+
+4. Orders from German customers
+
+```sql
+SELECT orderNumber, orderDate
+FROM orders
+WHERE customerNumber IN (
+    SELECT customerNumber 
+    FROM customers 
+    WHERE country = 'Germany'
+);
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+5. Customers who never ordered
+
+```sql
+SELECT customerName, country
+FROM customers
+WHERE customerNumber NOT IN (
+    SELECT DISTINCT customerNumber 
+    FROM orders
+);
+```
+
+6. Products never ordered
+
+```sql
+SELECT productName, buyPrice
+FROM products
+WHERE productCode NOT IN (
+    SELECT DISTINCT productCode 
+    FROM orderdetails
+);
+``` 
+
+---
+
+[Answer]{class="text-2xl"}
+
+7. Non-sales employees
+
+```sql
+SELECT employeeNumber, firstName, lastName
+FROM employees
+WHERE jobTitle NOT IN ('Sales Rep', 'Sales Manager');
+```
+
+8. Find product lines that don't have any products priced above $100
+
+```sql
+SELECT DISTINCT productLine
+FROM products
+WHERE productLine NOT IN (
+    SELECT DISTINCT productLine
+    FROM products
+    WHERE buyPrice > 100
+);
+```
+---
+
+[Answer]{class="text-2xl"}
+
+9. Products more expensive than any Classic Car
+
+```sql
+SELECT productName, buyPrice
+FROM products
+WHERE buyPrice > ANY (
+    SELECT buyPrice 
+    FROM products 
+    WHERE productLine = 'Classic Cars'
+)
+AND productLine != 'Classic Cars';
+```
+
+10. Customers in countries with offices
+
+```sql
+SELECT customerName, country
+FROM customers
+WHERE country = ANY (
+    SELECT DISTINCT country 
+    FROM offices
+);
+-- Alternative: WHERE country IN (SELECT DISTINCT country FROM offices);
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+11. Products cheaper than any Planes product
+
+```sql
+SELECT productName, productLine, buyPrice
+FROM products
+WHERE buyPrice < ANY (
+    SELECT buyPrice 
+    FROM products 
+    WHERE productLine = 'Planes'
+)
+AND productLine != 'Planes';
+```
+
+12. Customers with products from 3+ product lines
+
+```sql
+SELECT c.customerName
+FROM customers c
+WHERE customerNumber IN (
+    SELECT o.customerNumber
+    FROM orders o
+    JOIN orderdetails od ON o.orderNumber = od.orderNumber
+    JOIN products p ON od.productCode = p.productCode
+    GROUP BY o.customerNumber
+    HAVING COUNT(DISTINCT p.productLine) >= 3
+);
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+13. Cities with both customers and offices
+
+```sql
+SELECT DISTINCT city
+FROM customers
+WHERE city IN (
+    SELECT DISTINCT city 
+    FROM offices
+);
+```
+
+14. Countries with customers but no offices
+
+```sql
+SELECT DISTINCT country
+FROM customers
+WHERE country NOT IN (
+    SELECT DISTINCT country 
+    FROM offices
+);
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+15. Employees managing offices in countries with 5+ customers
+
+```sql
+SELECT e.firstName, e.lastName, o.city
+FROM employees e
+JOIN offices o ON e.officeCode = o.officeCode
+WHERE o.officeCode IN (
+    SELECT officeCode
+    FROM offices
+    WHERE country IN (
+        SELECT country
+        FROM customers
+        GROUP BY country
+        HAVING COUNT(DISTINCT customerNumber) > 5
+    )
+);
+```
+
+
+---
+
+[Exercise]{class="text-2xl"}
+
+- Scalar Subqueries (Single Row Return)
+
+1. Find products more expensive than the average product price
+
+```sql
+-- List productName, productLine, and buyPrice for products 
+-- whose buyPrice is greater than the average buyPrice of all products
+-- Hint: Use a subquery that returns AVG(buyPrice)
+```
+
+2. Find customers whose total payment amount exceeds the average customer payment
+
+```sql
+-- Display customerName and total payment amount for customers 
+-- whose total payments are greater than the average total payment per customer
+-- Hint: Use a scalar subquery with AVG in the HAVING clause
+```
+
+3. Find the employee who reports to the president (employee with no manager)
+
+```sql
+-- List firstName, lastName, and jobTitle for the employee 
+-- whose employeeNumber equals the reportsTo value that appears most frequently
+-- Or: Find employees who report to the employee with the highest employeeNumber
+```
+
+---
+
+[Exercise]{class="text-2xl"}
+
+- Subqueries in FROM Clause
+4. Find the top 3 customers by total order value
+
+```sql
+-- Use a subquery in FROM clause to calculate total order value per customer
+-- (sum of quantityOrdered * priceEach from orderdetails)
+-- Then select customerName and totalOrderValue, ordered by value DESC, limit 3
+-- Hint: Join the derived table with customers table
+```
+
+5. Find product lines with average product price above $50
+
+```sql
+-- Create a derived table that calculates AVG(buyPrice) per productLine
+-- Then select productLine and avgPrice where avgPrice > 50
+-- Use the subquery in FROM clause
+```
+
+6. List offices with their employee count, showing only offices with more than 2 employees
+
+```sql
+-- Use a subquery in FROM clause to count employees per officeCode
+-- Join with offices table to show city, country, and employee count
+-- Filter for offices with more than 2 employees
+```
+
+---
+
+[Exercise]{class="text-2xl"}
+
+- Mixed Concepts (Combining Multiple Subquery Types)
+
+7. Find customers who ordered products more expensive than the average product price
+
+```sql
+-- List DISTINCT customerName for customers whose orders include products
+-- with buyPrice > (scalar subquery returning average buyPrice)
+-- Hint: Use IN with a subquery that filters products by average price
+```
+
+8. Find employees in offices that have above-average number of employees
+
+```sql
+-- Use a subquery in FROM clause to count employees per office
+-- Use another scalar subquery to find average employee count
+-- List firstName, lastName, city for employees in offices with above-average count
+```
+
+
+---
+
+[Exercise]{class="text-2xl"}
+
+```sql
+SELECT CASE 
+        WHEN -1 > 0 
+        THEN 'more'
+        ELSE 'less than'
+    END as RESULT
+```
+
+9. Compare each product line's average price to the overall average
+
+```sql
+-- Create a derived table showing productLine and its AVG(buyPrice)
+-- Select productLine, avgPrice, and show whether it's above or below 
+-- the overall average (use a scalar subquery for comparison)
+-- Hint: Use CASE WHEN in the SELECT with scalar subquery
+```
+
+---
+
+[Exercise]{class="text-2xl"}
+
+10. Find customers whose number of orders is in the top 25% of all customers
+
+```sql
+-- Use a subquery in FROM clause to count orders per customer
+-- Use a scalar subquery to find the 75th percentile of order counts
+-- List customerName and orderCount for customers >= this threshold
+-- Hint: Use PERCENTILE or calculate with LIMIT and OFFSET
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+1. Products more expensive than average
+
+```sql
+SELECT productName, productLine, buyPrice
+FROM products
+WHERE buyPrice > (
+    SELECT AVG(buyPrice) 
+    FROM products
+);
+```
+
+2. Customers with above-average total payments
+
+```sql
+SELECT c.customerName, SUM(p.amount) AS totalPayment
+FROM customers c
+JOIN payments p ON c.customerNumber = p.customerNumber
+GROUP BY c.customerNumber, c.customerName
+HAVING SUM(p.amount) > (
+    SELECT AVG(customerTotal)
+    FROM (
+        SELECT SUM(amount) AS customerTotal
+        FROM payments
+        GROUP BY customerNumber
+    ) AS avgPayments
+);
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+3. Employees reporting to the president (or top manager)
+
+```sql
+SELECT firstName, lastName, jobTitle
+FROM employees
+WHERE reportsTo = (
+    SELECT employeeNumber
+    FROM employees
+    WHERE reportsTo IS NULL
+);
+```
+
+4. Top 3 customers by order value
+
+```sql
+SELECT c.customerName, orderValues.totalValue
+FROM customers c
+JOIN (
+    SELECT o.customerNumber, 
+           SUM(od.quantityOrdered * od.priceEach) AS totalValue
+    FROM orders o
+    JOIN orderdetails od ON o.orderNumber = od.orderNumber
+    GROUP BY o.customerNumber
+) AS orderValues ON c.customerNumber = orderValues.customerNumber
+ORDER BY orderValues.totalValue DESC
+LIMIT 3;
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+5. Product lines with average price above $50
+
+```sql
+SELECT productLine, avgPrice
+FROM (
+    SELECT productLine, AVG(buyPrice) AS avgPrice
+    FROM products
+    GROUP BY productLine
+) AS linePrices
+WHERE avgPrice > 50;
+```
+
+6. Offices with more than 2 employees
+
+```sql
+SELECT o.city, o.country, empCount.numEmployees
+FROM offices o
+JOIN (
+    SELECT officeCode, COUNT(*) AS numEmployees
+    FROM employees
+    GROUP BY officeCode
+) AS empCount ON o.officeCode = empCount.officeCode
+WHERE empCount.numEmployees > 2;
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+7. Customers who ordered above-average priced products
+
+```sql
+SELECT DISTINCT c.customerName
+FROM customers c
+WHERE c.customerNumber IN (
+    SELECT o.customerNumber
+    FROM orders o
+    JOIN orderdetails od ON o.orderNumber = od.orderNumber
+    JOIN products p ON od.productCode = p.productCode
+    WHERE p.buyPrice > (
+        SELECT AVG(buyPrice) 
+        FROM products
+    )
+);
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+8. Employees in offices with above-average employee count
+
+```sql
+SELECT e.firstName, e.lastName, o.city
+FROM employees e
+JOIN offices o ON e.officeCode = o.officeCode
+WHERE e.officeCode IN (
+    SELECT officeCode
+    FROM (
+        SELECT officeCode, COUNT(*) AS empCount
+        FROM employees
+        GROUP BY officeCode
+    ) AS officeCounts
+    WHERE empCount > (
+        SELECT AVG(empCount)
+        FROM (
+            SELECT COUNT(*) AS empCount
+            FROM employees
+            GROUP BY officeCode
+        ) AS avgCalc
+    )
+);
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+9. Product line average vs overall average
+
+```sql
+SELECT 
+    productLine,
+    avgPrice,
+    CASE 
+        WHEN avgPrice > (SELECT AVG(buyPrice) FROM products) 
+        THEN 'Above Average'
+        ELSE 'Below Average'
+    END AS priceCategory
+FROM (
+    SELECT productLine, AVG(buyPrice) AS avgPrice
+    FROM products
+    GROUP BY productLine
+) AS linePrices;
+```
+
+---
+
+[Answer]{class="text-2xl"}
+
+10. Customers in top 25% by order count
+
+```sql
+SELECT c.customerName, orderCounts.numOrders
+FROM customers c
+JOIN (
+    SELECT customerNumber, COUNT(*) AS numOrders
+    FROM orders
+    GROUP BY customerNumber
+) AS orderCounts ON c.customerNumber = orderCounts.customerNumber
+WHERE orderCounts.numOrders >= (
+    SELECT numOrders
+    FROM (
+        SELECT COUNT(*) AS numOrders
+        FROM orders
+        GROUP BY customerNumber
+        ORDER BY numOrders DESC
+        LIMIT 1 OFFSET (
+            SELECT (COUNT(DISTINCT customerNumber) * 0.25)::INT
+            FROM orders
+        )
+    ) AS threshold
+)
+ORDER BY orderCounts.numOrders DESC;
+```
+
 
 ---
 layout: two-cols-title
