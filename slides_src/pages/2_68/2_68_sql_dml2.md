@@ -2753,6 +2753,10 @@ EXISTS(subquery)
 - The `EXISTS` operator returns `TRUE` [if the subquery returns one or more records.]{.text-red-500}
 
 
+<StickyNote color="amber-light" textAlign="left" width="180px" title="Tips" v-drag="[185,404,605,64]">
+Exist is better than IN and ANY because it is NULL safety, not return NULL just True and False
+</StickyNote>
+
 ---
 
 [Correlated Subquery - EXISTS Example]{class="text-2xl"}
@@ -2842,9 +2846,7 @@ WHERE EXISTS (
 ::default::
 
 <CsvTable><pre>
-"employeenumber"	"lastname"	"firstname"	"extension"	"email"	"officecode"	"reportsto"	"jobtitle"
-NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
-</pre></CsvTable>
+"employeenumber"	"lastname"	"firstname"	"extension"	"email"	"officecode"	"reportsto"	"jobtitle"</pre></CsvTable>
 
 <StickyNote color="amber-light" textAlign="left" width="180px" title="Note" v-drag="[737,92,180,92]">
 

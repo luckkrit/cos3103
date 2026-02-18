@@ -112,7 +112,7 @@ class Program
 
 ## Setup - Java for Windows
 
-5. Create `JAVA_HOME` to `C:\Program Files\Java\jdk-21\bin`
+5. Create `JAVA_HOME` to `C:\Program Files\Java\jdk-21`
 6. Add `C:\Program Files\Java\jdk-21\bin` to `PATH` 
 
 <div class="w-fit mx-auto">
@@ -278,4 +278,116 @@ public class App {
 <div class="w-fit mx-auto">
 
 ![2_68_app_sql_2026-02-18-04-35-51](/images/2_68_app_sql/2_68_app_sql_2026-02-18-04-35-51.png){.max-h-40vh}
+</div>
+
+---
+
+[Other Solution]{class="text-2xl"}
+
+1. Goto https://start.spring.io/
+
+<div class="w-fit mx-auto">
+
+![2_68_app_sql_2026-02-18-09-56-59](/images/2_68_app_sql/2_68_app_sql_2026-02-18-09-56-59.png){.max-h-50vh}
+</div>
+
+---
+
+2. Extract Zip File
+3. Edit pom.xml
+
+<div class="w-fit mx-auto">
+
+![2_68_app_sql_2026-02-18-09-59-56](/images/2_68_app_sql/2_68_app_sql_2026-02-18-09-59-56.png){.max-h-50vh}
+</div>
+
+---
+
+3. Edit pom.xml
+
+<div class="w-fit mx-auto">
+
+![2_68_app_sql_2026-02-18-10-05-53](/images/2_68_app_sql/2_68_app_sql_2026-02-18-10-05-53.png){.max-h-50vh}
+</div>
+
+---
+layout: two-cols-title
+---
+
+::title::
+[4. Edit DemoApplication.java]{class="text-2xl"}
+
+::left::
+
+```java
+
+package pgdemo;
+import java.sql.*;
+public class App {
+    public static void main(String[] args) {
+        // PostgreSQL connection parameters
+        String url = "jdbc:postgresql://localhost:5432/postgres";
+        String username = "postgres";
+        String password = "password";
+        try (Connection conn = DriverManager.getConnection(url, username, password)) {
+            System.out.println("Connected to PostgreSQL database!");
+            // Create statement
+            Statement stmt = conn.createStatement();
+            // Execute query
+            String sql = "SELECT * FROM classicmodels.customers LIMIT 5";
+            ResultSet rs = stmt.executeQuery(sql);
+
+```
+
+::right::
+
+```java
+
+            // Get metadata
+            ResultSetMetaData metadata = rs.getMetaData();
+            int columnCount = metadata.getColumnCount();
+            // Print column names
+            for (int i = 1; i <= columnCount; i++) {
+                System.out.print(metadata.getColumnName(i) + "\t");
+            }
+            System.out.println("\n" + "-".repeat(50));
+            // Process results
+            while (rs.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    System.out.print(rs.getString(i) + "\t");
+                }
+                System.out.println();
+            }
+            rs.close();
+            stmt.close();
+            
+        } catch (SQLException e) {
+            System.err.println("Database error: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+::default::
+
+
+---
+
+[Run App]{class="text-2xl"}
+
+1. Goto folder demo
+
+<div class="w-fit mx-auto">
+
+![2_68_app_sql_2026-02-18-10-12-28](/images/2_68_app_sql/2_68_app_sql_2026-02-18-10-12-28.png){.max-h-40vh}
+</div>
+
+---
+
+2. Open powershell `.\mvnw clean compile exec:java`
+
+<div class="w-fit mx-auto">
+
+![2_68_app_sql_2026-02-18-10-10-58](/images/2_68_app_sql/2_68_app_sql_2026-02-18-10-10-58.png){.max-h-45vh}
 </div>
