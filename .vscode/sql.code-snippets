@@ -25,6 +25,11 @@
     "body": ["```sql", "$0", "```"],
     "description": "Wraps selected text with defined strings",
   },
+  "Wrap with js`": {
+    "prefix": "js`",
+    "body": ["```js", "$0", "```"],
+    "description": "Wraps selected text with defined strings",
+  },
   "Wrap with text-2xl": {
     "prefix": "t2xl",
     "body": ["[${TM_SELECTED_TEXT}$0]{class=\"text-2xl\"}"],
@@ -137,10 +142,10 @@
     ],
     "description": "Wrap flex 2 columns",
   },
-  "Wrap with %%sql": {
+  "Wrap with %%sql for jupysql": {
     "prefix": "%%sql",
     "body": ["%%sql", "$0"],
-    "description": "Wrap flex 2 columns",
+    "description": "Wrap with %%sql for jupysql",
   },
   "Speech bubble": {
     "prefix": "spchbble",

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "YClD6vNBAsI=",
+  "dgSpecHash": "QJZmOkBoUgc=",
   "success": true,
-  "projectFilePath": "D:\\backup\\nodejs\\astro-starlight\\cos3103\\public\\csharp\\pg-demo\\pg-demo.csproj",
+  "projectFilePath": "D:\\Backup\\nodejs\\astro-starlight\\cos3103\\public\\csharp\\pg-demo\\pg-demo.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\luckk\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\10.0.0\\microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
     "C:\\Users\\luckk\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\10.0.0\\microsoft.extensions.logging.abstractions.10.0.0.nupkg.sha512",

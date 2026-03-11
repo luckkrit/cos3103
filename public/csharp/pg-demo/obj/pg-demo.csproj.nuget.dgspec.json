@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\backup\\nodejs\\astro-starlight\\cos3103\\public\\csharp\\pg-demo\\pg-demo.csproj": {}
+    "D:\\Backup\\nodejs\\astro-starlight\\cos3103\\public\\csharp\\pg-demo\\pg-demo.csproj": {}
   },
   "projects": {
-    "D:\\backup\\nodejs\\astro-starlight\\cos3103\\public\\csharp\\pg-demo\\pg-demo.csproj": {
+    "D:\\Backup\\nodejs\\astro-starlight\\cos3103\\public\\csharp\\pg-demo\\pg-demo.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\backup\\nodejs\\astro-starlight\\cos3103\\public\\csharp\\pg-demo\\pg-demo.csproj",
+        "projectUniqueName": "D:\\Backup\\nodejs\\astro-starlight\\cos3103\\public\\csharp\\pg-demo\\pg-demo.csproj",
         "projectName": "pg-demo",
-        "projectPath": "D:\\backup\\nodejs\\astro-starlight\\cos3103\\public\\csharp\\pg-demo\\pg-demo.csproj",
+        "projectPath": "D:\\Backup\\nodejs\\astro-starlight\\cos3103\\public\\csharp\\pg-demo\\pg-demo.csproj",
         "packagesPath": "C:\\Users\\luckk\\.nuget\\packages\\",
-        "outputPath": "D:\\backup\\nodejs\\astro-starlight\\cos3103\\public\\csharp\\pg-demo\\obj\\",
+        "outputPath": "D:\\Backup\\nodejs\\astro-starlight\\cos3103\\public\\csharp\\pg-demo\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\luckk\\AppData\\Roaming\\NuGet\\NuGet.Config"

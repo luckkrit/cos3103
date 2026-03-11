@@ -31,7 +31,11 @@
     "build_sql_dml2": "slidev build cos3103 --base /cos3103/slides/2_68/2_68_sql_dml2 --out ../public/slides/2_68/2_68_sql_dml2",
     "clean_sql_dml2": "del-cli -f ../public/slides/2_68/2_68_sql_dml2",
     "export_sql_dml2": "slidev export cos3103 --with-clicks --timeout 5m --wait 5m --wait-until networkidle --format pdf --output ./slides-export/sql_dml2",
-    "clean_build_sql_dml2": "concurrently \"npm run clean_sql_dml2\" \"npm run build_sql_dml2\""
+    "clean_build_sql_dml2": "concurrently \"npm run clean_sql_dml2\" \"npm run build_sql_dml2\"",
+    "build_mongodb_tutorial": "slidev build cos3103 --base /cos3103/slides/2_68/2_68_nosql --out ../public/slides/2_68/2_68_nosql",
+    "clean_mongodb_tutorial": "del-cli -f ../public/slides/2_68/2_68_nosql",
+    "export_mongodb_tutorial": "slidev export cos3103 --with-clicks --timeout 5m --wait 5m --wait-until networkidle --format pdf --output ./slides-export/2_68_nosql_mongodb_tutorial",
+    "clean_build_mongodb_tutorial": "concurrently \"npm run clean_mongodb_tutorial\" \"npm run build_mongodb_tutorial\""
   },
   "dependencies": {
     "@slidev/cli": "^52.2.4",
