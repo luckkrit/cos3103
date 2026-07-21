@@ -1931,9 +1931,9 @@ b.productCode, b.quantityOrdered  from orders as a
 join  orderdetails as b on a.ordernumber =  b.orderNumber 
 ```
 
-<Box shape="s-s-5-0" color="amber-light" height="100" v-drag="[851,375,121,40]">Implicit JOIN</Box>
+<Box shape="s-s-5-0" color="amber-light" height="100" v-drag="[851,375,121,40]">Explicit JOIN</Box>
 
-<Box shape="s-s-5-0" color="amber-light" height="100" v-drag="[850,455,121,40]">Explicit JOIN</Box>
+<Box shape="s-s-5-0" color="amber-light" height="100" v-drag="[850,455,121,40]">Implicit JOIN</Box>
 
 
 <Box shape="s-s-5-0" color="amber-light" height="100" v-drag="[303,432,150,40]">is equivalent to:</Box>

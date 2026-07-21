@@ -5,7 +5,7 @@ async function runGetStarted() {
     // Replace the uri string with your connection string
     const uri = 'mongodb://localhost:27017/';
     const client = new MongoClient(uri);
-    await tutorial.ex24(client);
+    await tutorial.ex6(client);
     try {
     } finally {
         await client.close();
