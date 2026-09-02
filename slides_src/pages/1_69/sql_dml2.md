@@ -2703,6 +2703,12 @@ WHERE
     = 103 -- Example average of customer 103
 ```
 
+```sql
+SELECT p.customerNumber, p.checkNumber, p.amount, 
+    p.customerNumber as customer
+FROM payments p
+```
+
 ````
 
 ::right::
@@ -2733,6 +2739,17 @@ WHERE
 <CsvTable><pre>
 "avg"
 7438.1200000000000000
+</pre></CsvTable>
+</div>
+
+
+<div v-show="$slidev.nav.clicks == 2">
+
+<CsvTable><pre>
+"customernumber"	"checknumber"	"amount"	"customer"
+103	"HQ336336"	6066.78	103
+103	"JM555205"	14571.44	103
+103	"OM314933"	1676.14	103
 </pre></CsvTable>
 </div>
 
