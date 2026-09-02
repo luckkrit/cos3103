@@ -3678,3 +3678,149 @@ FROM ( SELECT orderNumber,
 </div>
 
 ::default::
+
+
+---
+layout: two-cols-title
+---
+
+::title::
+[การใช้ Explain อธิบาย Query]{class="text-2xl"}
+
+1. อ่านตารางจากล่างขึ้นบน — ข้อมูลไหลจาก node ล่างสุด (leaf) ขึ้นไปหา node บนสุด (root)
+2. ดู Inclusive time ที่แถวบนสุด — คือคำตอบสุดท้ายว่า query รวมทั้งหมดใช้เวลาเท่าไหร่ ใช้เทียบว่า query ไหนเร็วกว่า
+3. ถ้าอยากรู้ว่าช้าที่บรรทัดไหน ดู Exclusive — หาแถวที่ตัวเลข Exclusive สูงสุดในตาราง นั่นคือจุดคอขวด (bottleneck)
+
+::left::
+
+```sql
+EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)
+SELECT employeenumber, firstname, lastname, email
+FROM employees
+WHERE employeenumber IN (
+    SELECT salesrepemployeenumber FROM customers 
+    WHERE country = 'USA'
+);
+```
+
+::right::
+
+<div class="w-fit mx-auto">
+
+![1_69_sql_dml2_pgadmin4](/images/1_69_sql_dml2/pgAdmin4_UJ3Y7YZPv7.png){.max-h-50vh}
+</div>
+
+
+
+::default::
+
+
+---
+layout: two-cols-title
+---
+
+::title::
+[การใช้ Explain อธิบาย Query]{class="text-2xl"}
+
+1. อ่านตารางจากล่างขึ้นบน — ข้อมูลไหลจาก node ล่างสุด (leaf) ขึ้นไปหา node บนสุด (root)
+2. ดู Inclusive time ที่แถวบนสุด — คือคำตอบสุดท้ายว่า query รวมทั้งหมดใช้เวลาเท่าไหร่ ใช้เทียบว่า query ไหนเร็วกว่า
+3. ถ้าอยากรู้ว่าช้าที่บรรทัดไหน ดู Exclusive — หาแถวที่ตัวเลข Exclusive สูงสุดในตาราง นั่นคือจุดคอขวด (bottleneck)
+
+::left::
+
+```sql
+EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)
+SELECT DISTINCT e.employeenumber, 
+e.firstname || ' ' || e.lastname AS fullname, e.email
+FROM employees e
+JOIN customers c 
+ON e.employeenumber = c.salesrepemployeenumber
+WHERE c.country = 'USA';
+```
+
+::right::
+
+<div class="w-fit mx-auto">
+
+![sql_dml2_2026-09-02-09-15-34](/images/sql_dml2/sql_dml2_2026-09-02-09-15-34.png)
+</div>
+
+
+
+::default::
+
+
+---
+layout: two-cols-title
+---
+
+::title::
+[การใช้ Explain อธิบาย Query]{class="text-2xl"}
+
+1. อ่านตารางจากล่างขึ้นบน — ข้อมูลไหลจาก node ล่างสุด (leaf) ขึ้นไปหา node บนสุด (root)
+2. ดู Inclusive time ที่แถวบนสุด — คือคำตอบสุดท้ายว่า query รวมทั้งหมดใช้เวลาเท่าไหร่ ใช้เทียบว่า query ไหนเร็วกว่า
+3. ถ้าอยากรู้ว่าช้าที่บรรทัดไหน ดู Exclusive — หาแถวที่ตัวเลข Exclusive สูงสุดในตาราง นั่นคือจุดคอขวด (bottleneck)
+
+::left::
+
+```sql
+EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)
+SELECT e.employeenumber, 
+e.firstname || ' ' || e.lastname AS fullname, e.email
+FROM employees e
+WHERE EXISTS (
+    SELECT 1 FROM customers c
+    WHERE c.salesrepemployeenumber = e.employeenumber
+    AND c.country = 'USA'
+);
+```
+
+::right::
+
+<div class="w-fit mx-auto">
+
+
+![sql_dml2_2026-09-02-09-15-34](/images/sql_dml2/pgAdmin4_mtH1d4XTOQ.png)
+</div>
+
+
+
+::default::
+
+
+---
+layout: two-cols-title
+---
+
+::title::
+[การใช้ Explain อธิบาย Query]{class="text-2xl"}
+
+1. อ่านตารางจากล่างขึ้นบน — ข้อมูลไหลจาก node ล่างสุด (leaf) ขึ้นไปหา node บนสุด (root)
+2. ดู Inclusive time ที่แถวบนสุด — คือคำตอบสุดท้ายว่า query รวมทั้งหมดใช้เวลาเท่าไหร่ ใช้เทียบว่า query ไหนเร็วกว่า
+3. ถ้าอยากรู้ว่าช้าที่บรรทัดไหน ดู Exclusive — หาแถวที่ตัวเลข Exclusive สูงสุดในตาราง นั่นคือจุดคอขวด (bottleneck)
+
+::left::
+
+```sql
+EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)
+SELECT e.employeenumber, 
+e.firstname || ' ' || e.lastname AS fullname, e.email
+FROM employees e
+JOIN (
+    SELECT DISTINCT salesrepemployeenumber
+    FROM customers
+    WHERE country = 'USA'
+) c ON e.employeenumber = c.salesrepemployeenumber;
+```
+
+::right::
+
+<div class="w-fit mx-auto">
+
+
+![sql_dml2_2026-09-02-09-15-34](/images/sql_dml2/pgAdmin4_7i4EHN3wzF.png)
+</div>
+
+
+
+::default::
