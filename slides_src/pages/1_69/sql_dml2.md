@@ -2707,6 +2707,7 @@ WHERE
 SELECT p.customerNumber, p.checkNumber, p.amount, 
     p.customerNumber as customer
 FROM payments p
+WHERE p.customerNumber = 103
 ```
 
 ````
