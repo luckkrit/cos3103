@@ -731,6 +731,32 @@ layout: two-cols-title
 
 ---
 
+## Array Type
+
+
+```sql
+DO $$
+declare
+-- 1. ใช้ ARRAY constructor
+v_arr text[] := ARRAY['a', 'b', 'c'];
+
+-- 2. ใช้ string literal แบบ curly brace (array literal)
+v_arr2 text[] := '{a, b, c}';
+
+-- 3. Array ว่าง
+v_arr3 text[] := '{}';
+v_arr4 text[] := ARRAY[]::text[];  -- ต้อง cast type เพราะไม่รู้ว่าเป็น array ของอะไร
+
+-- 4. Array ของ record/row type
+v_batch products%ROWTYPE[] := '{}';
+begin
+
+end;
+$$;
+```
+
+---
+
 ## Row Type
 
 

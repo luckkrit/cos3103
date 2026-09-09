@@ -38,7 +38,7 @@
     "clean_build_mongodb_tutorial": "concurrently \"npm run clean_mongodb_tutorial\" \"npm run build_mongodb_tutorial\"",
     "build_storedproc_views": "slidev build cos3103 --base /cos3103/slides/1_69/storedproc_views --out ../public/slides/1_69/storedproc_views",
     "clean_storedproc_views": "del-cli -f ../public/slides/1_69/storedproc_views",
-    "export_storedproc_views": "slidev export cos3103 --with-clicks --timeout 5m --wait 5m --wait-until networkidle --format pdf --output ./slides-export/1_69/storedproc_views",
+    "export_storedproc_views": "slidev export cos3103 --with-clicks --timeout 5m --wait 5m --wait-until networkidle --format pdf --output ./slides-export/1_69/1_69_storedproc_views_update",
     "clean_build_storedproc_views": "concurrently \"npm run clean_storedproc_views\" \"npm run build_storedproc_views\""
   },
   "dependencies": {
