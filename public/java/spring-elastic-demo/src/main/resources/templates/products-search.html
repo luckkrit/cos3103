@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: common-head('Embedded Frame')}"></head>
+
+<body>
+
+    <a th:href="@{/customers/{customerId}/orders(customerId=${customerId})}" target="orderFrame"
+        style="padding:5px;">Back</a>
+    <h1>Search Products</h1>
+
+    <!-- TOP: search form + results -->
+    <div>
+
+        <!-- Search form: GET so the query shows up in the URL (?q=...), shareable/bookmarkable.
+         customerId/orderNumber stay in the path so refining the search keeps
+         the same customer/order context. -->
+        <form
+            th:action="@{/product/search/{customerId}/{orderNumber}(customerId=${customerId},orderNumber=${orderNumber})}"
+            method="get">
+            <div style="display: flex; gap: 8px;">
+                <input type="text" name="q" th:value="${query}" placeholder="Search by name or description..." />
+                <button type="submit" style="width: 150px;">Search</button>
+            </div>
+        </form>
+
+        <!-- No search performed yet -->
+        <div th:if="${!hasSearched}">
+            <p>Enter a search term above to find products.</p>
+        </div>
+
+        <!-- Search performed, no results -->
+        <div th:if="${hasSearched and #lists.isEmpty(results)}">
+            <p>No products found for "<span th:text="${query}"></span>".</p>
+        </div>
+
+        <!-- Results: fixed to half the viewport height, scrolls internally if the
+         list is longer than that, so the iframe below stays visible without
+         needing to scroll past a long results table. -->
+        <div th:if="${hasSearched and not #lists.isEmpty(results)}" style="max-height: 30vh; overflow-y: auto;">
+            <p th:text="|${#lists.size(results)} result(s) for &quot;${query}&quot;|"></p>
+
+            <table border="1" cellpadding="8" style="width: 100%;">
+                <thead>
+                    <tr>
+
+                        <th>Line</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="product : ${results}"
+                        th:class="${'line-' + #strings.toLowerCase(#strings.replace(#strings.replace(product.productLine, ' ', '-'), '&', 'and'))}">
+                        <td th:text="${product.productLine}"></td>
+                        <td th:text="${product.productCode}"></td>
+                        <td th:text="${product.productName}"></td>
+                        <td th:text="${product.productDescription}"></td>
+                        <td>
+                            <!-- target="orderFrame" matches the iframe's name below,
+                         so this link loads inside the iframe instead of
+                         navigating the whole page away from the results.
+                         customerId/orderNumber are carried through so the
+                         order page knows which customer/order this line
+                         belongs to. -->
+                            <a th:href="@{/orderdetails/update/{customerId}/{orderNumber}/{productCode}/{quantity}(customerId=${customerId},orderNumber=${orderNumber},productCode=${product.productCode},quantity=1)}"
+                                target="orderDetailsFrame">Order</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- BOTTOM: iframe target. Starts on the placeholder; populated when "Order" is clicked. -->
+    <div style="margin-top: 20px;">
+        <iframe name="orderDetailsFrame"
+            th:src="@{/orderdetails/{customerId}/{orderNumber}(customerId=${customerId},orderNumber=${orderNumber})}"
+            style="width: 100%; height: 500px; border: 1px solid #ccc;">
+        </iframe>
+    </div>
+</body>
+
+</html>

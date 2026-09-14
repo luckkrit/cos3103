@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="common-head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title}">Default Title</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+
+    <style>
+        tr.line-classic-cars>td {
+            background-color: #d1e7ff;
+        }
+
+        tr.line-motorcycles>td {
+            background-color: #ffe4c4;
+        }
+
+        tr.line-planes>td {
+            background-color: #d4f7d4;
+        }
+
+        tr.line-ships>td {
+            background-color: #e0d4f7;
+        }
+
+        tr.line-trains>td {
+            background-color: #fff3b0;
+        }
+
+        tr.line-trucks-and-buses>td {
+            background-color: #f7d4d4;
+        }
+
+        tr.line-vintage-cars>td {
+            background-color: #d4f0f7;
+        }
+    </style>
+</head>
+
+</html>

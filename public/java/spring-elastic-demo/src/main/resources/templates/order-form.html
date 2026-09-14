@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+
+<head th:replace="~{fragments/head :: common-head('Embedded Frame')}"></head>
+
+<body>
+
+    <h2>New Order for <span th:text="${customer.customerName}">Company</span></h2>
+
+    <form th:action="@{/orders/save}" th:object="${order}" method="post">
+        <!-- Primary Key: crucial for edit to perform an UPDATE -->
+        <input type="hidden" th:field="*{orderNumber}" />
+        <!-- Hidden customer reference -->
+        <input type="hidden" th:field="*{customerNumber}" />
+
+        <div class="form-group">
+            <label for="orderDate">Order Date</label>
+            <input type="datetime-local" id="orderDate" name="orderDate"
+                th:value="${order.orderDate != null ? #temporals.format(order.orderDate, 'yyyy-MM-dd''T''HH:mm') : ''}"
+                required />
+        </div>
+
+        <div class="form-group">
+            <label for="requiredDate">Required Date</label>
+            <input type="datetime-local" id="requiredDate" name="requiredDate"
+                th:value="${order.requiredDate != null ? #temporals.format(order.requiredDate, 'yyyy-MM-dd''T''HH:mm') : ''}"
+                required />
+        </div>
+
+        <div class="form-group">
+            <label for="shippedDate">Shipped Date</label>
+            <input type="datetime-local" id="shippedDate" name="shippedDate"
+                th:value="${order.shippedDate != null ? #temporals.format(order.shippedDate, 'yyyy-MM-dd''T''HH:mm') : ''}" />
+        </div>
+
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" th:field="*{status}">
+                <option value="In Process">In Process</option>
+                <option value="Shipped">Shipped</option>
+                <option value="On Hold">On Hold</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="comments">Comments</label>
+            <textarea id="comments" th:field="*{comments}" rows="4"
+                placeholder="Add order instructions or notes..."></textarea>
+        </div>
+
+        <button type="submit">Save Order</button>
+        <a th:href="@{/customers/{id}/orders(id=${customer.customerNumber})}" class="secondary">Cancel</a>
+    </form>
+
+</body>
+
+</html>

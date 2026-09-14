@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: common-head('Embedded Frame')}"></head>
+
+<body>
+
+
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2>Orders for <span th:text="${customer.customerName}">Customer</span></h2>
+        <a role="button" th:href="@{/orders/new(customerId=${customer.customerNumber})}">
+            + Create New Order
+        </a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(orders)}">
+        <p>No orders found for this customer.</p>
+    </div>
+
+    <table th:unless="${#lists.isEmpty(orders)}">
+        <thead>
+            <tr>
+                <th>Order No</th>
+                <th>Order Date</th>
+                <th>Required Date</th>
+                <th>Shipped Date</th>
+                <th>Status</th>
+                <th>Comments</th>
+                <th>Order</th>
+                <th>Order Detail</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="o : ${orders}">
+                <td th:text="${o.orderNumber}">10100</td>
+                <td th:text="${o.orderDate != null ? #temporals.format(o.orderDate, 'yyyy-MM-dd') : '-'}">2026-01-01
+                </td>
+                <td th:text="${o.requiredDate != null ? #temporals.format(o.requiredDate, 'yyyy-MM-dd') : '-'}">
+                    2026-01-10</td>
+                <td th:text="${o.shippedDate != null ? #temporals.format(o.shippedDate, 'yyyy-MM-dd') : '-'}">2026-01-05
+                </td>
+                <td th:text="${o.status}">Shipped</td>
+                <td th:text="${o.comments != null ? o.comments : '-'}">None</td>
+
+                <td>
+                    <a
+                        th:href="@{/customers/{customerNumber}/orders/{orderNumber}/edit(customerNumber=${customer.customerNumber}, orderNumber=${o.orderNumber})}">Edit</a>
+                </td>
+                <td>
+                    <a
+                        th:href="@{/customers/{customerNumber}/orders/{orderNumber}/details(customerNumber=${customer.customerNumber}, orderNumber=${o.orderNumber})}">Details</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+
+</html>
