@@ -5,6 +5,8 @@
 
 <body>
 
+    <script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script>
+
     <a th:href="@{/customers/{customerId}/orders(customerId=${customerId})}" target="orderFrame"
         style="padding:5px;">Back</a>
     <h1>Search Products</h1>
@@ -34,44 +36,71 @@
             <p>No products found for "<span th:text="${query}"></span>".</p>
         </div>
 
-        <!-- Results: fixed to half the viewport height, scrolls internally if the
-         list is longer than that, so the iframe below stays visible without
-         needing to scroll past a long results table. -->
-        <div th:if="${hasSearched and not #lists.isEmpty(results)}" style="max-height: 30vh; overflow-y: auto;">
-            <p th:text="|${#lists.size(results)} result(s) for &quot;${query}&quot;|"></p>
+        <!-- Results shown in a native <dialog> - real backdrop, ESC-to-close,
+             and focus trap all come free from the browser. JS only needed
+             to OPEN it (showModal() has no HTML-attribute equivalent);
+             closing uses <form method="dialog">, native, no JS needed. -->
+        <dialog id="resultsDialog" th:if="${hasSearched and not #lists.isEmpty(results)}"
+            style="border-radius: 8px; border: none;">
+            <!-- Pico's own dialog{} rule makes <dialog> a full-viewport
+                 flex overlay (position:fixed; inset:0) - don't fight
+                 that by setting width/max-width here. The VISIBLE card
+                 is this <article>, which Pico centers via that flex
+                 rule - width/max-width belong here instead. -->
+            <article style="width: 90vw; max-width: 100vw; max-height: 80vh; overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <p th:text="|${#lists.size(results)} result(s) for &quot;${query}&quot;|"></p>
+                    <form method="dialog">
+                        <button type="submit" style="font-weight: bold;">✕ Close</button>
+                    </form>
+                </div>
 
-            <table border="1" cellpadding="8" style="width: 100%;">
-                <thead>
-                    <tr>
+                <table border="1" cellpadding="8" style="width: 100%; table-layout: fixed; word-wrap: break-word;">
+                    <thead>
+                        <tr>
+                            <th style="width: 12%;">Line</th>
+                            <th style="width: 12%;">Code</th>
+                            <th style="width: 18%;">Name</th>
+                            <th>Description</th>
+                            <th style="width: 8%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="product : ${results}"
+                            th:class="${'line-' + #strings.toLowerCase(#strings.replace(#strings.replace(product.productLine, ' ', '-'), '&', 'and'))}">
+                            <td th:text="${product.productLine}"></td>
+                            <td th:text="${product.productCode}"></td>
+                            <td th:text="${product.productName}"></td>
+                            <td th:text="${product.productDescription}"></td>
+                            <td>
+                                <a th:href="@{/orderdetails/update/{customerId}/{orderNumber}/{productCode}/{quantity}(customerId=${customerId},orderNumber=${orderNumber},productCode=${product.productCode},quantity=1)}"
+                                    target="orderDetailsFrame">Order</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </article>
+        </dialog>
 
-                        <th>Line</th>
-                        <th>Code</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="product : ${results}"
-                        th:class="${'line-' + #strings.toLowerCase(#strings.replace(#strings.replace(product.productLine, ' ', '-'), '&', 'and'))}">
-                        <td th:text="${product.productLine}"></td>
-                        <td th:text="${product.productCode}"></td>
-                        <td th:text="${product.productName}"></td>
-                        <td th:text="${product.productDescription}"></td>
-                        <td>
-                            <!-- target="orderFrame" matches the iframe's name below,
-                         so this link loads inside the iframe instead of
-                         navigating the whole page away from the results.
-                         customerId/orderNumber are carried through so the
-                         order page knows which customer/order this line
-                         belongs to. -->
-                            <a th:href="@{/orderdetails/update/{customerId}/{orderNumber}/{productCode}/{quantity}(customerId=${customerId},orderNumber=${orderNumber},productCode=${product.productCode},quantity=1)}"
-                                target="orderDetailsFrame">Order</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <!-- Instead of showModal() on this LOCAL dialog, copy its inner
+             content into the PARENT page's dialog (#resultsDialog must
+             already exist, empty, in the Customers page) and open that
+             one. Direct window.parent access works because both pages
+             are same-origin - no postMessage needed. A dialog inside
+             this iframe can only cover the iframe's own area; only one
+             living in the outer document can cover the whole page. -->
+        <script th:if="${hasSearched and not #lists.isEmpty(results)}" th:inline="javascript">
+            const localDialog = document.getElementById('resultsDialog');
+
+            // Highlight matches in the search query BEFORE copying to
+            // parent, so the <mark> tags mark.js adds get copied too.
+            const query = /*[[${query}]]*/ '';
+            new Mark(localDialog).mark(query.split(/\s+/));
+
+            const parentDialog = window.parent.document.getElementById('resultsDialog');
+            parentDialog.innerHTML = localDialog.innerHTML;
+            parentDialog.showModal();
+        </script>
     </div>
 
     <!-- BOTTOM: iframe target. Starts on the placeholder; populated when "Order" is clicked. -->

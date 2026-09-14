@@ -39,6 +39,15 @@
         </div>
     </div>
 
+    <!-- Empty dialog, lives at the TOP-LEVEL document so it can cover the
+         entire page (unlike a dialog nested inside orderFrame, which can
+         only ever cover the iframe's own area). products-search.html
+         (loaded inside orderFrame, possibly several iframes deep) reaches
+         up to this element via window.parent/window.top and copies its
+         own rendered results into it, then opens it from here. -->
+    <dialog id="resultsDialog" style="border-radius: 8px; border: none;">
+    </dialog>
+
 </body>
 
 </html>
