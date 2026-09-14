@@ -32,53 +32,90 @@
         </div>
 
         <!-- Search performed, no results -->
-        <div th:if="${hasSearched and #lists.isEmpty(results)}">
-            <p>No products found for "<span th:text="${query}"></span>".</p>
+        <div th:if="${hasSearched and #lists.isEmpty(results) and #lists.isEmpty(sqlResults)}">
+            <p>No products found for "<span th:text="${query}"></span>" in either source.</p>
         </div>
 
         <!-- Results shown in a native <dialog> - real backdrop, ESC-to-close,
              and focus trap all come free from the browser. JS only needed
              to OPEN it (showModal() has no HTML-attribute equivalent);
              closing uses <form method="dialog">, native, no JS needed. -->
-        <dialog id="resultsDialog" th:if="${hasSearched and not #lists.isEmpty(results)}"
+        <dialog id="resultsDialog"
+            th:if="${hasSearched and (not #lists.isEmpty(results) or not #lists.isEmpty(sqlResults))}"
             style="border-radius: 8px; border: none;">
             <!-- Pico's own dialog{} rule makes <dialog> a full-viewport
                  flex overlay (position:fixed; inset:0) - don't fight
                  that by setting width/max-width here. The VISIBLE card
                  is this <article>, which Pico centers via that flex
                  rule - width/max-width belong here instead. -->
-            <article style="width: 90vw; max-width: 100vw; max-height: 80vh; overflow-y: auto;">
+            <article style="width: 95vw; max-width: 1600px; max-height: 80vh; overflow-y: auto;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <p th:text="|${#lists.size(results)} result(s) for &quot;${query}&quot;|"></p>
+                    <p th:text="|Results for &quot;${query}&quot;|"></p>
                     <form method="dialog">
                         <button type="submit" style="font-weight: bold;">✕ Close</button>
                     </form>
                 </div>
 
-                <table border="1" cellpadding="8" style="width: 100%; table-layout: fixed; word-wrap: break-word;">
-                    <thead>
-                        <tr>
-                            <th style="width: 12%;">Line</th>
-                            <th style="width: 12%;">Code</th>
-                            <th style="width: 18%;">Name</th>
-                            <th>Description</th>
-                            <th style="width: 8%;"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="product : ${results}"
-                            th:class="${'line-' + #strings.toLowerCase(#strings.replace(#strings.replace(product.productLine, ' ', '-'), '&', 'and'))}">
-                            <td th:text="${product.productLine}"></td>
-                            <td th:text="${product.productCode}"></td>
-                            <td th:text="${product.productName}"></td>
-                            <td th:text="${product.productDescription}"></td>
-                            <td>
-                                <a th:href="@{/orderdetails/update/{customerId}/{orderNumber}/{productCode}/{quantity}(customerId=${customerId},orderNumber=${orderNumber},productCode=${product.productCode},quantity=1)}"
-                                    target="orderDetailsFrame">Order</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- Two halves side by side: SQL LIKE (left) vs
+                     Elasticsearch (right), same query, for comparison. -->
+                <div style="display: flex; gap: 20px;">
+
+                    <!-- LEFT: SQL LIKE - exact substring match only, no
+                         relevance ranking, no typo tolerance. -->
+                    <div style="width: 50%;">
+                        <h4 th:text="|PostgreSQL (LIKE '%${query}%') - ${#lists.size(sqlResults)} result(s)|"></h4>
+                        <table border="1" cellpadding="8"
+                            style="width: 100%; table-layout: fixed; word-wrap: break-word;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30%;">Code</th>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="p : ${sqlResults}">
+                                    <td th:text="${p.productCode}"></td>
+                                    <td th:text="${p.productName}"></td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(sqlResults)}">
+                                    <td colspan="2">No matches - exact substring required.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- RIGHT: Elasticsearch - fuzzy, relevance-ranked,
+                         full-text across name + description. -->
+                    <div style="width: 50%;">
+                        <h4>Elasticsearch (fuzzy) - <span th:text="${#lists.size(results)}"></span> result(s)</h4>
+                        <table border="1" cellpadding="8"
+                            style="width: 100%; table-layout: fixed; word-wrap: break-word;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%;">Line</th>
+                                    <th style="width: 15%;">Code</th>
+                                    <th style="width: 20%;">Name</th>
+                                    <th>Description</th>
+                                    <th style="width: 10%;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="product : ${results}"
+                                    th:class="${'line-' + #strings.toLowerCase(#strings.replace(#strings.replace(product.productLine, ' ', '-'), '&', 'and'))}">
+                                    <td th:text="${product.productLine}"></td>
+                                    <td th:text="${product.productCode}"></td>
+                                    <td th:text="${product.productName}"></td>
+                                    <td th:text="${product.productDescription}"></td>
+                                    <td>
+                                        <a th:href="@{/orderdetails/update/{customerId}/{orderNumber}/{productCode}/{quantity}(customerId=${customerId},orderNumber=${orderNumber},productCode=${product.productCode},quantity=1)}"
+                                            target="orderDetailsFrame">Order</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
             </article>
         </dialog>
 
@@ -89,18 +126,19 @@
              are same-origin - no postMessage needed. A dialog inside
              this iframe can only cover the iframe's own area; only one
              living in the outer document can cover the whole page. -->
-        <script th:if="${hasSearched and not #lists.isEmpty(results)}" th:inline="javascript">
-            const localDialog = document.getElementById('resultsDialog');
+        <script th:if="${hasSearched and (not #lists.isEmpty(results) or not #lists.isEmpty(sqlResults))}"
+            th:inline="javascript">
+                const localDialog = document.getElementById('resultsDialog');
 
-            // Highlight matches in the search query BEFORE copying to
-            // parent, so the <mark> tags mark.js adds get copied too.
-            const query = /*[[${query}]]*/ '';
-            new Mark(localDialog).mark(query.split(/\s+/));
+                // Highlight matches in the search query BEFORE copying to
+                // parent, so the <mark> tags mark.js adds get copied too.
+                const query = /*[[${query}]]*/ '';
+                new Mark(localDialog).mark(query.split(/\s+/));
 
-            const parentDialog = window.parent.document.getElementById('resultsDialog');
-            parentDialog.innerHTML = localDialog.innerHTML;
-            parentDialog.showModal();
-        </script>
+                const parentDialog = window.parent.document.getElementById('resultsDialog');
+                parentDialog.innerHTML = localDialog.innerHTML;
+                parentDialog.showModal();
+            </script>
     </div>
 
     <!-- BOTTOM: iframe target. Starts on the placeholder; populated when "Order" is clicked. -->

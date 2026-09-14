@@ -23,7 +23,7 @@ public class ProductDocument {
 
     // Analyzed for full-text search ("productName"), plus an exact/sortable
     // sub-field ("productName.raw") for filtering or alphabetical sorting.
-    @MultiField(mainField = @Field(name = "productname", type = FieldType.Text, analyzer = "english"), otherFields = @InnerField(suffix = "raw", type = FieldType.Keyword))
+    @MultiField(mainField = @Field(name = "productname", type = FieldType.Text), otherFields = @InnerField(suffix = "raw", type = FieldType.Keyword))
     private String productName;
 
     @Field(type = FieldType.Keyword)
@@ -32,7 +32,7 @@ public class ProductDocument {
     @Field(type = FieldType.Keyword)
     private String productVendor;
 
-    @Field(name = "productdescription", type = FieldType.Text, analyzer = "english")
+    @Field(name = "productdescription", type = FieldType.Text)
     private String productDescription;
 
     @Field(type = FieldType.Integer)
