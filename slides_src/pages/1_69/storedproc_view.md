@@ -1742,18 +1742,19 @@ END LOOP;
 ```sql
 DO $$
 DECLARE
-    v_record   record;
-    cur_products CURSOR FOR
-        SELECT productCode, buyPrice FROM products 
-        WHERE buyPrice > 50;
+    v_record record;
+    v_counter int := 0;
 BEGIN
-    OPEN cur_products;
     LOOP
-        FETCH cur_products INTO v_record;
-        -- หยุดเอง เพราะ v_record เป็น NULL
+	    -- ข้อเสียของ select into คือมันดึงเฉพาะแถวแรกมาอย่างเดียว
+		-- ควรใช้ fetch จะดีกว่า
+        SELECT productCode, buyPrice INTO v_record
+        FROM products
+        WHERE buyPrice > 50;
+        v_counter := v_counter + 1;
         RAISE NOTICE 'Code: %', v_record.productCode;
+        EXIT WHEN v_counter >= 2;
     END LOOP;
-    CLOSE cur_products;
 END;
 $$;
 
