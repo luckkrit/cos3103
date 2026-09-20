@@ -27,5 +27,8 @@
   "markdown.copyFiles.destination": {
     "*.md": "../../public/images/${documentBaseName}/${documentBaseName}.png"
   },
-  "markdown.copyFiles.overwriteBehavior": "nameIncrementally"
+  "markdown.copyFiles.overwriteBehavior": "nameIncrementally",
+  "files.watcherExclude": {
+    "**/target/**": true
+  }
 }
