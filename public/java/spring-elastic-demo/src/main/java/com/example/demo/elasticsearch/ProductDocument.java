@@ -1,50 +1,135 @@
 package com.example.demo.elasticsearch;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.data.elasticsearch.annotations.InnerField;
-import org.springframework.data.elasticsearch.annotations.MultiField;
 
 @Document(indexName = "products")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class ProductDocument {
 
     @Id
-    private String productCode;
+    @Field(type = FieldType.Keyword)
+    private String productcode;
 
-    // Analyzed for full-text search ("productName"), plus an exact/sortable
-    // sub-field ("productName.raw") for filtering or alphabetical sorting.
-    @MultiField(mainField = @Field(name = "productname", type = FieldType.Text), otherFields = @InnerField(suffix = "raw", type = FieldType.Keyword))
-    private String productName;
+    @Field(type = FieldType.Text)
+    private String productname;
 
     @Field(type = FieldType.Keyword)
-    private String productScale;
+    private String productline;
+
+    @Field(type = FieldType.Text)
+    private String productdescription;
 
     @Field(type = FieldType.Keyword)
-    private String productVendor;
+    private String productscale;
 
-    @Field(name = "productdescription", type = FieldType.Text)
-    private String productDescription;
+    @Field(type = FieldType.Keyword)
+    private String productvendor;
 
-    @Field(type = FieldType.Integer)
-    private Short quantityInStock;
+    @Field(type = FieldType.Float)
+    private Double buyprice;
 
-    @Field(name = "buyprice", type = FieldType.Double)
-    private Double buyPrice;
-
-    @Field(name = "msrp", type = FieldType.Double)
+    @Field(type = FieldType.Float)
     private Double msrp;
 
-    @Field(name = "productline", type = FieldType.Keyword)
-    private String productLine;
+    @Field(type = FieldType.Integer)
+    private Integer quantityinstock;
 
+    public ProductDocument() {
+    }
+
+    public ProductDocument(
+            String productcode,
+            String productname,
+            String productline,
+            String productdescription,
+            String productscale,
+            String productvendor,
+            Double buyprice,
+            Double msrp,
+            Integer quantityinstock) {
+
+        this.productcode = productcode;
+        this.productname = productname;
+        this.productline = productline;
+        this.productdescription = productdescription;
+        this.productscale = productscale;
+        this.productvendor = productvendor;
+        this.buyprice = buyprice;
+        this.msrp = msrp;
+        this.quantityinstock = quantityinstock;
+    }
+
+    public String getProductcode() {
+        return productcode;
+    }
+
+    public void setProductcode(String productcode) {
+        this.productcode = productcode;
+    }
+
+    public String getProductname() {
+        return productname;
+    }
+
+    public void setProductname(String productname) {
+        this.productname = productname;
+    }
+
+    public String getProductline() {
+        return productline;
+    }
+
+    public void setProductline(String productline) {
+        this.productline = productline;
+    }
+
+    public String getProductdescription() {
+        return productdescription;
+    }
+
+    public void setProductdescription(String productdescription) {
+        this.productdescription = productdescription;
+    }
+
+    public String getProductscale() {
+        return productscale;
+    }
+
+    public void setProductscale(String productscale) {
+        this.productscale = productscale;
+    }
+
+    public String getProductvendor() {
+        return productvendor;
+    }
+
+    public void setProductvendor(String productvendor) {
+        this.productvendor = productvendor;
+    }
+
+    public Double getBuyprice() {
+        return buyprice;
+    }
+
+    public void setBuyprice(Double buyprice) {
+        this.buyprice = buyprice;
+    }
+
+    public Double getMsrp() {
+        return msrp;
+    }
+
+    public void setMsrp(Double msrp) {
+        this.msrp = msrp;
+    }
+
+    public Integer getQuantityinstock() {
+        return quantityinstock;
+    }
+
+    public void setQuantityinstock(Integer quantityinstock) {
+        this.quantityinstock = quantityinstock;
+    }
 }
