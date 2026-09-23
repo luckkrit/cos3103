@@ -426,3 +426,1906 @@ const downloadUrl =
 | TF component | 0.7143 | 0.4545 |
 | Boost ($k_1+1$) | 2.2 | 2.2 |
 | **BM25 score** | **1.0892** | **0.6931** |
+
+---
+layout: section
+---
+
+## Elasticsearch commands
+
+---
+
+## Elasticsearch's request and response flow
+
+<div class="w-fit mx-auto">
+
+![elasticsearch_2026-09-23-22-08-15](/images/elasticsearch/elasticsearch_2026-09-23-22-08-15.png){.max-h-50vh}
+</div>
+
+---
+
+## match
+
+- `match` ใช้กับ field ประเภท `text` — ตัดคำ, ทำ lowercase, หาคำที่ตรงแม้จะไม่ใช่ตัวพิมพ์เดียวกัน
+
+### Example
+- Search productname that match 'mustang'
+
+```json
+GET products/_search
+{
+  "query": {
+    "match": { "productname": "mustang" }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 10,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 2,
+      "relation": "eq"
+    },
+    "max_score": 4.2286577,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 4.2286577,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_2581",
+        "_score": 3.796762,
+        "_source": {
+          "productcode": "S18_2581",
+          "productname": "P-51-D Mustang",
+          "productscale": "1:72",
+          "productvendor": "Gearbox Collectibles",
+          "productdescription": "Has retractable wheels and comes with a stand",
+          "quantityinstock": 992,
+          "buyprice": 49,
+          "msrp": 84.48,
+          "productline": "Planes"
+        }
+      }
+    ]
+  }
+}
+</EsTable>
+
+---
+
+## term
+
+`term` ใช้กับ field ประเภท `keyword` — ต้องตรงกันทั้งสตริง (case-sensitive, ไม่ตัดคำ)
+
+### Example
+
+```json
+GET products/_search
+{
+  "size": 100,
+  "query": {
+    "term": { "productline": "Classic Cars" }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 0,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 38,
+      "relation": "eq"
+    },
+    "max_score": 1.0588719,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S10_1949",
+        "_score": 1.0588719,
+        "_source": {
+          "productcode": "S10_1949",
+          "productname": "1952 Alpine Renault 1300",
+          "productscale": "1:10",
+          "productvendor": "Classic Metal Creations",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 7305,
+          "buyprice": 98.58,
+          "msrp": 214.3,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_4757",
+        "_score": 1.0588719,
+        "_source": {
+          "productcode": "S10_4757",
+          "productname": "1972 Alfa Romeo GTA",
+          "productscale": "1:10",
+          "productvendor": "Motor City Art Classics",
+          "productdescription": "Features include: Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 3252,
+          "buyprice": 85.68,
+          "msrp": 136,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_4962",
+        "_score": 1.0588719,
+        "_source": {
+          "productcode": "S10_4962",
+          "productname": "1962 LanciaA Delta 16V",
+          "productscale": "1:10",
+          "productvendor": "Second Gear Diecast",
+          "productdescription": "Features include: Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 6791,
+          "buyprice": 103.42,
+          "msrp": 147.74,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 1.0588719,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_1108",
+        "_score": 1.0588719,
+        "_source": {
+          "productcode": "S12_1108",
+          "productname": "2001 Ferrari Enzo",
+          "productscale": "1:12",
+          "productvendor": "Second Gear Diecast",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 3619,
+          "buyprice": 95.59,
+          "msrp": 207.8,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_3148",
+        "_score": 1.0588719,
+        "_source": {
+          "productcode": "S12_3148",
+          "productname": "1969 Corvair Monza",
+          "productscale": "1:18",
+          "productvendor": "Welly Diecast Productions",
+          "productdescription": "1:18 scale die-cast about 10 inches long doors open, hood opens, trunk opens and wheels roll",
+          "quantityinstock": 6906,
+          "buyprice": 89.14,
+          "msrp": 151.08,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_3380",
+        "_score": 1.0588719,
+        "_source": {
+          "productcode": "S12_3380",
+          "productname": "1968 Dodge Charger",
+          "productscale": "1:12",
+          "productvendor": "Welly Diecast Productions",
+          "productdescription": "1:12 scale model of a 1968 Dodge Charger. Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color black",
+          "quantityinstock": 9123,
+          "buyprice": 75.16,
+          "msrp": 117.44,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_3891",
+        "_score": 1.0588719,
+        "_source": {
+          "productcode": "S12_3891",
+          "productname": "1969 Ford Falcon",
+          "productscale": "1:12",
+          "productvendor": "Second Gear Diecast",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 1049,
+          "buyprice": 83.05,
+          "msrp": 173.02,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_3990",
+        "_score": 1.0588719,
+        "_source": {
+          "productcode": "S12_3990",
+          "productname": "1970 Plymouth Hemi Cuda",
+          "productscale": "1:12",
+          "productvendor": "Studio M Art Models",
+          "productdescription": "Very detailed 1970 Plymouth Cuda model in 1:12 scale. The Cuda is generally accepted as one of the fastest original muscle cars from the 1970s. This model is a reproduction of one of the orginal 652 cars built in 1970. Red color.",
+          "quantityinstock": 5663,
+          "buyprice": 31.92,
+          "msrp": 79.8,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_4675",
+        "_score": 1.0588719,
+        "_source": {
+          "productcode": "S12_4675",
+          "productname": "1969 Dodge Charger",
+          "productscale": "1:12",
+          "productvendor": "Welly Diecast Productions",
+          "productdescription": "Detailed model of the 1969 Dodge Charger. This model includes finely detailed interior and exterior features. Painted in red and white.",
+          "quantityinstock": 7323,
+          "buyprice": 58.73,
+          "msrp": 115.16,
+          "productline": "Classic Cars"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## Example
+
+```json
+GET customers/_search
+{
+  "size": 100,
+  "query": {
+    "terms": { "country": ["USA", "Japan"] }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>{
+  "took": 1,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 38,
+      "relation": "eq"
+    },
+    "max_score": 1,
+    "hits": [
+      {
+        "_index": "customers",
+        "_id": "112",
+        "_score": 1,
+        "_source": {
+          "customernumber": 112,
+          "customername": "Signal Gift Stores",
+          "contactlastname": "King",
+          "contactfirstname": "Jean",
+          "phone": "7025551838",
+          "addressline1": "8489 Strong St.",
+          "city": "Las Vegas",
+          "state": "NV",
+          "postalcode": "83030",
+          "country": "USA",
+          "salesrepemployeenumber": 1166,
+          "creditlimit": 71800,
+          "customerlocation": "0101000020E6100000014F5AB8AC0E42406F0ED76A0FCB5CC0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "124",
+        "_score": 1,
+        "_source": {
+          "customernumber": 124,
+          "customername": "Mini Gifts Distributors Ltd.",
+          "contactlastname": "Nelson",
+          "contactfirstname": "Susan",
+          "phone": "4155551450",
+          "addressline1": "5677 Strong St.",
+          "city": "San Rafael",
+          "state": "CA",
+          "postalcode": "97562",
+          "country": "USA",
+          "salesrepemployeenumber": 1165,
+          "creditlimit": 210500,
+          "customerlocation": "0101000020E6100000214322C89CFC424055940156FDA15EC0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "129",
+        "_score": 1,
+        "_source": {
+          "customernumber": 129,
+          "customername": "Mini Wheels Co.",
+          "contactlastname": "Murphy",
+          "contactfirstname": "Julie",
+          "phone": "6505555787",
+          "addressline1": "5557 North Pendale Street",
+          "city": "San Francisco",
+          "state": "CA",
+          "postalcode": "94217",
+          "country": "USA",
+          "salesrepemployeenumber": 1165,
+          "creditlimit": 64600,
+          "customerlocation": "0101000020E6100000529ACDE330E34240425E0F26C59D5EC0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "131",
+        "_score": 1,
+        "_source": {
+          "customernumber": 131,
+          "customername": "Land of Toys Inc.",
+          "contactlastname": "Lee",
+          "contactfirstname": "Kwai",
+          "phone": "2125557818",
+          "addressline1": "897 Long Airport Avenue",
+          "city": "NYC",
+          "state": "NY",
+          "postalcode": "10022",
+          "country": "USA",
+          "salesrepemployeenumber": 1323,
+          "creditlimit": 114900,
+          "customerlocation": "0101000020E61000002CE79CE96F5B4440F849FFDC618052C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "151",
+        "_score": 1,
+        "_source": {
+          "customernumber": 151,
+          "customername": "Muscle Machine Inc",
+          "contactlastname": "Young",
+          "contactfirstname": "Jeff",
+          "phone": "2125557413",
+          "addressline1": "4092 Furth Circle",
+          "addressline2": "Suite 400",
+          "city": "NYC",
+          "state": "NY",
+          "postalcode": "10022",
+          "country": "USA",
+          "salesrepemployeenumber": 1286,
+          "creditlimit": 138500,
+          "customerlocation": "0101000020E61000002CE79CE96F5B4440F849FFDC618052C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "157",
+        "_score": 1,
+        "_source": {
+          "customernumber": 157,
+          "customername": "Diecast Classics Inc.",
+          "contactlastname": "Leong",
+          "contactfirstname": "Kelvin",
+          "phone": "2155551555",
+          "addressline1": "7586 Pompton St.",
+          "city": "Allentown",
+          "state": "PA",
+          "postalcode": "70267",
+          "country": "USA",
+          "salesrepemployeenumber": 1216,
+          "creditlimit": 100600,
+          "customerlocation": "0101000020E6100000C8B1F50CE14D4440E7A2C6295FDF52C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "161",
+        "_score": 1,
+        "_source": {
+          "customernumber": 161,
+          "customername": "Technics Stores Inc.",
+          "contactlastname": "Hashimoto",
+          "contactfirstname": "Juri",
+          "phone": "6505556809",
+          "addressline1": "9408 Furth Circle",
+          "city": "Burlingame",
+          "state": "CA",
+          "postalcode": "94217",
+          "country": "USA",
+          "salesrepemployeenumber": 1165,
+          "creditlimit": 84600,
+          "customerlocation": "0101000020E61000001941BEDFC3CA4240D4484BE56D975EC0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "168",
+        "_score": 1,
+        "_source": {
+          "customernumber": 168,
+          "customername": "American Souvenirs Inc",
+          "contactlastname": "Franco",
+          "contactfirstname": "Keith",
+          "phone": "2035557845",
+          "addressline1": "149 Spinnaker Dr.",
+          "addressline2": "Suite 101",
+          "city": "New Haven",
+          "state": "CT",
+          "postalcode": "97823",
+          "country": "USA",
+          "salesrepemployeenumber": 1286,
+          "creditlimit": 0,
+          "customerlocation": "0101000020E61000004956348C71A74440F5C18DEF663B52C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "173",
+        "_score": 1,
+        "_source": {
+          "customernumber": 173,
+          "customername": "Cambridge Collectables Co.",
+          "contactlastname": "Tseng",
+          "contactfirstname": "Jerry",
+          "phone": "6175555555",
+          "addressline1": "4658 Baden Av.",
+          "city": "Cambridge",
+          "state": "MA",
+          "postalcode": "51247",
+          "country": "USA",
+          "salesrepemployeenumber": 1188,
+          "creditlimit": 43400,
+          "customerlocation": "0101000020E6100000A5D70BAAB22F45408D7A2D8D04C751C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "175",
+        "_score": 1,
+        "_source": {
+          "customernumber": 175,
+          "customername": "Gift Depot Inc.",
+          "contactlastname": "King",
+          "contactfirstname": "Julie",
+          "phone": "2035552570",
+          "addressline1": "25593 South Bay Ln.",
+          "city": "Bridgewater",
+          "state": "CT",
+          "postalcode": "97562",
+          "country": "USA",
+          "salesrepemployeenumber": 1323,
+          "creditlimit": 84300,
+          "customerlocation": "0101000020E6100000D1E05BFD7DC444400E130D52705752C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "177",
+        "_score": 1,
+        "_source": {
+          "customernumber": 177,
+          "customername": "Osaka Souveniers Co.",
+          "contactlastname": "Kentary",
+          "contactfirstname": "Mory",
+          "phone": "+81 06 6342 5555",
+          "addressline1": "1-6-20 Dojima",
+          "city": "Kita-ku",
+          "state": "Osaka",
+          "postalcode": " 530-0003",
+          "country": "Japan",
+          "salesrepemployeenumber": 1621,
+          "creditlimit": 81200,
+          "customerlocation": "0101000020E61000004EA555E35BE041401FF818AC78776140"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "181",
+        "_score": 1,
+        "_source": {
+          "customernumber": 181,
+          "customername": "Vitachrome Inc.",
+          "contactlastname": "Frick",
+          "contactfirstname": "Michael",
+          "phone": "2125551500",
+          "addressline1": "2678 Kingston Rd.",
+          "addressline2": "Suite 101",
+          "city": "NYC",
+          "state": "NY",
+          "postalcode": "10022",
+          "country": "USA",
+          "salesrepemployeenumber": 1286,
+          "creditlimit": 76400,
+          "customerlocation": "0101000020E61000002CE79CE96F5B4440F849FFDC618052C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "198",
+        "_score": 1,
+        "_source": {
+          "customernumber": 198,
+          "customername": "Auto-Moto Classics Inc.",
+          "contactlastname": "Taylor",
+          "contactfirstname": "Leslie",
+          "phone": "6175558428",
+          "addressline1": "16780 Pompton St.",
+          "city": "Brickhaven",
+          "state": "MA",
+          "postalcode": "58339",
+          "country": "USA",
+          "salesrepemployeenumber": 1216,
+          "creditlimit": 23000,
+          "customerlocation": "0101000020E6100000678AEF7A1F3445401B71B7DA79D851C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "204",
+        "_score": 1,
+        "_source": {
+          "customernumber": 204,
+          "customername": "Online Mini Collectables",
+          "contactlastname": "Barajas",
+          "contactfirstname": "Miguel",
+          "phone": "6175557555",
+          "addressline1": "7635 Spinnaker Dr.",
+          "city": "Brickhaven",
+          "state": "MA",
+          "postalcode": "58339",
+          "country": "USA",
+          "salesrepemployeenumber": 1188,
+          "creditlimit": 68700,
+          "customerlocation": "0101000020E6100000678AEF7A1F3445401B71B7DA79D851C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "205",
+        "_score": 1,
+        "_source": {
+          "customernumber": 205,
+          "customername": "Toys4GrownUps.com",
+          "contactlastname": "Young",
+          "contactfirstname": "Julie",
+          "phone": "6265557265",
+          "addressline1": "78934 Hillside Dr.",
+          "city": "Pasadena",
+          "state": "CA",
+          "postalcode": "90003",
+          "country": "USA",
+          "salesrepemployeenumber": 1166,
+          "creditlimit": 90700,
+          "customerlocation": "0101000020E6100000DB2B989DEA124140F790F0BD3F895DC0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "219",
+        "_score": 1,
+        "_source": {
+          "customernumber": 219,
+          "customername": "Boards & Toys Co.",
+          "contactlastname": "Young",
+          "contactfirstname": "Mary",
+          "phone": "3105552373",
+          "addressline1": "4097 Douglas Av.",
+          "city": "Glendale",
+          "state": "CA",
+          "postalcode": "92561",
+          "country": "USA",
+          "salesrepemployeenumber": 1166,
+          "creditlimit": 11000,
+          "customerlocation": "0101000020E6100000633612B23D124140BEC1172653905DC0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "239",
+        "_score": 1,
+        "_source": {
+          "customernumber": 239,
+          "customername": "Collectable Mini Designs Co.",
+          "contactlastname": "Thompson",
+          "contactfirstname": "Valarie",
+          "phone": "7605558146",
+          "addressline1": "361 Furth Circle",
+          "city": "San Diego",
+          "state": "CA",
+          "postalcode": "91217",
+          "country": "USA",
+          "salesrepemployeenumber": 1166,
+          "creditlimit": 105000,
+          "customerlocation": "0101000020E6100000DAEF3FE88F5B404045E8B177104A5DC0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "286",
+        "_score": 1,
+        "_source": {
+          "customernumber": 286,
+          "customername": "Marta's Replicas Co.",
+          "contactlastname": "Hernandez",
+          "contactfirstname": "Marta",
+          "phone": "6175558555",
+          "addressline1": "39323 Spinnaker Dr.",
+          "city": "Cambridge",
+          "state": "MA",
+          "postalcode": "51247",
+          "country": "USA",
+          "salesrepemployeenumber": 1216,
+          "creditlimit": 123700,
+          "customerlocation": "0101000020E6100000A5D70BAAB22F45408D7A2D8D04C751C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "319",
+        "_score": 1,
+        "_source": {
+          "customernumber": 319,
+          "customername": "Mini Classics",
+          "contactlastname": "Frick",
+          "contactfirstname": "Steve",
+          "phone": "9145554562",
+          "addressline1": "3758 North Pendale Street",
+          "city": "White Plains",
+          "state": "NY",
+          "postalcode": "24067",
+          "country": "USA",
+          "salesrepemployeenumber": 1323,
+          "creditlimit": 102700,
+          "customerlocation": "0101000020E6100000F6C1E8A85984444046D33483D37052C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "320",
+        "_score": 1,
+        "_source": {
+          "customernumber": 320,
+          "customername": "Mini Creations Ltd.",
+          "contactlastname": "Huang",
+          "contactfirstname": "Wing",
+          "phone": "5085559555",
+          "addressline1": "4575 Hillside Dr.",
+          "city": "New Bedford",
+          "state": "MA",
+          "postalcode": "50553",
+          "country": "USA",
+          "salesrepemployeenumber": 1188,
+          "creditlimit": 94500,
+          "customerlocation": "0101000020E6100000EB9BEA7F6FD144409FB0C403CABB51C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "321",
+        "_score": 1,
+        "_source": {
+          "customernumber": 321,
+          "customername": "Corporate Gift Ideas Co.",
+          "contactlastname": "Brown",
+          "contactfirstname": "Julie",
+          "phone": "6505551386",
+          "addressline1": "7734 Strong St.",
+          "city": "San Francisco",
+          "state": "CA",
+          "postalcode": "94217",
+          "country": "USA",
+          "salesrepemployeenumber": 1165,
+          "creditlimit": 105000,
+          "customerlocation": "0101000020E6100000529ACDE330E34240EB1C03B2D79A5EC0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "328",
+        "_score": 1,
+        "_source": {
+          "customernumber": 328,
+          "customername": "Tekni Collectables Inc.",
+          "contactlastname": "Brown",
+          "contactfirstname": "William",
+          "phone": "2015559350",
+          "addressline1": "7476 Moss Rd.",
+          "city": "Newark",
+          "state": "NJ",
+          "postalcode": "94019",
+          "country": "USA",
+          "salesrepemployeenumber": 1323,
+          "creditlimit": 43000,
+          "customerlocation": "0101000020E6100000680932022A5E4440D8DA560E088B52C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "339",
+        "_score": 1,
+        "_source": {
+          "customernumber": 339,
+          "customername": "Classic Gift Ideas, Inc",
+          "contactlastname": "Cervantes",
+          "contactfirstname": "Francisca",
+          "phone": "2155554695",
+          "addressline1": "782 First Street",
+          "city": "Philadelphia",
+          "state": "PA",
+          "postalcode": "71270",
+          "country": "USA",
+          "salesrepemployeenumber": 1188,
+          "creditlimit": 81100,
+          "customerlocation": "0101000020E610000007EBFF1CE6F94340739CDB847BCA52C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "347",
+        "_score": 1,
+        "_source": {
+          "customernumber": 347,
+          "customername": "Men 'R' US Retailers, Ltd.",
+          "contactlastname": "Chandler",
+          "contactfirstname": "Brian",
+          "phone": "2155554369",
+          "addressline1": "6047 Douglas Av.",
+          "city": "Los Angeles",
+          "state": "CA",
+          "postalcode": "91003",
+          "country": "USA",
+          "salesrepemployeenumber": 1166,
+          "creditlimit": 57700,
+          "customerlocation": "0101000020E6100000CA5D3A9CAF064140DC018D88988F5DC0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "362",
+        "_score": 1,
+        "_source": {
+          "customernumber": 362,
+          "customername": "Gifts4AllAges.com",
+          "contactlastname": "Yoshido",
+          "contactfirstname": "Juri",
+          "phone": "6175559555",
+          "addressline1": "8616 Spinnaker Dr.",
+          "city": "Boston",
+          "state": "MA",
+          "postalcode": "51003",
+          "country": "USA",
+          "salesrepemployeenumber": 1216,
+          "creditlimit": 41900,
+          "customerlocation": "0101000020E610000087F0790FE12D4540B9FC87F4DBC351C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "363",
+        "_score": 1,
+        "_source": {
+          "customernumber": 363,
+          "customername": "Online Diecast Creations Co.",
+          "contactlastname": "Young",
+          "contactfirstname": "Dorothy",
+          "phone": "6035558647",
+          "addressline1": "2304 Long Airport Avenue",
+          "city": "Nashua",
+          "state": "NH",
+          "postalcode": "62005",
+          "country": "USA",
+          "salesrepemployeenumber": 1216,
+          "creditlimit": 114200,
+          "customerlocation": "0101000020E61000005E3B0785F76145402EAEF199ECDD51C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "379",
+        "_score": 1,
+        "_source": {
+          "customernumber": 379,
+          "customername": "Collectables For Less Inc.",
+          "contactlastname": "Nelson",
+          "contactfirstname": "Allen",
+          "phone": "6175558555",
+          "addressline1": "7825 Douglas Av.",
+          "city": "Brickhaven",
+          "state": "MA",
+          "postalcode": "58339",
+          "country": "USA",
+          "salesrepemployeenumber": 1188,
+          "creditlimit": 70700,
+          "customerlocation": "0101000020E6100000678AEF7A1F3445401B71B7DA79D851C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "398",
+        "_score": 1,
+        "_source": {
+          "customernumber": 398,
+          "customername": "Tokyo Collectables, Ltd",
+          "contactlastname": "Shimamura",
+          "contactfirstname": "Akiko",
+          "phone": "+81 3 3584 0555",
+          "addressline1": "2-2-8 Roppongi",
+          "city": "Minato-ku",
+          "state": "Tokyo",
+          "postalcode": "106-0032",
+          "country": "Japan",
+          "salesrepemployeenumber": 1621,
+          "creditlimit": 94400,
+          "customerlocation": "0101000020E61000003B0554933BD4414064F6C3190D786140"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "424",
+        "_score": 1,
+        "_source": {
+          "customernumber": 424,
+          "customername": "Classic Legends Inc.",
+          "contactlastname": "Hernandez",
+          "contactfirstname": "Maria",
+          "phone": "2125558493",
+          "addressline1": "5905 Pompton St.",
+          "addressline2": "Suite 750",
+          "city": "NYC",
+          "state": "NY",
+          "postalcode": "10022",
+          "country": "USA",
+          "salesrepemployeenumber": 1286,
+          "creditlimit": 67500,
+          "customerlocation": "0101000020E61000002CE79CE96F5B4440F849FFDC618052C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "447",
+        "_score": 1,
+        "_source": {
+          "customernumber": 447,
+          "customername": "Gift Ideas Corp.",
+          "contactlastname": "Lewis",
+          "contactfirstname": "Dan",
+          "phone": "2035554407",
+          "addressline1": "2440 Pompton St.",
+          "city": "Glendale",
+          "state": "CT",
+          "postalcode": "97561",
+          "country": "USA",
+          "salesrepemployeenumber": 1323,
+          "creditlimit": 49700,
+          "customerlocation": "0101000020E61000002535FE8EF2C44040A21F5734E70B5CC0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "450",
+        "_score": 1,
+        "_source": {
+          "customernumber": 450,
+          "customername": "The Sharp Gifts Warehouse",
+          "contactlastname": "Frick",
+          "contactfirstname": "Sue",
+          "phone": "4085553659",
+          "addressline1": "3086 Ingle Ln.",
+          "city": "San Jose",
+          "state": "CA",
+          "postalcode": "94217",
+          "country": "USA",
+          "salesrepemployeenumber": 1165,
+          "creditlimit": 77600,
+          "customerlocation": "0101000020E6100000731D99FD70AB424005F86EF346795EC0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "455",
+        "_score": 1,
+        "_source": {
+          "customernumber": 455,
+          "customername": "Super Scale Inc.",
+          "contactlastname": "Murphy",
+          "contactfirstname": "Leslie",
+          "phone": "2035559545",
+          "addressline1": "567 North Pendale Street",
+          "city": "New Haven",
+          "state": "CT",
+          "postalcode": "97823",
+          "country": "USA",
+          "salesrepemployeenumber": 1286,
+          "creditlimit": 95400,
+          "customerlocation": "0101000020E61000004956348C71A74440F5C18DEF663B52C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "456",
+        "_score": 1,
+        "_source": {
+          "customernumber": 456,
+          "customername": "Microscale Inc.",
+          "contactlastname": "Choi",
+          "contactfirstname": "Yu",
+          "phone": "2125551957",
+          "addressline1": "5290 North Pendale Street",
+          "addressline2": "Suite 200",
+          "city": "NYC",
+          "state": "NY",
+          "postalcode": "10022",
+          "country": "USA",
+          "salesrepemployeenumber": 1286,
+          "creditlimit": 39800,
+          "customerlocation": "0101000020E61000002CE79CE96F5B4440F849FFDC618052C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "462",
+        "_score": 1,
+        "_source": {
+          "customernumber": 462,
+          "customername": "FunGiftIdeas.com",
+          "contactlastname": "Benitez",
+          "contactfirstname": "Violeta",
+          "phone": "5085552555",
+          "addressline1": "1785 First Street",
+          "city": "New Bedford",
+          "state": "MA",
+          "postalcode": "50553",
+          "country": "USA",
+          "salesrepemployeenumber": 1216,
+          "creditlimit": 85800,
+          "customerlocation": "0101000020E6100000EB9BEA7F6FD144409FB0C403CABB51C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "475",
+        "_score": 1,
+        "_source": {
+          "customernumber": 475,
+          "customername": "West Coast Collectables Co.",
+          "contactlastname": "Thompson",
+          "contactfirstname": "Steve",
+          "phone": "3105553722",
+          "addressline1": "3675 Furth Circle",
+          "city": "Burbank",
+          "state": "CA",
+          "postalcode": "94019",
+          "country": "USA",
+          "salesrepemployeenumber": 1166,
+          "creditlimit": 55400,
+          "customerlocation": "0101000020E6100000DBEA28BD25174140A7C4BF19C6935DC0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "486",
+        "_score": 1,
+        "_source": {
+          "customernumber": 486,
+          "customername": "Motor Mint Distributors Inc.",
+          "contactlastname": "Salazar",
+          "contactfirstname": "Rosa",
+          "phone": "2155559857",
+          "addressline1": "11328 Douglas Av.",
+          "city": "Philadelphia",
+          "state": "PA",
+          "postalcode": "71270",
+          "country": "USA",
+          "salesrepemployeenumber": 1323,
+          "creditlimit": 72600,
+          "customerlocation": "0101000020E610000007EBFF1CE6F94340739CDB847BCA52C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "487",
+        "_score": 1,
+        "_source": {
+          "customernumber": 487,
+          "customername": "Signal Collectibles Ltd.",
+          "contactlastname": "Taylor",
+          "contactfirstname": "Sue",
+          "phone": "4155554312",
+          "addressline1": "2793 Furth Circle",
+          "city": "Brisbane",
+          "state": "CA",
+          "postalcode": "94217",
+          "country": "USA",
+          "salesrepemployeenumber": 1165,
+          "creditlimit": 60300,
+          "customerlocation": "0101000020E6100000D21BEE23B7BE4440A29BFD8172FD55C0"
+        }
+      },
+      {
+        "_index": "customers",
+        "_id": "495",
+        "_score": 1,
+        "_source": {
+          "customernumber": 495,
+          "customername": "Diecast Collectables",
+          "contactlastname": "Franco",
+          "contactfirstname": "Valarie",
+          "phone": "6175552555",
+          "addressline1": "6251 Ingle Ln.",
+          "city": "Boston",
+          "state": "MA",
+          "postalcode": "51003",
+          "country": "USA",
+          "salesrepemployeenumber": 1188,
+          "creditlimit": 85100,
+          "customerlocation": "0101000020E610000087F0790FE12D454058CBF852D3C351C0"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## bool
+
+- Full-text search จะมีการค้นหาแบบค้นหาตาม 
+  1. match/unmatch
+  2. relevance score 
+
+---
+
+1. Full-text search (match/unmatch)
+
+- `must` = ต้องเจอ ถ้าไม่เจอ = ไม่ติดผลลัพธ์
+- `should` = เจอก็ได้ ไม่เจอก็ได้ ไม่มีสิทธิ์ตัดใครออกจากผลลัพธ์เด็ดขาด
+
+### Example
+
+- `must` อย่างเดียว
+
+```json
+GET products/_search
+{
+  "query": {
+    "bool": {
+      "must": [ { "match": { "productname": "mustang" } } ]
+    }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 0,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 2,
+      "relation": "eq"
+    },
+    "max_score": 4.2286577,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 4.2286577,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_2581",
+        "_score": 3.796762,
+        "_source": {
+          "productcode": "S18_2581",
+          "productname": "P-51-D Mustang",
+          "productscale": "1:72",
+          "productvendor": "Gearbox Collectibles",
+          "productdescription": "Has retractable wheels and comes with a stand",
+          "quantityinstock": 992,
+          "buyprice": 49,
+          "msrp": 84.48,
+          "productline": "Planes"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## Example
+
+- มีการใช้ must กับ should
+
+```json
+GET products/_search
+{
+  "query": {
+    "bool": {
+      "must": [ { "match": { "productname": "mustang" } } ],
+      "should": [ { "match": { "productdescription": "wheels" } } ]
+    }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 8,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 2,
+      "relation": "eq"
+    },
+    "max_score": 5.5237346,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 5.5237346,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_2581",
+        "_score": 5.478362,
+        "_source": {
+          "productcode": "S18_2581",
+          "productname": "P-51-D Mustang",
+          "productscale": "1:72",
+          "productvendor": "Gearbox Collectibles",
+          "productdescription": "Has retractable wheels and comes with a stand",
+          "quantityinstock": 992,
+          "buyprice": 49,
+          "msrp": 84.48,
+          "productline": "Planes"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+1. Full-text search (match/unmatch)
+
+- `filter` = ต้องเจอ ถ้าไม่เจอ = ไม่ติดผลลัพธ์
+
+```json
+GET products/_search
+{
+  "query": {
+    "bool": {
+      "filter": [ { "term": { "productline": "Classic Cars" } } ]
+    }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 0,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 38,
+      "relation": "eq"
+    },
+    "max_score": 0,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S10_1949",
+        "_score": 0,
+        "_source": {
+          "productcode": "S10_1949",
+          "productname": "1952 Alpine Renault 1300",
+          "productscale": "1:10",
+          "productvendor": "Classic Metal Creations",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 7305,
+          "buyprice": 98.58,
+          "msrp": 214.3,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_4757",
+        "_score": 0,
+        "_source": {
+          "productcode": "S10_4757",
+          "productname": "1972 Alfa Romeo GTA",
+          "productscale": "1:10",
+          "productvendor": "Motor City Art Classics",
+          "productdescription": "Features include: Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 3252,
+          "buyprice": 85.68,
+          "msrp": 136,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_4962",
+        "_score": 0,
+        "_source": {
+          "productcode": "S10_4962",
+          "productname": "1962 LanciaA Delta 16V",
+          "productscale": "1:10",
+          "productvendor": "Second Gear Diecast",
+          "productdescription": "Features include: Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 6791,
+          "buyprice": 103.42,
+          "msrp": 147.74,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 0,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_1108",
+        "_score": 0,
+        "_source": {
+          "productcode": "S12_1108",
+          "productname": "2001 Ferrari Enzo",
+          "productscale": "1:12",
+          "productvendor": "Second Gear Diecast",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 3619,
+          "buyprice": 95.59,
+          "msrp": 207.8,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_3148",
+        "_score": 0,
+        "_source": {
+          "productcode": "S12_3148",
+          "productname": "1969 Corvair Monza",
+          "productscale": "1:18",
+          "productvendor": "Welly Diecast Productions",
+          "productdescription": "1:18 scale die-cast about 10 inches long doors open, hood opens, trunk opens and wheels roll",
+          "quantityinstock": 6906,
+          "buyprice": 89.14,
+          "msrp": 151.08,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_3380",
+        "_score": 0,
+        "_source": {
+          "productcode": "S12_3380",
+          "productname": "1968 Dodge Charger",
+          "productscale": "1:12",
+          "productvendor": "Welly Diecast Productions",
+          "productdescription": "1:12 scale model of a 1968 Dodge Charger. Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color black",
+          "quantityinstock": 9123,
+          "buyprice": 75.16,
+          "msrp": 117.44,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_3891",
+        "_score": 0,
+        "_source": {
+          "productcode": "S12_3891",
+          "productname": "1969 Ford Falcon",
+          "productscale": "1:12",
+          "productvendor": "Second Gear Diecast",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 1049,
+          "buyprice": 83.05,
+          "msrp": 173.02,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_3990",
+        "_score": 0,
+        "_source": {
+          "productcode": "S12_3990",
+          "productname": "1970 Plymouth Hemi Cuda",
+          "productscale": "1:12",
+          "productvendor": "Studio M Art Models",
+          "productdescription": "Very detailed 1970 Plymouth Cuda model in 1:12 scale. The Cuda is generally accepted as one of the fastest original muscle cars from the 1970s. This model is a reproduction of one of the orginal 652 cars built in 1970. Red color.",
+          "quantityinstock": 5663,
+          "buyprice": 31.92,
+          "msrp": 79.8,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_4675",
+        "_score": 0,
+        "_source": {
+          "productcode": "S12_4675",
+          "productname": "1969 Dodge Charger",
+          "productscale": "1:12",
+          "productvendor": "Welly Diecast Productions",
+          "productdescription": "Detailed model of the 1969 Dodge Charger. This model includes finely detailed interior and exterior features. Painted in red and white.",
+          "quantityinstock": 7323,
+          "buyprice": 58.73,
+          "msrp": 115.16,
+          "productline": "Classic Cars"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+- must_not = บังคับไม่ติดผลลัพธ์ (ตรงข้าม must)
+
+```json
+GET products/_search
+{
+  "query": {
+    "bool": {
+      "must_not": [ { "term": { "productline": "Classic Cars" } } ]
+    }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 8,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 72,
+      "relation": "eq"
+    },
+    "max_score": 0,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S10_1678",
+        "_score": 0,
+        "_source": {
+          "productcode": "S10_1678",
+          "productname": "1969 Harley Davidson Ultimate Chopper",
+          "productscale": "1:10",
+          "productvendor": "Min Lin Diecast",
+          "productdescription": "This replica features working kickstand, front suspension, gear-shift lever, footbrake lever, drive chain, wheels and steering. All parts are particularly delicate due to their precise scale and require special care and attention.",
+          "quantityinstock": 7933,
+          "buyprice": 48.81,
+          "msrp": 95.7,
+          "productline": "Motorcycles"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_2016",
+        "_score": 0,
+        "_source": {
+          "productcode": "S10_2016",
+          "productname": "1996 Moto Guzzi 1100i",
+          "productscale": "1:10",
+          "productvendor": "Highway 66 Mini Classics",
+          "productdescription": "Official Moto Guzzi logos and insignias, saddle bags located on side of motorcycle, detailed engine, working steering, working suspension, two leather seats, luggage rack, dual exhaust pipes, small saddle bag located on handle bars, two-tone paint with chrome accents, superior die-cast detail , rotating wheels , working kick stand, diecast metal with plastic parts and baked enamel finish.",
+          "quantityinstock": 6625,
+          "buyprice": 68.99,
+          "msrp": 118.94,
+          "productline": "Motorcycles"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_4698",
+        "_score": 0,
+        "_source": {
+          "productcode": "S10_4698",
+          "productname": "2003 Harley-Davidson Eagle Drag Bike",
+          "productscale": "1:10",
+          "productvendor": "Red Start Diecast",
+          "productdescription": """Model features, official Harley Davidson logos and insignias, detachable rear wheelie bar, heavy diecast metal with resin parts, authentic multi-color tampo-printed graphics, separate engine drive belts, free-turning front fork, rotating tires and rear racing slick, certificate of authenticity, detailed engine, display stand\r\n, precision diecast replica, baked enamel finish, 1:10 scale model, removable fender, seat and tank cover piece for displaying the superior detail of the v-twin engine""",
+          "quantityinstock": 5582,
+          "buyprice": 91.02,
+          "msrp": 193.66,
+          "productline": "Motorcycles"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_1666",
+        "_score": 0,
+        "_source": {
+          "productcode": "S12_1666",
+          "productname": "1958 Setra Bus",
+          "productscale": "1:12",
+          "productvendor": "Welly Diecast Productions",
+          "productdescription": "Model features 30 windows, skylights & glare resistant glass, working steering system, original logos",
+          "quantityinstock": 1579,
+          "buyprice": 77.9,
+          "msrp": 136.67,
+          "productline": "Trucks and Buses"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_2823",
+        "_score": 0,
+        "_source": {
+          "productcode": "S12_2823",
+          "productname": "2002 Suzuki XREO",
+          "productscale": "1:12",
+          "productvendor": "Unimax Art Galleries",
+          "productdescription": "Official logos and insignias, saddle bags located on side of motorcycle, detailed engine, working steering, working suspension, two leather seats, luggage rack, dual exhaust pipes, small saddle bag located on handle bars, two-tone paint with chrome accents, superior die-cast detail , rotating wheels , working kick stand, diecast metal with plastic parts and baked enamel finish.",
+          "quantityinstock": 9997,
+          "buyprice": 66.27,
+          "msrp": 150.62,
+          "productline": "Motorcycles"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_4473",
+        "_score": 0,
+        "_source": {
+          "productcode": "S12_4473",
+          "productname": "1957 Chevy Pickup",
+          "productscale": "1:12",
+          "productvendor": "Exoto Designs",
+          "productdescription": "1:12 scale die-cast about 20 inches long Hood opens, Rubber wheels",
+          "quantityinstock": 6125,
+          "buyprice": 55.7,
+          "msrp": 118.5,
+          "productline": "Trucks and Buses"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_1097",
+        "_score": 0,
+        "_source": {
+          "productcode": "S18_1097",
+          "productname": "1940 Ford Pickup Truck",
+          "productscale": "1:18",
+          "productvendor": "Studio M Art Models",
+          "productdescription": "This model features soft rubber tires, working steering, rubber mud guards, authentic Ford logos, detailed undercarriage, opening doors and hood,  removable split rear gate, full size spare mounted in bed, detailed interior with opening glove box",
+          "quantityinstock": 2613,
+          "buyprice": 58.33,
+          "msrp": 116.67,
+          "productline": "Trucks and Buses"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_1342",
+        "_score": 0,
+        "_source": {
+          "productcode": "S18_1342",
+          "productname": "1937 Lincoln Berline",
+          "productscale": "1:18",
+          "productvendor": "Motor City Art Classics",
+          "productdescription": "Features opening engine cover, doors, trunk, and fuel filler cap. Color black",
+          "quantityinstock": 8693,
+          "buyprice": 60.62,
+          "msrp": 102.74,
+          "productline": "Vintage Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_1367",
+        "_score": 0,
+        "_source": {
+          "productcode": "S18_1367",
+          "productname": "1936 Mercedes-Benz 500K Special Roadster",
+          "productscale": "1:18",
+          "productvendor": "Studio M Art Models",
+          "productdescription": "This 1:18 scale replica is constructed of heavy die-cast metal and has all the features of the original: working doors and rumble seat, independent spring suspension, detailed interior, working steering system, and a bifold hood that reveals an engine so accurate that it even includes the wiring. All this is topped off with a baked enamel finish. Color white.",
+          "quantityinstock": 8635,
+          "buyprice": 24.26,
+          "msrp": 53.91,
+          "productline": "Vintage Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_1662",
+        "_score": 0,
+        "_source": {
+          "productcode": "S18_1662",
+          "productname": "1980s Black Hawk Helicopter",
+          "productscale": "1:18",
+          "productvendor": "Red Start Diecast",
+          "productdescription": "1:18 scale replica of actual Army's UH-60L BLACK HAWK Helicopter. 100% hand-assembled. Features rotating rotor blades, propeller blades and rubber wheels.",
+          "quantityinstock": 5330,
+          "buyprice": 77.27,
+          "msrp": 157.69,
+          "productline": "Planes"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+
+ดังนั้นถ้าใช้ must/filter พร้อมกัน เปรียบเสมือนเงื่อนไขใน `bool` คือ `AND`
+
+
+```json
+GET products/_search
+{
+  "query": {
+    "bool": {
+      "must": [ { "match": { "productname": "mustang" } } ],
+      "filter": [ { "term": { "productline": "Classic Cars" } } ]
+    }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 0,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": 4.2286577,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 4.2286577,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+แต่ถ้าใช้ must/should พร้อมกัน เปรียบเสมือนเงื่อนไขใน `bool` คือ `OR`
+
+```json
+GET products/_search
+{
+  "query": {
+    "bool": {
+      "must": [ { "match": { "productname": "mustang" } } ],
+      "should": [ { "term": { "productline": "Classic Cars" } } ]
+    }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 0,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 2,
+      "relation": "eq"
+    },
+    "max_score": 5.2875295,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 5.2875295,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_2581",
+        "_score": 3.796762,
+        "_source": {
+          "productcode": "S18_2581",
+          "productname": "P-51-D Mustang",
+          "productscale": "1:72",
+          "productvendor": "Gearbox Collectibles",
+          "productdescription": "Has retractable wheels and comes with a stand",
+          "quantityinstock": 992,
+          "buyprice": 49,
+          "msrp": 84.48,
+          "productline": "Planes"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+2. Full-text search (relevance score)
+  - `must` กับ `should` มีการคิดคะแนน
+  - ส่วน `filter` กับ `must_not` จะไม่มีการคิดคะแนน (สังเกตได้จากตารางผลลัพธ์ก่อนหน้าคะแนนจะเป็น 0)
+
+ดังนั้นถ้าให้เปรียบเทียบกันระหว่างการใช้ must กับ must/filter จะเห็นได้ว่าคะแนนไม่เท่ากัน **โดยการใช้ must เพื่อค้นหาทั้ง 2 fields จะได้คะแนนมากกว่า**
+
+---
+
+## Result ของการใช้ `must` อย่างเดียวทั้ง 2 fields
+
+<EsTable>
+{
+  "took": 0,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": 5.2875295,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 5.2875295,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## Result ของการใช้ `must/filter` 
+
+<EsTable>
+{
+  "took": 0,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": 4.2286577,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 4.2286577,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
