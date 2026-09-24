@@ -404,14 +404,8 @@ GET demo/_search
 
 > Result เป็น JSON ยาวมาก ต้องไปดูจาก Elasticsearch
 
-<script setup>
-const downloadUrl =
-  `${import.meta.env.BASE_URL}json/elastic-result.json`
-</script>
 
-<a :href="downloadUrl" download>
-  Download JSON
-</a>
+<Download file="json/elastic-result.json"/>
 
 ---
 
@@ -427,6 +421,9 @@ const downloadUrl =
 | Boost ($k_1+1$) | 2.2 | 2.2 |
 | **BM25 score** | **1.0892** | **0.6931** |
 
+
+
+
 ---
 layout: section
 ---
@@ -439,8 +436,369 @@ layout: section
 
 <div class="w-fit mx-auto">
 
-![elasticsearch_2026-09-23-22-08-15](/images/elasticsearch/elasticsearch_2026-09-23-22-08-15.png){.max-h-50vh}
+![elasticsearch_2026-09-23-22-08-15](/images/elasticsearch/elasticsearch_2026-09-23-22-08-15.png){.max-h-100vh}
 </div>
+
+---
+
+## Kibana Dev Tools
+
+<div class="w-fit mx-auto">
+
+![elasticsearch_2026-09-24-12-22-07](/images/elasticsearch/elasticsearch_2026-09-24-12-22-07.png){.max-h-80vh}
+</div>
+
+---
+
+## Migrate data to Elasticsearch
+
+
+1. <Download file="txt/migrate.txt"/>
+2. Copy contents to kibana devtools
+
+<div class="w-fit mx-auto">
+
+![elasticsearch_2026-09-24-13-25-37](/images/elasticsearch/elasticsearch_2026-09-24-13-25-37.png){.max-h-70vh}
+</div>
+
+---
+
+## GET - retreiving data
+
+- Get all index
+
+```json
+GET /_cat/indices?v
+```
+<CsvTable><pre>
+
+health status index                                           uuid                   pri rep docs.count docs.deleted store.size pri.store.size dataset.size
+green  open   .internal.alerts-security.alerts-default-000001 j8fuHdBSTDWiFsZ2ief6SA   1   0          0            0       249b           249b         249b
+yellow open   customers                                       -KA4EWCsQtqCVjWtyx9V5Q   1   1        122            0    144.7kb        144.7kb      144.7kb
+yellow open   products                                        jSCHp6-cT_mxvoyOh1EJPQ   1   1        110            0     50.7kb         50.7kb       50.7kb
+</pre></CsvTable>
+
+---
+
+- JSON Format
+```json
+GET /_cat/indices?v&format=json&pretty
+```
+
+<EsTable>
+[
+  {
+    "health": "green",
+    "status": "open",
+    "index": ".internal.alerts-security.alerts-default-000001",
+    "uuid": "j8fuHdBSTDWiFsZ2ief6SA",
+    "pri": "1",
+    "rep": "0",
+    "docs.count": "0",
+    "docs.deleted": "0",
+    "store.size": "249b",
+    "pri.store.size": "249b",
+    "dataset.size": "249b"
+  },
+  {
+    "health": "yellow",
+    "status": "open",
+    "index": "customers",
+    "uuid": "-KA4EWCsQtqCVjWtyx9V5Q",
+    "pri": "1",
+    "rep": "1",
+    "docs.count": "122",
+    "docs.deleted": "0",
+    "store.size": "144.7kb",
+    "pri.store.size": "144.7kb",
+    "dataset.size": "144.7kb"
+  },
+  {
+    "health": "yellow",
+    "status": "open",
+    "index": "products",
+    "uuid": "jSCHp6-cT_mxvoyOh1EJPQ",
+    "pri": "1",
+    "rep": "1",
+    "docs.count": "110",
+    "docs.deleted": "0",
+    "store.size": "50.7kb",
+    "pri.store.size": "50.7kb",
+    "dataset.size": "50.7kb"
+  }
+]
+
+</EsTable>
+
+---
+
+- Get fields mapping of products
+
+```json
+GET products
+```
+
+<EsTable height="65dvh">
+{
+  "products": {
+    "aliases": {},
+    "mappings": {
+      "properties": {
+        "_class": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": false
+        },
+        "buyprice": {
+          "type": "float"
+        },
+        "msrp": {
+          "type": "float"
+        },
+        "productcode": {
+          "type": "keyword"
+        },
+        "productdescription": {
+          "type": "text"
+        },
+        "productline": {
+          "type": "keyword"
+        },
+        "productname": {
+          "type": "text"
+        },
+        "productscale": {
+          "type": "keyword"
+        },
+        "productvendor": {
+          "type": "keyword"
+        },
+        "quantityinstock": {
+          "type": "integer"
+        }
+      }
+    },
+    "settings": {
+      "index": {
+        "routing": {
+          "allocation": {
+            "include": {
+              "_tier_preference": "data_content"
+            }
+          }
+        },
+        "refresh_interval": "1s",
+        "number_of_shards": "1",
+        "provided_name": "products",
+        "creation_date": "1790090733879",
+        "number_of_replicas": "1",
+        "uuid": "jSCHp6-cT_mxvoyOh1EJPQ",
+        "version": {
+          "created": "9111000"
+        }
+      }
+    }
+  }
+}
+
+</EsTable>
+
+---
+
+- Get fields mapping of customers
+
+```json
+GET customers
+```
+
+<EsTable height="65dvh">
+{
+  "customers": {
+    "aliases": {},
+    "mappings": {
+      "properties": {
+        "addressline1": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "addressline2": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "city": {
+          "type": "text"
+        },
+        "contactfirstname": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "contactlastname": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "country": {
+          "type": "keyword"
+        },
+        "creditlimit": {
+          "type": "long"
+        },
+        "customerlocation": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "customername": {
+          "type": "text"
+        },
+        "customernumber": {
+          "type": "keyword"
+        },
+        "phone": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "postalcode": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "salesrepemployeenumber": {
+          "type": "long"
+        },
+        "state": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        }
+      }
+    },
+    "settings": {
+      "index": {
+        "routing": {
+          "allocation": {
+            "include": {
+              "_tier_preference": "data_content"
+            }
+          }
+        },
+        "number_of_shards": "1",
+        "provided_name": "customers",
+        "creation_date": "1790090774800",
+        "number_of_replicas": "1",
+        "uuid": "-KA4EWCsQtqCVjWtyx9V5Q",
+        "version": {
+          "created": "9111000"
+        }
+      }
+    }
+  }
+}
+
+</EsTable>
+
+---
+
+## _doc
+
+- Get document by _id
+
+```json
+GET products/_doc/S10_1678
+```
+
+<EsTable>
+{
+  "_index": "products",
+  "_id": "S10_1678",
+  "_version": 3,
+  "_seq_no": 220,
+  "_primary_term": 3,
+  "found": true,
+  "_source": {
+    "productcode": "S10_1678",
+    "productname": "1969 Harley Davidson Ultimate Chopper",
+    "productscale": "1:10",
+    "productvendor": "Min Lin Diecast",
+    "productdescription": "This replica features working kickstand, front suspension, gear-shift lever, footbrake lever, drive chain, wheels and steering. All parts are particularly delicate due to their precise scale and require special care and attention.",
+    "quantityinstock": 7933,
+    "buyprice": 48.81,
+    "msrp": 95.7,
+    "productline": "Motorcycles"
+  }
+}
+
+</EsTable>
+
+---
+
+## _count
+
+- Count documents
+
+```json
+GET products/_count
+```
+
+```json
+{
+  "count": 110,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  }
+}
+```
+
+- Filter only count
+
+```json
+GET products/_count?filter_path=count
+```
+
+```json
+{
+  "count": 110
+}
+```
 
 ---
 
@@ -464,7 +822,7 @@ GET products/_search
 
 ## Result
 
-<EsTable>
+<EsTable >
 {
   "took": 10,
   "timed_out": false,
@@ -517,6 +875,475 @@ GET products/_search
   }
 }
 </EsTable>
+
+---
+
+## Search multiple words in one field (by default using `OR` operator)
+
+
+```json
+GET products/_search
+{
+  "query": {
+    "match": {
+      "productname": {
+        "query": "ford mustang",
+        "operator": "and" 
+      }
+    }
+  }
+}
+```
+
+<EsTable >
+{
+  "took": 0,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": 6.4233303,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 6.4233303,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## Search across multiple fields
+
+```json
+GET products/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "truck",
+      "fields": [
+        "productline",
+        "productname"
+      ]
+    }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable height="80dvh">
+{
+  "took": 0,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 2,
+      "relation": "eq"
+    },
+    "max_score": 4.2286577,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S18_4600",
+        "_score": 4.2286577,
+        "_source": {
+          "productcode": "S18_4600",
+          "productname": "1940s Ford truck",
+          "productscale": "1:18",
+          "productvendor": "Motor City Art Classics",
+          "productdescription": "This 1940s Ford Pick-Up truck is re-created in 1:18 scale of original 1940s Ford truck. This antique style metal 1940s Ford Flatbed truck is all hand-assembled. This collectible 1940's Pick-Up truck is painted in classic dark green color, and features rotating wheels.",
+          "quantityinstock": 3128,
+          "buyprice": 84.76,
+          "msrp": 121.08,
+          "productline": "Trucks and Buses"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_1097",
+        "_score": 3.796762,
+        "_source": {
+          "productcode": "S18_1097",
+          "productname": "1940 Ford Pickup Truck",
+          "productscale": "1:18",
+          "productvendor": "Studio M Art Models",
+          "productdescription": "This model features soft rubber tires, working steering, rubber mud guards, authentic Ford logos, detailed undercarriage, opening doors and hood,  removable split rear gate, full size spare mounted in bed, detailed interior with opening glove box",
+          "quantityinstock": 2613,
+          "buyprice": 58.33,
+          "msrp": 116.67,
+          "productline": "Trucks and Buses"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+layout: two-cols-title
+---
+
+::title::
+[การ boost ด้วย score เข้าไป]{class="text-2xl"}
+- ตัวอย่างนี้คือจะทำให้เห็นว่า จะเร่งอันดับการค้นหาในบาง field เพิ่มขึ้นมา เช่น `productcode` **S18_3233** ที่มีคำว่า `Ford` อยู่ใน `productdescription` ทั้งๆที่ `productname` เป็น **1985 Toyota Supra document** นี้อยู่ด้านท้ายเพราะ `productname` ไม่มี `Ford` เลย จะได้คะแนนอยู่ที่ **2.8176036** แต่ถ้า boost `productdescription^3` (* 3 เท่า) จะกลายเป็น **8.452811**
+
+
+::left::
+-  ไม่มีการ boost คะแนน
+
+```json
+GET products/_search?filter_path=hits.hits._score,hits.hits._source.productcode,hits.hits._source.productname,hits.hits._source.productdescription
+{
+    "size": 50,
+  "query": {
+    "multi_match": {
+      "query": "Ford",
+      "type": "most_fields",
+      "fields": ["productname", "productdescription"]
+    }
+  }
+}
+
+```
+::right::
+
+- มีการ boost คะแนน
+
+```json
+GET products/_search?filter_path=hits.hits._score,hits.hits._source.productcode,hits.hits._source.productname,hits.hits._source.productdescription
+{
+    "size": 50,
+  "query": {
+    "multi_match": {
+      "query": "Ford",
+      "type": "most_fields",
+      "fields": ["productname", "productdescription^3"]
+    }
+  }
+}
+
+```
+
+
+::default::
+
+
+---
+
+## Result ได้คะแนนสูงขึ้นเป็น 3 เท่า
+
+<EsTable>{
+  "hits": {
+    "hits": [
+      {
+        "_score": 15.137336,
+        "_source": {
+          "productcode": "S18_4600",
+          "productname": "1940s Ford truck",
+          "productdescription": "This 1940s Ford Pick-Up truck is re-created in 1:18 scale of original 1940s Ford truck. This antique style metal 1940s Ford Flatbed truck is all hand-assembled. This collectible 1940's Pick-Up truck is painted in classic dark green color, and features rotating wheels."
+        }
+      },
+      {
+        "_score": 12.539774,
+        "_source": {
+          "productcode": "S18_3482",
+          "productname": "1976 Ford Gran Torino",
+          "productdescription": "Highly detailed 1976 Ford 'Gran Torino' Starsky and Hutch diecast model. Very well constructed and painted in red and white patterns."
+        }
+      },
+      {
+        "_score": 10.423329,
+        "_source": {
+          "productcode": "S18_1097",
+          "productname": "1940 Ford Pickup Truck",
+          "productdescription": "This model features soft rubber tires, working steering, rubber mud guards, authentic Ford logos, detailed undercarriage, opening doors and hood,  removable split rear gate, full size spare mounted in bed, detailed interior with opening glove box"
+        }
+      },
+      {
+        "_score": 8.452811,
+        "_source": {
+          "productcode": "S18_3233",
+          "productname": "1985 Toyota Supra",
+          "productdescription": "This model features soft rubber tires, working steering, rubber mud guards, authentic Ford logos, detailed undercarriage, opening doors and hood, removable split rear gate, full size spare mounted in bed, detailed interior with opening glove box"
+        }
+      },
+      {
+        "_score": 2.1946723,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green."
+        }
+      },
+      {
+        "_score": 2.1946723,
+        "_source": {
+          "productcode": "S12_3891",
+          "productname": "1969 Ford Falcon",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis."
+        }
+      },
+      {
+        "_score": 2.1946723,
+        "_source": {
+          "productcode": "S18_4933",
+          "productname": "1957 Ford Thunderbird",
+          "productdescription": "This 1:18 scale precision die-cast replica, with its optional porthole hardtop and factory baked-enamel Thunderbird Bronze finish, is a 100% accurate rendition of this American classic."
+        }
+      },
+      {
+        "_score": 1.9705184,
+        "_source": {
+          "productcode": "S18_2248",
+          "productname": "1911 Ford Town Car",
+          "productdescription": "Features opening hood, opening doors, opening trunk, wide white wall tires, front door arm rests, working steering system."
+        }
+      },
+      {
+        "_score": 1.9705184,
+        "_source": {
+          "productcode": "S18_2432",
+          "productname": "1926 Ford Fire Engine",
+          "productdescription": "Gleaming red handsome appearance. Everything is here the fire hoses, ladder, axes, bells, lanterns, ready to fight any inferno."
+        }
+      },
+      {
+        "_score": 1.9705184,
+        "_source": {
+          "productcode": "S18_2957",
+          "productname": "1934 Ford V8 Coupe",
+          "productdescription": "Chrome Trim, Chrome Grille, Opening Hood, Opening Doors, Opening Trunk, Detailed Engine, Working Steering System"
+        }
+      },
+      {
+        "_score": 1.9705184,
+        "_source": {
+          "productcode": "S18_3140",
+          "productname": "1903 Ford Model A",
+          "productdescription": "Features opening trunk,  working steering system"
+        }
+      },
+      {
+        "_score": 1.9705184,
+        "_source": {
+          "productcode": "S24_3816",
+          "productname": "1940 Ford Delivery Sedan",
+          "productdescription": "Chrome Trim, Chrome Grille, Opening Hood, Opening Doors, Opening Trunk, Detailed Engine, Working Steering System. Color black."
+        }
+      },
+      {
+        "_score": 1.9705184,
+        "_source": {
+          "productcode": "S32_4289",
+          "productname": "1928 Ford Phaeton Deluxe",
+          "productdescription": "This model features grille-mounted chrome horn, lift-up louvered hood, fold-down rumble seat, working steering system"
+        }
+      },
+      {
+        "_score": 1.787909,
+        "_source": {
+          "productcode": "S18_2949",
+          "productname": "1913 Ford Model T Speedster",
+          "productdescription": "This 250 part reproduction includes moving handbrakes, clutch, throttle and foot pedals, squeezable horn, detailed wired engine, removable water, gas, and oil cans, pivoting monocle windshield, all topped with a baked enamel red finish. Each replica comes with an Owners Title and Certificate of Authenticity. Color red."
+        }
+      },
+      {
+        "_score": 1.6362743,
+        "_source": {
+          "productcode": "S18_2325",
+          "productname": "1932 Model A Ford J-Coupe",
+          "productdescription": "This model features grille-mounted chrome horn, lift-up louvered hood, fold-down rumble seat, working steering system, chrome-covered spare, opening doors, detailed and wired engine"
+        }
+      },
+      {
+        "_score": 1.6362743,
+        "_source": {
+          "productcode": "S24_3151",
+          "productname": "1912 Ford Model T Delivery Wagon",
+          "productdescription": "This model features chrome trim and grille, opening hood, opening doors, opening trunk, detailed engine, working steering system. Color white."
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## Result ของการไม่ boost
+
+<EsTable>
+{
+  "hits": {
+    "hits": [
+      {
+        "_score": 6.508893,
+        "_source": {
+          "productcode": "S18_4600",
+          "productname": "1940s Ford truck",
+          "productdescription": "This 1940s Ford Pick-Up truck is re-created in 1:18 scale of original 1940s Ford truck. This antique style metal 1940s Ford Flatbed truck is all hand-assembled. This collectible 1940's Pick-Up truck is painted in classic dark green color, and features rotating wheels."
+        }
+      },
+      {
+        "_score": 5.4936037,
+        "_source": {
+          "productcode": "S18_3482",
+          "productname": "1976 Ford Gran Torino",
+          "productdescription": "Highly detailed 1976 Ford 'Gran Torino' Starsky and Hutch diecast model. Very well constructed and painted in red and white patterns."
+        }
+      },
+      {
+        "_score": 4.788122,
+        "_source": {
+          "productcode": "S18_1097",
+          "productname": "1940 Ford Pickup Truck",
+          "productdescription": "This model features soft rubber tires, working steering, rubber mud guards, authentic Ford logos, detailed undercarriage, opening doors and hood,  removable split rear gate, full size spare mounted in bed, detailed interior with opening glove box"
+        }
+      },
+      {
+        "_score": 2.8176036,
+        "_source": {
+          "productcode": "S18_3233",
+          "productname": "1985 Toyota Supra",
+          "productdescription": "This model features soft rubber tires, working steering, rubber mud guards, authentic Ford logos, detailed undercarriage, opening doors and hood, removable split rear gate, full size spare mounted in bed, detailed interior with opening glove box"
+        }
+      },
+      {
+        "_score": 2.1946723,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green."
+        }
+      },
+      {
+        "_score": 2.1946723,
+        "_source": {
+          "productcode": "S12_3891",
+          "productname": "1969 Ford Falcon",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis."
+        }
+      },
+      {
+        "_score": 2.1946723,
+        "_source": {
+          "productcode": "S18_4933",
+          "productname": "1957 Ford Thunderbird",
+          "productdescription": "This 1:18 scale precision die-cast replica, with its optional porthole hardtop and factory baked-enamel Thunderbird Bronze finish, is a 100% accurate rendition of this American classic."
+        }
+      },
+      {
+        "_score": 1.9705184,
+        "_source": {
+          "productcode": "S18_2248",
+          "productname": "1911 Ford Town Car",
+          "productdescription": "Features opening hood, opening doors, opening trunk, wide white wall tires, front door arm rests, working steering system."
+        }
+      },
+      {
+        "_score": 1.9705184,
+        "_source": {
+          "productcode": "S18_2432",
+          "productname": "1926 Ford Fire Engine",
+          "productdescription": "Gleaming red handsome appearance. Everything is here the fire hoses, ladder, axes, bells, lanterns, ready to fight any inferno."
+        }
+      },
+      {
+        "_score": 1.9705184,
+        "_source": {
+          "productcode": "S18_2957",
+          "productname": "1934 Ford V8 Coupe",
+          "productdescription": "Chrome Trim, Chrome Grille, Opening Hood, Opening Doors, Opening Trunk, Detailed Engine, Working Steering System"
+        }
+      },
+      {
+        "_score": 1.9705184,
+        "_source": {
+          "productcode": "S18_3140",
+          "productname": "1903 Ford Model A",
+          "productdescription": "Features opening trunk,  working steering system"
+        }
+      },
+      {
+        "_score": 1.9705184,
+        "_source": {
+          "productcode": "S24_3816",
+          "productname": "1940 Ford Delivery Sedan",
+          "productdescription": "Chrome Trim, Chrome Grille, Opening Hood, Opening Doors, Opening Trunk, Detailed Engine, Working Steering System. Color black."
+        }
+      },
+      {
+        "_score": 1.9705184,
+        "_source": {
+          "productcode": "S32_4289",
+          "productname": "1928 Ford Phaeton Deluxe",
+          "productdescription": "This model features grille-mounted chrome horn, lift-up louvered hood, fold-down rumble seat, working steering system"
+        }
+      },
+      {
+        "_score": 1.787909,
+        "_source": {
+          "productcode": "S18_2949",
+          "productname": "1913 Ford Model T Speedster",
+          "productdescription": "This 250 part reproduction includes moving handbrakes, clutch, throttle and foot pedals, squeezable horn, detailed wired engine, removable water, gas, and oil cans, pivoting monocle windshield, all topped with a baked enamel red finish. Each replica comes with an Owners Title and Certificate of Authenticity. Color red."
+        }
+      },
+      {
+        "_score": 1.6362743,
+        "_source": {
+          "productcode": "S18_2325",
+          "productname": "1932 Model A Ford J-Coupe",
+          "productdescription": "This model features grille-mounted chrome horn, lift-up louvered hood, fold-down rumble seat, working steering system, chrome-covered spare, opening doors, detailed and wired engine"
+        }
+      },
+      {
+        "_score": 1.6362743,
+        "_source": {
+          "productcode": "S24_3151",
+          "productname": "1912 Ford Model T Delivery Wagon",
+          "productdescription": "This model features chrome trim and grille, opening hood, opening doors, opening trunk, detailed engine, working steering system. Color white."
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
 
 ---
 
@@ -2242,7 +3069,21 @@ GET products/_search
   - `must` กับ `should` มีการคิดคะแนน
   - ส่วน `filter` กับ `must_not` จะไม่มีการคิดคะแนน (สังเกตได้จากตารางผลลัพธ์ก่อนหน้าคะแนนจะเป็น 0)
 
-ดังนั้นถ้าให้เปรียบเทียบกันระหว่างการใช้ must กับ must/filter จะเห็นได้ว่าคะแนนไม่เท่ากัน **โดยการใช้ must เพื่อค้นหาทั้ง 2 fields จะได้คะแนนมากกว่า**
+ดังนั้นถ้าให้เปรียบเทียบกันระหว่างการใช้ must กับ must/filter จะเห็นได้ว่าคะแนนไม่เท่ากัน **โดยการใช้ must เพื่อค้นหาทั้ง 2 fields จะได้คะแนนมากกว่า must/filter** 
+
+```json
+GET products/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "productname": "mustang" } },
+        { "term": { "productline": "Classic Cars" } }
+      ]
+    }
+  }
+}
+```
 
 ---
 
@@ -2289,6 +3130,22 @@ GET products/_search
 
 ---
 
+- การใช้ must/filter คู่กัน ได้คะแนนน้อยกว่า
+
+```json
+GET products/_search
+{
+  "query": {
+    "bool": {
+      "must": [ { "match": { "productname": "mustang" } } ],
+      "filter": [ { "term": { "productline": "Classic Cars" } } ]
+    }
+  }
+}
+```
+
+---
+
 ## Result ของการใช้ `must/filter` 
 
 <EsTable>
@@ -2322,6 +3179,206 @@ GET products/_search
           "buyprice": 95.34,
           "msrp": 194.57,
           "productline": "Classic Cars"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+
+- จะเห็นได้ว่าถ้าใช้ `must` อย่างเดียวจะได้คะแนน **5.2875295** ที่มากกว่า
+- แต่ถ้าใช้ `must/filter` จะได้คะแนน **4.2286577** ที่น้อยกว่า
+
+
+---
+layout: two-cols-title
+---
+
+::title::
+[การนำเข้าข้อมูลจาก View]{class="text-2xl"}
+
+::left::
+
+- สร้าง View ใน postgres
+
+```sql
+CREATE VIEW ClassicModels.products_search_view AS
+SELECT
+    p.productCode,
+    p.productName,
+    p.productLine,
+    p.productDescription,
+    pl.textDescription AS productLineDescription
+FROM ClassicModels.Products p
+JOIN ClassicModels.ProductLines pl
+    ON p.productLine = pl.productLine;
+```
+
+
+::right::
+
+- สร้าง Index ใหม่ บน Elasticsearch
+
+```json
+PUT products_search
+{
+  "mappings": {
+    "properties": {
+      "productcode":            { "type": "keyword" },
+      "productname":            { "type": "text" },
+      "productline":            { "type": "keyword" },
+      "productdescription":     { "type": "text" },
+      "productlinedescription": { "type": "text" }
+    }
+  }
+}
+```
+
+<Download file="txt/view1.txt"/>
+::default::
+
+
+---
+
+## Result
+
+<EsTable height="50dvh">
+{
+  "took": 0,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 13,
+      "relation": "eq"
+    },
+    "max_score": 2.0930893,
+    "hits": [
+      {
+        "_index": "products_search",
+        "_id": "S10_1678",
+        "_score": 2.0930893,
+        "_source": {
+          "productcode": "S10_1678",
+          "productname": "1969 Harley Davidson Ultimate Chopper",
+          "productline": "Motorcycles",
+          "productdescription": "This replica features working kickstand, front suspension, gear-shift lever, footbrake lever, drive chain, wheels and steering. All parts are particularly delicate due to their precise scale and require special care and attention.",
+          "productlinedescription": "Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic. The models range in size from 1:10 to 1:50 scale and include numerous limited edition and several out-of-production vehicles. All models come fully assembled and ready for display in the home or office. Most include a certificate of authenticity."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S10_2016",
+        "_score": 2.0930893,
+        "_source": {
+          "productcode": "S10_2016",
+          "productname": "1996 Moto Guzzi 1100i",
+          "productline": "Motorcycles",
+          "productdescription": "Official Moto Guzzi logos and insignias, saddle bags located on side of motorcycle, detailed engine, working steering, working suspension, two leather seats, luggage rack, dual exhaust pipes, small saddle bag located on handle bars, two-tone paint with chrome accents, superior die-cast detail , rotating wheels , working kick stand, diecast metal with plastic parts and baked enamel finish.",
+          "productlinedescription": "Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic. The models range in size from 1:10 to 1:50 scale and include numerous limited edition and several out-of-production vehicles. All models come fully assembled and ready for display in the home or office. Most include a certificate of authenticity."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S10_4698",
+        "_score": 2.0930893,
+        "_source": {
+          "productcode": "S10_4698",
+          "productname": "2003 Harley-Davidson Eagle Drag Bike",
+          "productline": "Motorcycles",
+          "productdescription": """Model features, official Harley Davidson logos and insignias, detachable rear wheelie bar, heavy diecast metal with resin parts, authentic multi-color tampo-printed graphics, separate engine drive belts, free-turning front fork, rotating tires and rear racing slick, certificate of authenticity, detailed engine, display stand\r\n, precision diecast replica, baked enamel finish, 1:10 scale model, removable fender, seat and tank cover piece for displaying the superior detail of the v-twin engine""",
+          "productlinedescription": "Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic. The models range in size from 1:10 to 1:50 scale and include numerous limited edition and several out-of-production vehicles. All models come fully assembled and ready for display in the home or office. Most include a certificate of authenticity."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S12_2823",
+        "_score": 2.0930893,
+        "_source": {
+          "productcode": "S12_2823",
+          "productname": "2002 Suzuki XREO",
+          "productline": "Motorcycles",
+          "productdescription": "Official logos and insignias, saddle bags located on side of motorcycle, detailed engine, working steering, working suspension, two leather seats, luggage rack, dual exhaust pipes, small saddle bag located on handle bars, two-tone paint with chrome accents, superior die-cast detail , rotating wheels , working kick stand, diecast metal with plastic parts and baked enamel finish.",
+          "productlinedescription": "Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic. The models range in size from 1:10 to 1:50 scale and include numerous limited edition and several out-of-production vehicles. All models come fully assembled and ready for display in the home or office. Most include a certificate of authenticity."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S18_2625",
+        "_score": 2.0930893,
+        "_source": {
+          "productcode": "S18_2625",
+          "productname": "1936 Harley Davidson El Knucklehead",
+          "productline": "Motorcycles",
+          "productdescription": "Intricately detailed with chrome accents and trim, official die-struck logos and baked enamel finish.",
+          "productlinedescription": "Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic. The models range in size from 1:10 to 1:50 scale and include numerous limited edition and several out-of-production vehicles. All models come fully assembled and ready for display in the home or office. Most include a certificate of authenticity."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S18_3782",
+        "_score": 2.0930893,
+        "_source": {
+          "productcode": "S18_3782",
+          "productname": "1957 Vespa GS150",
+          "productline": "Motorcycles",
+          "productdescription": "Features rotating wheels, working kick stand. Comes with stand.",
+          "productlinedescription": "Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic. The models range in size from 1:10 to 1:50 scale and include numerous limited edition and several out-of-production vehicles. All models come fully assembled and ready for display in the home or office. Most include a certificate of authenticity."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S24_1578",
+        "_score": 2.0930893,
+        "_source": {
+          "productcode": "S24_1578",
+          "productname": "1997 BMW R 1100 S",
+          "productline": "Motorcycles",
+          "productdescription": "Detailed scale replica with working suspension and constructed from over 70 parts",
+          "productlinedescription": "Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic. The models range in size from 1:10 to 1:50 scale and include numerous limited edition and several out-of-production vehicles. All models come fully assembled and ready for display in the home or office. Most include a certificate of authenticity."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S24_2000",
+        "_score": 2.0930893,
+        "_source": {
+          "productcode": "S24_2000",
+          "productname": "1960 BSA Gold Star DBD34",
+          "productline": "Motorcycles",
+          "productdescription": "Detailed scale replica with working suspension and constructed from over 70 parts",
+          "productlinedescription": "Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic. The models range in size from 1:10 to 1:50 scale and include numerous limited edition and several out-of-production vehicles. All models come fully assembled and ready for display in the home or office. Most include a certificate of authenticity."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S24_2360",
+        "_score": 2.0930893,
+        "_source": {
+          "productcode": "S24_2360",
+          "productname": "1982 Ducati 900 Monster",
+          "productline": "Motorcycles",
+          "productdescription": "Features two-tone paint with chrome accents, superior die-cast detail , rotating wheels , working kick stand",
+          "productlinedescription": "Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic. The models range in size from 1:10 to 1:50 scale and include numerous limited edition and several out-of-production vehicles. All models come fully assembled and ready for display in the home or office. Most include a certificate of authenticity."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S32_1374",
+        "_score": 2.0930893,
+        "_source": {
+          "productcode": "S32_1374",
+          "productname": "1997 BMW F650 ST",
+          "productline": "Motorcycles",
+          "productdescription": "Features official die-struck logos and baked enamel finish. Comes with stand.",
+          "productlinedescription": "Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic. The models range in size from 1:10 to 1:50 scale and include numerous limited edition and several out-of-production vehicles. All models come fully assembled and ready for display in the home or office. Most include a certificate of authenticity."
         }
       }
     ]

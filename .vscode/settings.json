@@ -30,5 +30,21 @@
   "markdown.copyFiles.overwriteBehavior": "nameIncrementally",
   "files.watcherExclude": {
     "**/target/**": true
-  }
+  },
+  "workbench.editorAssociations": {
+    "*.copilotmd": "vscode.markdown.preview.editor",
+    "*.parquet": "duckdb.dataFileViewer",
+    "*.csv": "duckdb.dataFileViewer",
+    "*.tsv": "duckdb.dataFileViewer",
+    "*.xlsx": "duckdb.dataFileViewer"
+  },
+  "duckdb.databases": [
+    {
+      "alias": "duckdb",
+      "type": "file",
+      "path": "/home/krit/Projects/cos3103/slides_src/public/json/duckdb",
+      "attached": true
+    }
+  ],
+  "duckdb.defaultDatabase": "duckdb"
 }
