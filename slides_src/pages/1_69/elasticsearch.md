@@ -3193,18 +3193,819 @@ GET products/_search
 
 
 ---
+
+## match_phrase - ค้นหาทั้งประโยค
+
+```json
+GET products_search/_search
+{
+  "query": {
+    "match_phrase": { "productdescription": "chrome dashboard" }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 28,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": 4.318061,
+    "hits": [
+      {
+        "_index": "products_search",
+        "_id": "S24_4620",
+        "_score": 4.318061,
+        "_source": {
+          "productcode": "S24_4620",
+          "productname": "1961 Chevrolet Impala",
+          "productline": "Classic Cars",
+          "productdescription": "This 1:18 scale precision die-cast reproduction of the 1961 Chevrolet Impala has all the features-doors, hood and trunk that open; detailed 409 cubic-inch engine; chrome dashboard and stick shift, two-tone interior; working steering system; all topped of with a factory baked-enamel finish.",
+          "productlinedescription": "Attention car enthusiasts: Make your wildest car ownership dreams come true. Whether you are looking for classic muscle cars, dream sports cars or movie-inspired miniatures, you will find great choices in this category. These replicas feature superb attention to detail and craftsmanship and offer features such as working steering system, opening forward compartment, opening rear trunk with removable spare wheel, 4-wheel independent spring suspension, and so on. The models range in size from 1:10 to 1:24 scale and include numerous limited edition and several out-of-production vehicles. All models include a certificate of authenticity from their manufacturers and come fully assembled and ready for display in the home or office."
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## Add highlight to the result
+
+```json
+GET products_search/_search
+{
+  "query": {
+    "match_phrase": { "productdescription": "chrome dashboard" }
+  },
+  "highlight": {
+    "fields": { "productdescription": {} }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 59,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": 4.318061,
+    "hits": [
+      {
+        "_index": "products_search",
+        "_id": "S24_4620",
+        "_score": 4.318061,
+        "_source": {
+          "productcode": "S24_4620",
+          "productname": "1961 Chevrolet Impala",
+          "productline": "Classic Cars",
+          "productdescription": "This 1:18 scale precision die-cast reproduction of the 1961 Chevrolet Impala has all the features-doors, hood and trunk that open; detailed 409 cubic-inch engine; chrome dashboard and stick shift, two-tone interior; working steering system; all topped of with a factory baked-enamel finish.",
+          "productlinedescription": "Attention car enthusiasts: Make your wildest car ownership dreams come true. Whether you are looking for classic muscle cars, dream sports cars or movie-inspired miniatures, you will find great choices in this category. These replicas feature superb attention to detail and craftsmanship and offer features such as working steering system, opening forward compartment, opening rear trunk with removable spare wheel, 4-wheel independent spring suspension, and so on. The models range in size from 1:10 to 1:24 scale and include numerous limited edition and several out-of-production vehicles. All models include a certificate of authenticity from their manufacturers and come fully assembled and ready for display in the home or office."
+        },
+        "highlight": {
+          "productdescription": [
+            "Impala has all the features-doors, hood and trunk that open; detailed 409 cubic-inch engine; <em>chrome dashboard</em>"
+          ]
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## range
+
+- Find `msrp` more than 100
+
+```json
+GET products/_search
+{
+  "query": {
+    "range": { "msrp": { "gte": 100 } }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 8,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 51,
+      "relation": "eq"
+    },
+    "max_score": 1,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S10_1949",
+        "_score": 1,
+        "_source": {
+          "productcode": "S10_1949",
+          "productname": "1952 Alpine Renault 1300",
+          "productscale": "1:10",
+          "productvendor": "Classic Metal Creations",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 7305,
+          "buyprice": 98.58,
+          "msrp": 214.3,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_2016",
+        "_score": 1,
+        "_source": {
+          "productcode": "S10_2016",
+          "productname": "1996 Moto Guzzi 1100i",
+          "productscale": "1:10",
+          "productvendor": "Highway 66 Mini Classics",
+          "productdescription": "Official Moto Guzzi logos and insignias, saddle bags located on side of motorcycle, detailed engine, working steering, working suspension, two leather seats, luggage rack, dual exhaust pipes, small saddle bag located on handle bars, two-tone paint with chrome accents, superior die-cast detail , rotating wheels , working kick stand, diecast metal with plastic parts and baked enamel finish.",
+          "quantityinstock": 6625,
+          "buyprice": 68.99,
+          "msrp": 118.94,
+          "productline": "Motorcycles"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_4698",
+        "_score": 1,
+        "_source": {
+          "productcode": "S10_4698",
+          "productname": "2003 Harley-Davidson Eagle Drag Bike",
+          "productscale": "1:10",
+          "productvendor": "Red Start Diecast",
+          "productdescription": """Model features, official Harley Davidson logos and insignias, detachable rear wheelie bar, heavy diecast metal with resin parts, authentic multi-color tampo-printed graphics, separate engine drive belts, free-turning front fork, rotating tires and rear racing slick, certificate of authenticity, detailed engine, display stand\r\n, precision diecast replica, baked enamel finish, 1:10 scale model, removable fender, seat and tank cover piece for displaying the superior detail of the v-twin engine""",
+          "quantityinstock": 5582,
+          "buyprice": 91.02,
+          "msrp": 193.66,
+          "productline": "Motorcycles"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_4757",
+        "_score": 1,
+        "_source": {
+          "productcode": "S10_4757",
+          "productname": "1972 Alfa Romeo GTA",
+          "productscale": "1:10",
+          "productvendor": "Motor City Art Classics",
+          "productdescription": "Features include: Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 3252,
+          "buyprice": 85.68,
+          "msrp": 136,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_4962",
+        "_score": 1,
+        "_source": {
+          "productcode": "S10_4962",
+          "productname": "1962 LanciaA Delta 16V",
+          "productscale": "1:10",
+          "productvendor": "Second Gear Diecast",
+          "productdescription": "Features include: Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 6791,
+          "buyprice": 103.42,
+          "msrp": 147.74,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 1,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_1108",
+        "_score": 1,
+        "_source": {
+          "productcode": "S12_1108",
+          "productname": "2001 Ferrari Enzo",
+          "productscale": "1:12",
+          "productvendor": "Second Gear Diecast",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 3619,
+          "buyprice": 95.59,
+          "msrp": 207.8,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_1666",
+        "_score": 1,
+        "_source": {
+          "productcode": "S12_1666",
+          "productname": "1958 Setra Bus",
+          "productscale": "1:12",
+          "productvendor": "Welly Diecast Productions",
+          "productdescription": "Model features 30 windows, skylights & glare resistant glass, working steering system, original logos",
+          "quantityinstock": 1579,
+          "buyprice": 77.9,
+          "msrp": 136.67,
+          "productline": "Trucks and Buses"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_2823",
+        "_score": 1,
+        "_source": {
+          "productcode": "S12_2823",
+          "productname": "2002 Suzuki XREO",
+          "productscale": "1:12",
+          "productvendor": "Unimax Art Galleries",
+          "productdescription": "Official logos and insignias, saddle bags located on side of motorcycle, detailed engine, working steering, working suspension, two leather seats, luggage rack, dual exhaust pipes, small saddle bag located on handle bars, two-tone paint with chrome accents, superior die-cast detail , rotating wheels , working kick stand, diecast metal with plastic parts and baked enamel finish.",
+          "quantityinstock": 9997,
+          "buyprice": 66.27,
+          "msrp": 150.62,
+          "productline": "Motorcycles"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_3148",
+        "_score": 1,
+        "_source": {
+          "productcode": "S12_3148",
+          "productname": "1969 Corvair Monza",
+          "productscale": "1:18",
+          "productvendor": "Welly Diecast Productions",
+          "productdescription": "1:18 scale die-cast about 10 inches long doors open, hood opens, trunk opens and wheels roll",
+          "quantityinstock": 6906,
+          "buyprice": 89.14,
+          "msrp": 151.08,
+          "productline": "Classic Cars"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## range between
+
+- Find `buyprice` between 40 and 60, you also can use `gt` and `lt`.
+
+```json
+GET products/_search
+{
+  "query": {
+    "range": { "buyprice": { "gte": 40, "lte": 60 } }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 2,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 30,
+      "relation": "eq"
+    },
+    "max_score": 1,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S10_1678",
+        "_score": 1,
+        "_source": {
+          "productcode": "S10_1678",
+          "productname": "1969 Harley Davidson Ultimate Chopper",
+          "productscale": "1:10",
+          "productvendor": "Min Lin Diecast",
+          "productdescription": "This replica features working kickstand, front suspension, gear-shift lever, footbrake lever, drive chain, wheels and steering. All parts are particularly delicate due to their precise scale and require special care and attention.",
+          "quantityinstock": 7933,
+          "buyprice": 48.81,
+          "msrp": 95.7,
+          "productline": "Motorcycles"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_4473",
+        "_score": 1,
+        "_source": {
+          "productcode": "S12_4473",
+          "productname": "1957 Chevy Pickup",
+          "productscale": "1:12",
+          "productvendor": "Exoto Designs",
+          "productdescription": "1:12 scale die-cast about 20 inches long Hood opens, Rubber wheels",
+          "quantityinstock": 6125,
+          "buyprice": 55.7,
+          "msrp": 118.5,
+          "productline": "Trucks and Buses"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_4675",
+        "_score": 1,
+        "_source": {
+          "productcode": "S12_4675",
+          "productname": "1969 Dodge Charger",
+          "productscale": "1:12",
+          "productvendor": "Welly Diecast Productions",
+          "productdescription": "Detailed model of the 1969 Dodge Charger. This model includes finely detailed interior and exterior features. Painted in red and white.",
+          "quantityinstock": 7323,
+          "buyprice": 58.73,
+          "msrp": 115.16,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_1097",
+        "_score": 1,
+        "_source": {
+          "productcode": "S18_1097",
+          "productname": "1940 Ford Pickup Truck",
+          "productscale": "1:18",
+          "productvendor": "Studio M Art Models",
+          "productdescription": "This model features soft rubber tires, working steering, rubber mud guards, authentic Ford logos, detailed undercarriage, opening doors and hood,  removable split rear gate, full size spare mounted in bed, detailed interior with opening glove box",
+          "quantityinstock": 2613,
+          "buyprice": 58.33,
+          "msrp": 116.67,
+          "productline": "Trucks and Buses"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_1889",
+        "_score": 1,
+        "_source": {
+          "productcode": "S18_1889",
+          "productname": "1948 Porsche 356-A Roadster",
+          "productscale": "1:18",
+          "productvendor": "Gearbox Collectibles",
+          "productdescription": "This precision die-cast replica features opening doors, superb detail and craftsmanship, working steering system, opening forward compartment, opening rear trunk with removable spare, 4 wheel independent spring suspension as well as factory baked enamel finish.",
+          "quantityinstock": 8826,
+          "buyprice": 53.9,
+          "msrp": 77,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_2325",
+        "_score": 1,
+        "_source": {
+          "productcode": "S18_2325",
+          "productname": "1932 Model A Ford J-Coupe",
+          "productscale": "1:18",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "This model features grille-mounted chrome horn, lift-up louvered hood, fold-down rumble seat, working steering system, chrome-covered spare, opening doors, detailed and wired engine",
+          "quantityinstock": 9354,
+          "buyprice": 58.48,
+          "msrp": 127.13,
+          "productline": "Vintage Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_2581",
+        "_score": 1,
+        "_source": {
+          "productcode": "S18_2581",
+          "productname": "P-51-D Mustang",
+          "productscale": "1:72",
+          "productvendor": "Gearbox Collectibles",
+          "productdescription": "Has retractable wheels and comes with a stand",
+          "quantityinstock": 992,
+          "buyprice": 49,
+          "msrp": 84.48,
+          "productline": "Planes"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_2870",
+        "_score": 1,
+        "_source": {
+          "productcode": "S18_2870",
+          "productname": "1999 Indy 500 Monte Carlo SS",
+          "productscale": "1:18",
+          "productvendor": "Red Start Diecast",
+          "productdescription": "Features include opening and closing doors. Color: Red",
+          "quantityinstock": 8164,
+          "buyprice": 56.76,
+          "msrp": 132,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_3029",
+        "_score": 1,
+        "_source": {
+          "productcode": "S18_3029",
+          "productname": "1999 Yamaha Speed Boat",
+          "productscale": "1:18",
+          "productvendor": "Min Lin Diecast",
+          "productdescription": "Exact replica. Wood and Metal. Many extras including rigging, long boats, pilot house, anchors, etc. Comes with three masts, all square-rigged.",
+          "quantityinstock": 4259,
+          "buyprice": 51.61,
+          "msrp": 86.02,
+          "productline": "Ships"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_3233",
+        "_score": 1,
+        "_source": {
+          "productcode": "S18_3233",
+          "productname": "1985 Toyota Supra",
+          "productscale": "1:18",
+          "productvendor": "Highway 66 Mini Classics",
+          "productdescription": "This model features soft rubber tires, working steering, rubber mud guards, authentic Ford logos, detailed undercarriage, opening doors and hood, removable split rear gate, full size spare mounted in bed, detailed interior with opening glove box",
+          "quantityinstock": 7733,
+          "buyprice": 57.01,
+          "msrp": 107.57,
+          "productline": "Classic Cars"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## Aggregation
+
+- `aggs` ใช้กับ field ประเภท `keyword` กับ `long/integer/short/byte/double/float` เท่านั้น
+- ใส่ `"size": 0` เพื่อไม่เอาข้อมูลตาราง
+- ยังสามารถ query พร้อมกับ aggregations ได้พร้อมกัน (ดูจากตัวอย่างหลัง view)
+
+```json
+GET products/_search
+{
+  "size": 0,
+  "aggs": {
+    "by_productline": {
+      "terms": { "field": "productline" },
+      "aggs": {
+        "avg_msrp": { "avg": { "field": "msrp" } }
+      }
+    }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 13,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 110,
+      "relation": "eq"
+    },
+    "max_score": null,
+    "hits": []
+  },
+  "aggregations": {
+    "by_productline": {
+      "doc_count_error_upper_bound": 0,
+      "sum_other_doc_count": 0,
+      "buckets": [
+        {
+          "key": "Classic Cars",
+          "doc_count": 38,
+          "avg_msrp": {
+            "value": 118.02105311343544
+          }
+        },
+        {
+          "key": "Vintage Cars",
+          "doc_count": 24,
+          "avg_msrp": {
+            "value": 87.09583282470703
+          }
+        },
+        {
+          "key": "Motorcycles",
+          "doc_count": 13,
+          "avg_msrp": {
+            "value": 97.17846122154823
+          }
+        },
+        {
+          "key": "Planes",
+          "doc_count": 12,
+          "avg_msrp": {
+            "value": 89.51583321889241
+          }
+        },
+        {
+          "key": "Trucks and Buses",
+          "doc_count": 11,
+          "avg_msrp": {
+            "value": 103.18363640525125
+          }
+        },
+        {
+          "key": "Ships",
+          "doc_count": 9,
+          "avg_msrp": {
+            "value": 86.5633316040039
+          }
+        },
+        {
+          "key": "Trains",
+          "doc_count": 3,
+          "avg_msrp": {
+            "value": 73.85333251953125
+          }
+        }
+      ]
+    }
+  }
+}
+
+</EsTable>
+
+
+---
+
+## Sort & Pagination
+
+- `sort` เทียบเท่า `order by` และ `from/size` เทียบเท่า `offset/limit` 
+- ค่า `default` ของ `sort` โดยปกติจะเรียงตาม `_score` จากมากไปหาน้อย
+- ด้านล่างคือตัวอย่างหน้า 1 ถ้าต้องการหน้า 2 ต้องเปลี่ยน `"form":3` แทน
+
+```json
+GET products/_search
+{
+  "query": { "match_all": {} },
+  "sort": [ { "msrp": "desc" } ],
+  "from": 0,
+  "size": 3
+}
+```
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 0,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 110,
+      "relation": "eq"
+    },
+    "max_score": null,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S10_1949",
+        "_score": null,
+        "_source": {
+          "productcode": "S10_1949",
+          "productname": "1952 Alpine Renault 1300",
+          "productscale": "1:10",
+          "productvendor": "Classic Metal Creations",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 7305,
+          "buyprice": 98.58,
+          "msrp": 214.3,
+          "productline": "Classic Cars"
+        },
+        "sort": [
+          214.3
+        ]
+      },
+      {
+        "_index": "products",
+        "_id": "S12_1108",
+        "_score": null,
+        "_source": {
+          "productcode": "S12_1108",
+          "productname": "2001 Ferrari Enzo",
+          "productscale": "1:12",
+          "productvendor": "Second Gear Diecast",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 3619,
+          "buyprice": 95.59,
+          "msrp": 207.8,
+          "productline": "Classic Cars"
+        },
+        "sort": [
+          207.8
+        ]
+      },
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": null,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        },
+        "sort": [
+          194.57
+        ]
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## Fuzzy search
+
+- การค้นหาคำที่สะกดใกล้เคียง
+
+```json
+GET products/_search
+{
+  "query": {
+    "match": {
+      "productname": { "query": "mustng", "fuzziness": "AUTO" }
+    }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 14,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 2,
+      "relation": "eq"
+    },
+    "max_score": 3.5238814,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 3.5238814,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_2581",
+        "_score": 3.163968,
+        "_source": {
+          "productcode": "S18_2581",
+          "productname": "P-51-D Mustang",
+          "productscale": "1:72",
+          "productvendor": "Gearbox Collectibles",
+          "productdescription": "Has retractable wheels and comes with a stand",
+          "quantityinstock": 992,
+          "buyprice": 49,
+          "msrp": 84.48,
+          "productline": "Planes"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+
+---
 layout: two-cols-title
 ---
 
 ::title::
-[การนำเข้าข้อมูลจาก View]{class="text-2xl"}
+[การนำเข้าข้อมูลจาก View products_search]{class="text-2xl"}
 
 ::left::
 
 - สร้าง View ใน postgres
 
 ```sql
-CREATE VIEW ClassicModels.products_search_view AS
+CREATE OR REPLACE VIEW ClassicModels.products_search_view AS
 SELECT
     p.productCode,
     p.productName,
@@ -3230,7 +4031,8 @@ PUT products_search
       "productname":            { "type": "text" },
       "productline":            { "type": "keyword" },
       "productdescription":     { "type": "text" },
-      "productlinedescription": { "type": "text" }
+      "productlinedescription": { "type": "text" },
+      "msrp": { "type": "float" }
     }
   }
 }
@@ -3239,6 +4041,21 @@ PUT products_search
 <Download file="txt/view1.txt"/>
 ::default::
 
+
+---
+
+## Result
+
+- Search `Ducati` from productlinedescription
+
+```json
+GET products_search/_search
+{
+  "query": {
+    "match": { "productlinedescription": "Ducati" }
+  }
+}
+```
 
 ---
 
@@ -3386,3 +4203,788 @@ PUT products_search
 }
 
 </EsTable>
+
+---
+
+## Example
+
+- Search `diecast` from productlinedescription and filter productline with `Planes`
+
+```json
+GET products_search/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "productlinedescription": "diecast" } }
+      ],
+      "filter": [
+        { "term": { "productline": "Planes" } }
+      ]
+    }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 1,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 12,
+      "relation": "eq"
+    },
+    "max_score": 0.7337705,
+    "hits": [
+      {
+        "_index": "products_search",
+        "_id": "S18_1662",
+        "_score": 0.7337705,
+        "_source": {
+          "productcode": "S18_1662",
+          "productname": "1980s Black Hawk Helicopter",
+          "productline": "Planes",
+          "productdescription": "1:18 scale replica of actual Army's UH-60L BLACK HAWK Helicopter. 100% hand-assembled. Features rotating rotor blades, propeller blades and rubber wheels.",
+          "productlinedescription": "Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S72_1253",
+        "_score": 0.7337705,
+        "_source": {
+          "productcode": "S72_1253",
+          "productname": "Boeing X-32A JSF",
+          "productline": "Planes",
+          "productdescription": "10 inches Wingspan with retractable landing gears.Comes with pilot",
+          "productlinedescription": "Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S18_2581",
+        "_score": 0.7337705,
+        "_source": {
+          "productcode": "S18_2581",
+          "productname": "P-51-D Mustang",
+          "productline": "Planes",
+          "productdescription": "Has retractable wheels and comes with a stand",
+          "productlinedescription": "Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S24_1785",
+        "_score": 0.7337705,
+        "_source": {
+          "productcode": "S24_1785",
+          "productname": "1928 British Royal Navy Airplane",
+          "productline": "Planes",
+          "productdescription": "Official logos and insignias",
+          "productlinedescription": "Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S24_2841",
+        "_score": 0.7337705,
+        "_source": {
+          "productcode": "S24_2841",
+          "productname": "1900s Vintage Bi-Plane",
+          "productline": "Planes",
+          "productdescription": "Hand crafted diecast-like metal bi-plane is re-created in about 1:24 scale of antique pioneer airplane. All hand-assembled with many different parts. Hand-painted in classic yellow and features correct markings of original airplane.",
+          "productlinedescription": "Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S24_3949",
+        "_score": 0.7337705,
+        "_source": {
+          "productcode": "S24_3949",
+          "productname": "Corsair F4U ( Bird Cage)",
+          "productline": "Planes",
+          "productdescription": "Has retractable wheels and comes with a stand. Official logos and insignias.",
+          "productlinedescription": "Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S24_4278",
+        "_score": 0.7337705,
+        "_source": {
+          "productcode": "S24_4278",
+          "productname": "1900s Vintage Tri-Plane",
+          "productline": "Planes",
+          "productdescription": "Hand crafted diecast-like metal Triplane is Re-created in about 1:24 scale of antique pioneer airplane. This antique style metal triplane is all hand-assembled with many different parts.",
+          "productlinedescription": "Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S700_1691",
+        "_score": 0.7337705,
+        "_source": {
+          "productcode": "S700_1691",
+          "productname": "American Airlines: B767-300",
+          "productline": "Planes",
+          "productdescription": "Exact replia with official logos and insignias and retractable wheels",
+          "productlinedescription": "Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S700_2466",
+        "_score": 0.7337705,
+        "_source": {
+          "productcode": "S700_2466",
+          "productname": "America West Airlines B757-200",
+          "productline": "Planes",
+          "productdescription": "Official logos and insignias. Working steering system. Rotating jet engines",
+          "productlinedescription": "Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers."
+        }
+      },
+      {
+        "_index": "products_search",
+        "_id": "S700_2834",
+        "_score": 0.7337705,
+        "_source": {
+          "productcode": "S700_2834",
+          "productname": "ATA: B757-300",
+          "productline": "Planes",
+          "productdescription": "Exact replia with official logos and insignias and retractable wheels",
+          "productlinedescription": "Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on. Most come fully assembled and with a certificate of authenticity from their manufacturers."
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+layout: two-cols-title
+---
+
+::title::
+[การนำข้อมูลเข้าจาก View custoemr_orders_view]{class="text-2xl"}
+
+::left::
+
+- สร้าง View ใน postgres
+
+```sql
+CREATE OR REPLACE VIEW ClassicModels.customer_orders_view AS
+SELECT
+    o.orderNumber,
+    o.orderDate,
+    o.status,
+    o.comments,
+    c.customerNumber,
+    c.customerName,
+    c.country
+FROM ClassicModels.Orders o
+JOIN ClassicModels.Customers c
+    ON o.customerNumber = c.customerNumber;
+```
+
+::right::
+
+- สร้าง Index ใหม่ บน Elasticsearch
+
+```json
+PUT customer_orders_view
+{
+  "mappings": {
+    "properties": {
+      "ordernumber":    { "type": "keyword" },
+      "orderdate":      { "type": "date" },
+      "status":         { "type": "keyword" },
+      "comments":       { "type": "text" },
+      "customernumber": { "type": "keyword" },
+      "customername":   { "type": "text" },
+      "country":        { "type": "keyword" }
+    }
+  }
+}
+```
+
+<Download file="txt/view2.txt"/>
+
+::default::
+
+
+---
+
+## Search order that contains `shipping` in `comments`
+
+```json
+GET customer_orders_view/_search
+{
+  "query": {
+    "match": { "comments": "shipping" }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 1,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 17,
+      "relation": "eq"
+    },
+    "max_score": 1.9931043,
+    "hits": [
+      {
+        "_index": "customer_orders_view",
+        "_id": "10178",
+        "_score": 1.9931043,
+        "_source": {
+          "ordernumber": 10178,
+          "orderdate": "2003-11-08T00:00",
+          "status": "Shipped",
+          "comments": "Custom shipping instructions sent to warehouse",
+          "customernumber": 242,
+          "customername": "Alpha Cognac",
+          "country": "France"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10284",
+        "_score": 1.9931043,
+        "_source": {
+          "ordernumber": 10284,
+          "orderdate": "2004-08-21T00:00",
+          "status": "Shipped",
+          "comments": "Custom shipping instructions sent to warehouse",
+          "customernumber": 299,
+          "customername": "Norway Gifts By Mail, Co.",
+          "country": "Norway  "
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10382",
+        "_score": 1.9931043,
+        "_source": {
+          "ordernumber": 10382,
+          "orderdate": "2005-02-17T00:00",
+          "status": "Shipped",
+          "comments": "Custom shipping instructions sent to warehouse",
+          "customernumber": 124,
+          "customername": "Mini Gifts Distributors Ltd.",
+          "country": "USA"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10421",
+        "_score": 1.919103,
+        "_source": {
+          "ordernumber": 10421,
+          "orderdate": "2005-05-29T00:00",
+          "status": "In Process",
+          "comments": "Custom shipping instructions were sent to warehouse",
+          "customernumber": 124,
+          "customername": "Mini Gifts Distributors Ltd.",
+          "country": "USA"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10254",
+        "_score": 1.7864461,
+        "_source": {
+          "ordernumber": 10254,
+          "orderdate": "2004-06-03T00:00",
+          "status": "Shipped",
+          "comments": "Customer requested that DHL is used for this shipping",
+          "customernumber": 323,
+          "customername": "Down Under Souveniers, Inc",
+          "country": "New Zealand"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10319",
+        "_score": 1.7864461,
+        "_source": {
+          "ordernumber": 10319,
+          "orderdate": "2004-11-03T00:00",
+          "status": "Shipped",
+          "comments": "Customer requested that DHL is used for this shipping",
+          "customernumber": 456,
+          "customername": "Microscale Inc.",
+          "country": "USA"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10336",
+        "_score": 1.7864461,
+        "_source": {
+          "ordernumber": 10336,
+          "orderdate": "2004-11-20T00:00",
+          "status": "Shipped",
+          "comments": "Customer requested that DHL is used for this shipping",
+          "customernumber": 172,
+          "customername": "La Corne D'abondance, Co.",
+          "country": "France"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10358",
+        "_score": 1.7864461,
+        "_source": {
+          "ordernumber": 10358,
+          "orderdate": "2004-12-10T00:00",
+          "status": "Shipped",
+          "comments": "Customer requested that DHL is used for this shipping",
+          "customernumber": 141,
+          "customername": "Euro+ Shopping Channel",
+          "country": "Spain"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10400",
+        "_score": 1.7864461,
+        "_source": {
+          "ordernumber": 10400,
+          "orderdate": "2005-04-01T00:00",
+          "status": "Shipped",
+          "comments": "Customer requested that DHL is used for this shipping",
+          "customernumber": 450,
+          "customername": "The Sharp Gifts Warehouse",
+          "country": "USA"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10413",
+        "_score": 1.7864461,
+        "_source": {
+          "ordernumber": 10413,
+          "orderdate": "2005-05-05T00:00",
+          "status": "Shipped",
+          "comments": "Customer requested that DHL is used for this shipping",
+          "customernumber": 175,
+          "customername": "Gift Depot Inc.",
+          "country": "USA"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+
+--- 
+
+## Search order that is not shipped and comments contains 'shipping'
+
+```json
+GET customer_orders_view/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "comments": "shipping" } }
+      ],
+      "filter": [
+        { "term": { "status": "In Process" } }
+      ]
+    }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>{
+  "took": 1,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": 1.919103,
+    "hits": [
+      {
+        "_index": "customer_orders_view",
+        "_id": "10421",
+        "_score": 1.919103,
+        "_source": {
+          "ordernumber": 10421,
+          "orderdate": "2005-05-29T00:00",
+          "status": "In Process",
+          "comments": "Custom shipping instructions were sent to warehouse",
+          "customernumber": 124,
+          "customername": "Mini Gifts Distributors Ltd.",
+          "country": "USA"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## Search query and aggregations
+
+```json
+GET customer_orders_view/_search
+{
+  "query": { "match_all": {} },
+  "aggs": {
+    "by_status": {
+      "terms": { "field": "status" }
+    }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 8,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 326,
+      "relation": "eq"
+    },
+    "max_score": 1,
+    "hits": [
+      {
+        "_index": "customer_orders_view",
+        "_id": "10100",
+        "_score": 1,
+        "_source": {
+          "ordernumber": 10100,
+          "orderdate": "2003-01-06T00:00",
+          "status": "Shipped",
+          "customernumber": 363,
+          "customername": "Online Diecast Creations Co.",
+          "country": "USA"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10101",
+        "_score": 1,
+        "_source": {
+          "ordernumber": 10101,
+          "orderdate": "2003-01-09T00:00",
+          "status": "Shipped",
+          "comments": "Check on availability.",
+          "customernumber": 128,
+          "customername": "Blauer See Auto, Co.",
+          "country": "Germany"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10102",
+        "_score": 1,
+        "_source": {
+          "ordernumber": 10102,
+          "orderdate": "2003-01-10T00:00",
+          "status": "Shipped",
+          "customernumber": 181,
+          "customername": "Vitachrome Inc.",
+          "country": "USA"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10103",
+        "_score": 1,
+        "_source": {
+          "ordernumber": 10103,
+          "orderdate": "2003-01-29T00:00",
+          "status": "Shipped",
+          "customernumber": 121,
+          "customername": "Baane Mini Imports",
+          "country": "Norway"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10104",
+        "_score": 1,
+        "_source": {
+          "ordernumber": 10104,
+          "orderdate": "2003-01-31T00:00",
+          "status": "Shipped",
+          "customernumber": 141,
+          "customername": "Euro+ Shopping Channel",
+          "country": "Spain"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10105",
+        "_score": 1,
+        "_source": {
+          "ordernumber": 10105,
+          "orderdate": "2003-02-11T00:00",
+          "status": "Shipped",
+          "customernumber": 145,
+          "customername": "Danish Wholesale Imports",
+          "country": "Denmark"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10106",
+        "_score": 1,
+        "_source": {
+          "ordernumber": 10106,
+          "orderdate": "2003-02-17T00:00",
+          "status": "Shipped",
+          "customernumber": 278,
+          "customername": "Rovelli Gifts",
+          "country": "Italy"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10107",
+        "_score": 1,
+        "_source": {
+          "ordernumber": 10107,
+          "orderdate": "2003-02-24T00:00",
+          "status": "Shipped",
+          "comments": "Difficult to negotiate with customer. We need more marketing materials",
+          "customernumber": 131,
+          "customername": "Land of Toys Inc.",
+          "country": "USA"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10108",
+        "_score": 1,
+        "_source": {
+          "ordernumber": 10108,
+          "orderdate": "2003-03-03T00:00",
+          "status": "Shipped",
+          "customernumber": 385,
+          "customername": "Cruz & Sons Co.",
+          "country": "Philippines"
+        }
+      },
+      {
+        "_index": "customer_orders_view",
+        "_id": "10109",
+        "_score": 1,
+        "_source": {
+          "ordernumber": 10109,
+          "orderdate": "2003-03-10T00:00",
+          "status": "Shipped",
+          "comments": "Customer requested that FedEx Ground is used for this shipping",
+          "customernumber": 486,
+          "customername": "Motor Mint Distributors Inc.",
+          "country": "USA"
+        }
+      }
+    ]
+  },
+  "aggregations": {
+    "by_status": {
+      "doc_count_error_upper_bound": 0,
+      "sum_other_doc_count": 0,
+      "buckets": [
+        {
+          "key": "Shipped",
+          "doc_count": 303
+        },
+        {
+          "key": "Cancelled",
+          "doc_count": 6
+        },
+        {
+          "key": "In Process",
+          "doc_count": 6
+        },
+        {
+          "key": "On Hold",
+          "doc_count": 4
+        },
+        {
+          "key": "Resolved",
+          "doc_count": 4
+        },
+        {
+          "key": "Disputed",
+          "doc_count": 3
+        }
+      ]
+    }
+  }
+}
+
+</EsTable>
+
+---
+layout: two-cols-title
+---
+
+::title::
+[Demo Faceted Search]{class="text-2xl"}
+- สร้างหน้าค้นหาเลียนแบบเวบ shopping เช่น ลูกค้าพิมพ์คำว่า "chrome" ในช่องค้นหา แล้วเลื่อน slider เลือกราคา 60-150
+
+::left::
+
+```json
+GET products_search/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "productdescription": "chrome" } }
+      ],
+      "filter": [
+        { "range": { "msrp": { "gte": 60, "lte": 150 } } }
+      ]
+    }
+  },
+```
+::right::
+
+```json
+  "aggs": {
+    "by_productline": {
+      "terms": { "field": "productline" }
+    },
+    "price_ranges": {
+      "range": {
+        "field": "msrp",
+        "ranges": [
+          { "to": 70 },
+          { "from": 70, "to": 120 },
+          { "from": 120 }
+        ]
+      }
+    }
+  }
+}
+```
+
+::default::
+
+
+
+---
+
+
+# Result
+
+<EsFacetedSearch height="350px">
+{
+  "took": 3,
+  "hits": {
+    "total": {
+      "value": 11,
+      "relation": "eq"
+    },
+    "hits": [
+      {
+        "_score": 2.9941463,
+        "_source": {
+          "productcode": "S18_2957",
+          "productname": "1934 Ford V8 Coupe",
+          "productline": "Vintage Cars",
+          "msrp": 62.46
+        }
+      }
+    ]
+  },
+  "aggregations": {
+    "by_productline": {
+      "buckets": [
+        {
+          "key": "Vintage Cars",
+          "doc_count": 6
+        },
+        {
+          "key": "Motorcycles",
+          "doc_count": 4
+        },
+        {
+          "key": "Classic Cars",
+          "doc_count": 1
+        }
+      ]
+    },
+    "price_ranges": {
+      "buckets": [
+        {
+          "key": "*-70.0",
+          "to": 70,
+          "doc_count": 4
+        },
+        {
+          "key": "70.0-120.0",
+          "from": 70,
+          "to": 120,
+          "doc_count": 6
+        },
+        {
+          "key": "120.0-*",
+          "from": 120,
+          "doc_count": 1
+        }
+      ]
+    }
+  }
+}
+</EsFacetedSearch>

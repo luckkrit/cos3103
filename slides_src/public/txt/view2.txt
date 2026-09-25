@@ -1,0 +1,19 @@
+POST customer_orders_view/_bulk?refresh
+{"index":{"_id":"10111"}}
+{"ordernumber":"10111","orderdate":"2003-03-25","status":"Shipped","comments":null,"customernumber":"129","customername":"Mini Wheels Co.","country":"USA"}
+{"index":{"_id":"10113"}}
+{"ordernumber":"10113","orderdate":"2003-03-26","status":"Shipped","comments":null,"customernumber":"124","customername":"Mini Gifts Distributors Ltd.","country":"USA"}
+{"index":{"_id":"10123"}}
+{"ordernumber":"10123","orderdate":"2003-05-20","status":"Shipped","comments":null,"customernumber":"103","customername":"Atelier graphique","country":"France"}
+{"index":{"_id":"10124"}}
+{"ordernumber":"10124","orderdate":"2003-05-21","status":"Shipped","comments":"Customer very concerned about the exact color of the models. There is high risk that he may dispute the order because there is a slight color mismatch","customernumber":"112","customername":"Signal Gift Stores","country":"USA"}
+{"index":{"_id":"10210"}}
+{"ordernumber":"10210","orderdate":"2004-01-12","status":"Shipped","comments":null,"customernumber":"177","customername":"Osaka Souveniers Co.","country":"Japan"}
+{"index":{"_id":"10258"}}
+{"ordernumber":"10258","orderdate":"2004-06-15","status":"Shipped","comments":null,"customernumber":"398","customername":"Tokyo Collectables, Ltd","country":"Japan"}
+{"index":{"_id":"10368"}}
+{"ordernumber":"10368","orderdate":"2005-01-19","status":"Shipped","comments":"Can we renegotiate this one?","customernumber":"124","customername":"Mini Gifts Distributors Ltd.","country":"USA"}
+{"index":{"_id":"10382"}}
+{"ordernumber":"10382","orderdate":"2005-02-17","status":"Shipped","comments":"Custom shipping instructions sent to warehouse","customernumber":"124","customername":"Mini Gifts Distributors Ltd.","country":"USA"}
+{"index":{"_id":"10421"}}
+{"ordernumber":"10421","orderdate":"2005-05-29","status":"In Process","comments":"Custom shipping instructions were sent to warehouse","customernumber":"124","customername":"Mini Gifts Distributors Ltd.","country":"USA"}

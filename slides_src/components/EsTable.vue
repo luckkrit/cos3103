@@ -1,18 +1,42 @@
 <template>
     <div class="to-table">
 
-        <!-- Error -->
+        <!-- =========================================
+             Error
+        ========================================= -->
+
         <div v-if="error" class="error">
             Invalid JSON: {{ error }}
         </div>
 
         <template v-else>
 
-            <!-- Summary -->
+            <!-- =========================================
+                 Summary
+            ========================================= -->
+
             <div v-if="data" class="summary">
 
-                <!-- Elasticsearch Search -->
-                <template v-if="isSearchResponse">
+                <!-- Aggregation: check BEFORE search -->
+                <template v-if="isAggregationResponse">
+
+                    <strong>Aggregation:</strong>
+                    {{ aggregationNames.join(', ') }}
+
+                    &nbsp; | &nbsp;
+
+                    <strong>Matched:</strong>
+                    {{ data.hits?.total?.value ?? 'N/A' }}
+
+                    &nbsp; | &nbsp;
+
+                    <strong>Buckets:</strong>
+                    {{ rows.length }}
+
+                </template>
+
+                <!-- Elasticsearch _search -->
+                <template v-else-if="isSearchResponse">
 
                     <strong>Matched:</strong>
                     {{ data.hits?.total?.value ?? rows.length }}
@@ -23,7 +47,6 @@
                     {{ rows.length }}
 
                 </template>
-
 
                 <!-- Elasticsearch Single Document -->
                 <template v-else-if="isSingleDocumentResponse">
@@ -38,7 +61,6 @@
 
                 </template>
 
-
                 <!-- Elasticsearch Mapping -->
                 <template v-else-if="isMappingResponse">
 
@@ -47,8 +69,7 @@
 
                 </template>
 
-
-                <!-- Normal JSON Array -->
+                <!-- Normal JSON -->
                 <template v-else>
 
                     <strong>Rows:</strong>
@@ -56,8 +77,7 @@
 
                 </template>
 
-
-                <!-- Took -->
+                <!-- Query execution time -->
                 <span v-if="data?.took !== undefined">
 
                     &nbsp; | &nbsp;
@@ -70,32 +90,37 @@
             </div>
 
 
-            <!-- =================================================
-                 Horizontal scrollbar at TOP
-            ================================================== -->
+            <!-- =========================================
+                 TOP Horizontal Scrollbar
+            ========================================= -->
 
             <div v-if="rows.length" ref="topScroll" class="top-scroll" @scroll="syncFromTop" @wheel.stop>
 
-                <div class="top-scroll-content" :style="{ width: `${tableWidth}px` }"></div>
+                <div class="top-scroll-content" :style="{
+                    width: `${tableWidth}px`
+                }"></div>
 
             </div>
 
 
-            <!-- =================================================
+            <!-- =========================================
                  Main Table Viewport
-            ================================================== -->
+            ========================================= -->
 
-            <div v-if="rows.length" ref="tableScroll" class="table-scroll" :style="{ height: props.height }"
-                @scroll="syncFromTable" @wheel.stop @touchmove.stop>
+            <div v-if="rows.length" ref="tableScroll" class="table-scroll" :style="{
+                height: props.height
+            }" @scroll="syncFromTable" @wheel.stop @touchmove.stop>
 
                 <table ref="tableElement">
 
+                    <!-- Header -->
                     <thead>
 
                         <tr>
 
                             <th v-for="column in columns" :key="column" :class="{
-                                description: isDescriptionColumn(column)
+                                description:
+                                    isDescriptionColumn(column)
                             }">
                                 {{ column }}
                             </th>
@@ -105,14 +130,60 @@
                     </thead>
 
 
+                    <!-- Data -->
                     <tbody>
 
-                        <tr v-for="(row, index) in rows" :key="index">
+                        <tr v-for="(row, rowIndex) in rows" :key="rowIndex">
 
                             <td v-for="column in columns" :key="column" :class="{
-                                description: isDescriptionColumn(column)
+                                description:
+                                    isDescriptionColumn(column)
                             }">
-                                {{ formatValue(row[column]) }}
+
+                                <!-- =========================
+                                     Elasticsearch Highlight
+
+                                     Highlight appears inside
+                                     original field column.
+                                ========================= -->
+
+                                <template v-if="hasHighlight(row, column)">
+
+                                    <div v-for="fragment in getHighlightFragments(
+                                        row.__highlights[column]
+                                    )" :key="fragment.index" class="highlight-fragment">
+
+                                        <span v-for="part in highlightParts(
+                                            fragment.text
+                                        )" :key="part.start">
+
+                                            <mark v-if="part.highlight">{{ part.text }}</mark>
+
+                                            <span v-else>{{ part.text }}</span>
+
+                                        </span>
+
+                                    </div>
+
+                                </template>
+
+
+                                <!-- =========================
+                                     Normal Value
+
+                                     Works for:
+                                     - document fields
+                                     - aggregation buckets
+                                     - mappings
+                                     - JSON arrays
+                                ========================= -->
+
+                                <template v-else>
+
+                                    {{ formatValue(row[column]) }}
+
+                                </template>
+
                             </td>
 
                         </tr>
@@ -124,7 +195,10 @@
             </div>
 
 
-            <!-- Empty -->
+            <!-- =========================================
+                 Empty Table
+            ========================================= -->
+
             <div v-else class="empty">
                 No results
             </div>
@@ -164,6 +238,14 @@ const props = defineProps({
 
 /* =========================================================
    2. Slot -> Text
+
+   Important for Slidev:
+
+   The slot may contain Elasticsearch markup:
+
+   <em>chrome dashboard</em>
+
+   Preserve highlight tags while extracting JSON text.
 ========================================================= */
 
 const slots = useSlots()
@@ -173,21 +255,47 @@ function extractText(nodes) {
 
     let text = ''
 
+
     for (const node of nodes ?? []) {
+
+        let content = ''
+
 
         if (typeof node.children === 'string') {
 
-            text += node.children
+            content = node.children
 
         }
 
         else if (Array.isArray(node.children)) {
 
-            text += extractText(node.children)
+            content = extractText(node.children)
+
+        }
+
+
+        /*
+         * Preserve Elasticsearch highlight tags.
+         */
+
+        if (
+            node.type === 'em' ||
+            node.type === 'mark'
+        ) {
+
+            text +=
+                `<${node.type}>${content}</${node.type}>`
+
+        }
+
+        else {
+
+            text += content
 
         }
 
     }
+
 
     return text
 
@@ -196,7 +304,8 @@ function extractText(nodes) {
 
 const rawText = computed(() => {
 
-    const nodes = slots.default?.() ?? []
+    const nodes =
+        slots.default?.() ?? []
 
     return extractText(nodes).trim()
 
@@ -206,16 +315,12 @@ const rawText = computed(() => {
 /* =========================================================
    3. Kibana Triple Quote Support
 
-   Kibana may show:
+   Kibana Console may display:
 
    "description": """hello
    world"""
 
-   This is not standard JSON.
-
-   Convert it to:
-
-   "description": "hello\nworld"
+   Convert it into valid JSON.
 ========================================================= */
 
 function normalizeKibanaJson(text) {
@@ -235,7 +340,7 @@ function normalizeKibanaJson(text) {
 
 
         /*
-         * Inside normal JSON string
+         * Inside a normal JSON string.
          */
 
         if (insideString) {
@@ -270,17 +375,14 @@ function normalizeKibanaJson(text) {
 
 
         /*
-         * Kibana triple quote
+         * Kibana triple-quoted string.
          */
 
         if (
-            text[i] === '"' &&
-            text[i + 1] === '"' &&
-            text[i + 2] === '"'
+            text.slice(i, i + 3) === '"""'
         ) {
 
             i += 3
-
 
             let content = ''
 
@@ -289,11 +391,7 @@ function normalizeKibanaJson(text) {
 
                 i < text.length &&
 
-                !(
-                    text[i] === '"' &&
-                    text[i + 1] === '"' &&
-                    text[i + 2] === '"'
-                )
+                text.slice(i, i + 3) !== '"""'
 
             ) {
 
@@ -315,7 +413,6 @@ function normalizeKibanaJson(text) {
 
             result += JSON.stringify(content)
 
-
             i += 3
 
             continue
@@ -324,7 +421,7 @@ function normalizeKibanaJson(text) {
 
 
         /*
-         * Start normal JSON string
+         * Start a normal JSON string.
          */
 
         if (char === '"') {
@@ -353,7 +450,7 @@ function normalizeKibanaJson(text) {
 const parsed = computed(() => {
 
     /*
-     * Try normal JSON first
+     * Try standard JSON first.
      */
 
     try {
@@ -371,7 +468,7 @@ const parsed = computed(() => {
     catch (originalError) {
 
         /*
-         * Try Kibana format
+         * Try Kibana triple-quote format.
          */
 
         try {
@@ -407,13 +504,90 @@ const parsed = computed(() => {
 })
 
 
-const data = computed(() => parsed.value.data)
+const data = computed(
+    () => parsed.value.data
+)
 
-const error = computed(() => parsed.value.error)
+const error = computed(
+    () => parsed.value.error
+)
 
 
 /* =========================================================
-   5. Detect Elasticsearch _search
+   5. Detect Elasticsearch Aggregations
+
+   Example:
+
+   aggregations: {
+       by_productline: {
+           buckets: [...]
+       }
+   }
+
+   Detect aggregation names dynamically.
+========================================================= */
+
+const aggregationEntries = computed(() => {
+
+    const aggregations =
+        data.value?.aggregations
+
+
+    if (
+
+        !aggregations ||
+
+        typeof aggregations !== 'object' ||
+
+        Array.isArray(aggregations)
+
+    ) {
+
+        return []
+
+    }
+
+
+    /*
+     * Only bucket aggregations are converted
+     * to tables in this version.
+     */
+
+    return Object.entries(
+        aggregations
+    ).filter(
+
+        ([name, aggregation]) =>
+
+            Array.isArray(
+                aggregation?.buckets
+            )
+
+    )
+
+})
+
+
+const isAggregationResponse = computed(() => {
+
+    return aggregationEntries.value.length > 0
+
+})
+
+
+const aggregationNames = computed(() => {
+
+    return aggregationEntries.value.map(
+
+        ([name]) => name
+
+    )
+
+})
+
+
+/* =========================================================
+   6. Detect Elasticsearch _search
 ========================================================= */
 
 const isSearchResponse = computed(() => {
@@ -426,7 +600,7 @@ const isSearchResponse = computed(() => {
 
 
 /* =========================================================
-   6. Detect Elasticsearch Single Document
+   7. Detect Elasticsearch Single Document
 
    GET products/_doc/S10_1678
 ========================================================= */
@@ -455,7 +629,7 @@ const isSingleDocumentResponse = computed(() => {
 
 
 /* =========================================================
-   7. Detect Elasticsearch Mapping
+   8. Detect Elasticsearch Mapping
 
    GET products
 ========================================================= */
@@ -491,7 +665,90 @@ const isMappingResponse = computed(() => {
 
 
 /* =========================================================
-   8. Build Rows
+   9. Flatten Aggregation Metrics
+
+   Elasticsearch:
+
+   avg_msrp: {
+       value: 118.02
+   }
+
+   Table:
+
+   avg_msrp = 118.02
+
+   Also supports:
+   - sum
+   - min
+   - max
+   - value_count
+
+   Other nested values remain unchanged.
+========================================================= */
+
+function flattenAggregationBucket(bucket) {
+
+    const row = {}
+
+
+    for (
+        const [field, value]
+        of Object.entries(bucket)
+    ) {
+
+        /*
+         * Single-value numeric metric.
+         */
+
+        if (
+
+            value !== null &&
+
+            typeof value === 'object' &&
+
+            !Array.isArray(value) &&
+
+            Object.prototype.hasOwnProperty.call(
+                value,
+                'value'
+            )
+
+        ) {
+
+            row[field] = value.value
+
+        }
+
+        else {
+
+            row[field] = value
+
+        }
+
+    }
+
+
+    return row
+
+}
+
+
+/* =========================================================
+   10. Build Rows
+
+   IMPORTANT:
+
+   Aggregations are checked BEFORE search.
+
+   A response can contain:
+
+   hits.hits = []
+
+   AND
+
+   aggregations.by_productline.buckets = [...]
+
+   We want to display aggregation buckets.
 ========================================================= */
 
 const rows = computed(() => {
@@ -503,12 +760,13 @@ const rows = computed(() => {
     }
 
 
-    /*
-     * JSON Array
-     *
-     * Example:
-     * _cat/indices?format=json
-     */
+    /* -------------------------------------
+       Case 1: Normal JSON Array
+
+       Example:
+
+       GET _cat/indices?format=json
+    ------------------------------------- */
 
     if (Array.isArray(data.value)) {
 
@@ -517,26 +775,105 @@ const rows = computed(() => {
     }
 
 
-    /*
-     * Elasticsearch _search
-     */
+    /* -------------------------------------
+       Case 2: Elasticsearch Aggregations
 
-    if (isSearchResponse.value) {
+       Check BEFORE _search.
+    ------------------------------------- */
 
-        return data.value.hits.hits.map(hit => ({
+    if (isAggregationResponse.value) {
 
-            _score: hit._score,
+        const result = []
 
-            ...hit._source
 
-        }))
+        const multipleAggregations =
+            aggregationEntries.value.length > 1
+
+
+        for (
+            const [aggregationName, aggregation]
+            of aggregationEntries.value
+        ) {
+
+            for (
+                const bucket of aggregation.buckets
+            ) {
+
+                const row =
+                    flattenAggregationBucket(bucket)
+
+
+                /*
+                 * Multiple aggregations:
+
+                 * Add a column identifying
+                 * the aggregation source.
+                 */
+
+                if (multipleAggregations) {
+
+                    result.push({
+
+                        _aggregation:
+                            aggregationName,
+
+                        ...row
+
+                    })
+
+                }
+
+                else {
+
+                    result.push(row)
+
+                }
+
+            }
+
+        }
+
+
+        return result
 
     }
 
 
-    /*
-     * Elasticsearch Single Document
-     */
+    /* -------------------------------------
+       Case 3: Elasticsearch _search
+
+       Preserve highlight data internally.
+
+       Do NOT create extra highlight columns.
+    ------------------------------------- */
+
+    if (isSearchResponse.value) {
+
+        return data.value.hits.hits.map(
+
+            hit => ({
+
+                _score: hit._score,
+
+                ...hit._source,
+
+                /*
+                 * Internal highlight metadata.
+                 */
+
+                __highlights:
+                    hit.highlight ?? {}
+
+            })
+
+        )
+
+    }
+
+
+    /* -------------------------------------
+       Case 4: Single Document
+    ------------------------------------- */
 
     if (isSingleDocumentResponse.value) {
 
@@ -551,13 +888,11 @@ const rows = computed(() => {
     }
 
 
-    /*
-     * Elasticsearch Mapping
-     *
-     * Show only:
-     *
-     * Field | Type
-     */
+    /* -------------------------------------
+       Case 5: Elasticsearch Mapping
+
+       Field | Type
+    ------------------------------------- */
 
     if (isMappingResponse.value) {
 
@@ -601,7 +936,11 @@ const rows = computed(() => {
 
 
 /* =========================================================
-   9. Detect Columns
+   11. Detect Columns
+
+   Collect all field names across rows.
+
+   Hide __highlights metadata.
 ========================================================= */
 
 const columns = computed(() => {
@@ -628,6 +967,18 @@ const columns = computed(() => {
 
         for (const key of Object.keys(row)) {
 
+            /*
+             * Internal highlight metadata
+             * is not a visible column.
+             */
+
+            if (key === '__highlights') {
+
+                continue
+
+            }
+
+
             names.add(key)
 
         }
@@ -641,7 +992,7 @@ const columns = computed(() => {
 
 
 /* =========================================================
-   10. Description Fields
+   12. Description Fields
 ========================================================= */
 
 function isDescriptionColumn(column) {
@@ -654,17 +1005,254 @@ function isDescriptionColumn(column) {
 
 
 /* =========================================================
-   11. Format Values
+   13. Detect Highlight for Current Cell
+
+   If Elasticsearch returns:
+
+   highlight: {
+       productdescription: [...]
+   }
+
+   Render highlighted text in the existing
+   productdescription column.
+========================================================= */
+
+function hasHighlight(row, column) {
+
+    const fragments =
+        row?.__highlights?.[column]
+
+
+    if (Array.isArray(fragments)) {
+
+        return fragments.length > 0
+
+    }
+
+
+    return (
+
+        typeof fragments === 'string' &&
+
+        fragments.length > 0
+
+    )
+
+}
+
+
+/* =========================================================
+   14. Get Highlight Fragments
+
+   Returns:
+
+   [
+       {
+           index: 0,
+           text: "Text with <em>highlight</em>"
+       }
+   ]
+
+   An index is used as the Vue key.
+========================================================= */
+
+function getHighlightFragments(value) {
+
+    if (Array.isArray(value)) {
+
+        return value.map(
+
+            (fragment, index) => ({
+
+                index,
+
+                text: String(fragment)
+
+            })
+
+        )
+
+    }
+
+
+    if (typeof value === 'string') {
+
+        return [
+
+            {
+                index: 0,
+                text: value
+            }
+
+        ]
+
+    }
+
+
+    return []
+
+}
+
+
+/* =========================================================
+   15. Parse Elasticsearch Highlight Markup
+
+   Input:
+
+   "This has <em>chrome dashboard</em>."
+
+   Output:
+
+   [
+       {
+           start: 0,
+           text: "This has ",
+           highlight: false
+       },
+       {
+           start: 9,
+           text: "chrome dashboard",
+           highlight: true
+       },
+       {
+           start: 34,
+           text: ".",
+           highlight: false
+       }
+   ]
+
+   Supports:
+   <em>...</em>
+   <mark>...</mark>
+
+   No v-html is needed.
+========================================================= */
+
+function highlightParts(fragment) {
+
+    const result = []
+
+    const regex =
+        /<(em|mark)>([\s\S]*?)<\/\1>/gi
+
+    let lastIndex = 0
+
+    let match
+
+
+    while (
+        (match = regex.exec(fragment)) !== null
+    ) {
+
+        /*
+         * Text before highlighted section.
+         */
+
+        if (match.index > lastIndex) {
+
+            result.push({
+
+                start: lastIndex,
+
+                text: fragment.slice(
+                    lastIndex,
+                    match.index
+                ),
+
+                highlight: false
+
+            })
+
+        }
+
+
+        /*
+         * Highlighted text.
+         */
+
+        result.push({
+
+            start: match.index,
+
+            text: match[2],
+
+            highlight: true
+
+        })
+
+
+        lastIndex = regex.lastIndex
+
+    }
+
+
+    /*
+     * Text after the last highlight.
+     */
+
+    if (lastIndex < fragment.length) {
+
+        result.push({
+
+            start: lastIndex,
+
+            text: fragment.slice(lastIndex),
+
+            highlight: false
+
+        })
+
+    }
+
+
+    /*
+     * Fallback for empty strings.
+     */
+
+    if (result.length === 0) {
+
+        result.push({
+
+            start: 0,
+
+            text: fragment,
+
+            highlight: false
+
+        })
+
+    }
+
+
+    return result
+
+}
+
+
+/* =========================================================
+   16. Format Normal Values
+
+   Numbers remain numbers.
+
+   Objects and arrays are converted to
+   readable JSON text.
 ========================================================= */
 
 function formatValue(value) {
 
     if (
-        value === null ||
+        value === null
+    ) {
+
+        return 'null'
+
+    }
+
+    if (
         value === undefined
     ) {
 
-        return ''
+        return 'undefined'
 
     }
 
@@ -682,7 +1270,7 @@ function formatValue(value) {
 
 
 /* =========================================================
-   12. Scroll Synchronization
+   17. Scroll References
 ========================================================= */
 
 const topScroll = ref(null)
@@ -699,9 +1287,9 @@ let syncing = false
 let resizeObserver = null
 
 
-/*
- * Measure real table width.
- */
+/* =========================================================
+   18. Measure Table Width
+========================================================= */
 
 async function updateTableWidth() {
 
@@ -717,15 +1305,22 @@ async function updateTableWidth() {
     }
 
 
-    tableWidth.value =
+    const width =
         tableElement.value.scrollWidth
+
+
+    if (tableWidth.value !== width) {
+
+        tableWidth.value = width
+
+    }
 
 }
 
 
-/*
- * Top scrollbar -> table
- */
+/* =========================================================
+   19. TOP Scrollbar -> Table
+========================================================= */
 
 function syncFromTop() {
 
@@ -762,9 +1357,9 @@ function syncFromTop() {
 }
 
 
-/*
- * Table -> top scrollbar
- */
+/* =========================================================
+   20. Table -> TOP Scrollbar
+========================================================= */
 
 function syncFromTable() {
 
@@ -802,31 +1397,80 @@ function syncFromTable() {
 
 
 /* =========================================================
-   13. Watch Data Changes
+   21. Resize Observer Setup
+========================================================= */
+
+function observeTable() {
+
+    if (!resizeObserver) {
+
+        return
+
+    }
+
+
+    resizeObserver.disconnect()
+
+
+    if (tableElement.value) {
+
+        resizeObserver.observe(
+            tableElement.value
+        )
+
+    }
+
+
+    if (tableScroll.value) {
+
+        resizeObserver.observe(
+            tableScroll.value
+        )
+
+    }
+
+}
+
+
+/* =========================================================
+   22. Watch Table Data Changes
+
+   Supports changing JSON between:
+
+   - _search
+   - aggregation
+   - mapping
+   - normal array
 ========================================================= */
 
 watch(
 
     rows,
 
-    () => {
+    async () => {
 
-        updateTableWidth()
+        await updateTableWidth()
+
+        observeTable()
 
     },
 
     {
-        deep: true
+        deep: true,
+        flush: 'post'
     }
 
 )
 
 
 /* =========================================================
-   14. Resize Observer
+   23. Mounted
 
    Important for Slidev:
-   preview -> fullscreen -> presenter view
+
+   - Preview
+   - Fullscreen
+   - Presenter view
 ========================================================= */
 
 onMounted(async () => {
@@ -846,27 +1490,16 @@ onMounted(async () => {
             })
 
 
-        if (tableElement.value) {
-
-            resizeObserver.observe(
-                tableElement.value
-            )
-
-        }
-
-
-        if (tableScroll.value) {
-
-            resizeObserver.observe(
-                tableScroll.value
-            )
-
-        }
+        observeTable()
 
     }
 
 })
 
+
+/* =========================================================
+   24. Cleanup
+========================================================= */
 
 onBeforeUnmount(() => {
 
@@ -945,11 +1578,6 @@ onBeforeUnmount(() => {
 }
 
 
-/*
- * Invisible element that creates
- * the scrollbar width.
- */
-
 .top-scroll-content {
 
     height: 1px;
@@ -973,17 +1601,9 @@ onBeforeUnmount(() => {
 
     box-sizing: border-box;
 
-    /*
-     * Both directions
-     */
-
     overflow-x: auto;
 
     overflow-y: auto;
-
-    /*
-     * Prevent scroll escaping to Slidev
-     */
 
     overscroll-behavior: contain;
 
@@ -998,12 +1618,6 @@ onBeforeUnmount(() => {
 
 /* =========================================================
    Table
-
-   width:max-content is very important.
-
-   It forces the table to retain its
-   real column width instead of shrinking
-   into the Slidev viewport.
 ========================================================= */
 
 table {
@@ -1074,9 +1688,6 @@ th {
 
 /* =========================================================
    Normal Cells
-
-   nowrap ensures columns create horizontal
-   width instead of shrinking aggressively.
 ========================================================= */
 
 td {
@@ -1090,8 +1701,6 @@ td {
 
 /* =========================================================
    Description Columns
-
-   Long descriptions wrap inside a fixed width.
 ========================================================= */
 
 th.description,
@@ -1118,7 +1727,52 @@ td.description {
 
 
 /* =========================================================
-   Hover
+   Highlight Fragments
+========================================================= */
+
+.highlight-fragment {
+
+    margin-bottom: 6px;
+
+    white-space: pre-wrap;
+
+    line-height: 1.5;
+
+}
+
+
+.highlight-fragment:last-child {
+
+    margin-bottom: 0;
+
+}
+
+
+/* =========================================================
+   Highlight Text
+
+   Only matching text is highlighted.
+
+   Table headers remain unchanged.
+========================================================= */
+
+mark {
+
+    background: #fde047;
+
+    color: #111827;
+
+    font-weight: bold;
+
+    padding: 1px 2px;
+
+    border-radius: 2px;
+
+}
+
+
+/* =========================================================
+   Row Hover
 ========================================================= */
 
 tbody tr:hover {
