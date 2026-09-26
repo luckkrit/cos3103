@@ -1,3 +1,18 @@
+PUT customer_orders_view
+{
+  "mappings": {
+    "properties": {
+      "ordernumber":    { "type": "keyword" },
+      "orderdate":      { "type": "date" },
+      "status":         { "type": "keyword" },
+      "comments":       { "type": "text" },
+      "customernumber": { "type": "keyword" },
+      "customername":   { "type": "text" },
+      "country":        { "type": "keyword" }
+    }
+  }
+}
+
 POST customer_orders_view/_bulk?refresh
 {"index":{"_id":"10111"}}
 {"ordernumber":"10111","orderdate":"2003-03-25","status":"Shipped","comments":null,"customernumber":"129","customername":"Mini Wheels Co.","country":"USA"}
