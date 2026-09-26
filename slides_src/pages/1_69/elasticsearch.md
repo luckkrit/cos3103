@@ -4875,116 +4875,252 @@ GET customer_orders_view/_search
 </EsTable>
 
 ---
-layout: two-cols-title
----
 
-::title::
-[Demo Faceted Search]{class="text-2xl"}
-- สร้างหน้าค้นหาเลียนแบบเวบ shopping เช่น ลูกค้าพิมพ์คำว่า "chrome" ในช่องค้นหา แล้วเลื่อน slider เลือกราคา 60-150
-
-::left::
+## Demo Faceted Search
 
 ```json
-GET products_search/_search
+GET products/_search
 {
-  "query": {
-    "bool": {
-      "must": [
-        { "match": { "productdescription": "chrome" } }
-      ],
-      "filter": [
-        { "range": { "msrp": { "gte": 60, "lte": 150 } } }
-      ]
-    }
-  },
-```
-::right::
-
-```json
+  "query": { "match_all": {} },
   "aggs": {
-    "by_productline": {
-      "terms": { "field": "productline" }
-    },
-    "price_ranges": {
-      "range": {
-        "field": "msrp",
-        "ranges": [
-          { "to": 70 },
-          { "from": 70, "to": 120 },
-          { "from": 120 }
-        ]
-      }
-    }
+    "by_productline": { "terms": { "field": "productline" } }
   }
 }
 ```
 
-::default::
+- ถ้าค้นหาซ้ำเช่นเลือก `Trains` จะต้องมีการใช้ `post_filter`
 
+```json
+GET products/_search
+{
+  "query": { "match_all": {} },
+  "aggs": {
+    "by_productline": { "terms": { "field": "productline" } }
+  }
+  ,"post_filter":{"term":{"productline":"Trains"}}
 
+}
+```
 
 ---
 
+## Result
 
-# Result
-
-<EsFacetedSearch height="350px">
+<EsFacetedSearch>
 {
-  "took": 3,
+  "took": 0,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
   "hits": {
     "total": {
-      "value": 11,
+      "value": 110,
       "relation": "eq"
     },
+    "max_score": 1,
     "hits": [
       {
-        "_score": 2.9941463,
+        "_index": "products",
+        "_id": "S10_1678",
+        "_score": 1,
         "_source": {
-          "productcode": "S18_2957",
-          "productname": "1934 Ford V8 Coupe",
-          "productline": "Vintage Cars",
-          "msrp": 62.46
+          "productcode": "S10_1678",
+          "productname": "1969 Harley Davidson Ultimate Chopper",
+          "productscale": "1:10",
+          "productvendor": "Min Lin Diecast",
+          "productdescription": "This replica features working kickstand, front suspension, gear-shift lever, footbrake lever, drive chain, wheels and steering. All parts are particularly delicate due to their precise scale and require special care and attention.",
+          "quantityinstock": 7933,
+          "buyprice": 48.81,
+          "msrp": 95.7,
+          "productline": "Motorcycles"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_1949",
+        "_score": 1,
+        "_source": {
+          "productcode": "S10_1949",
+          "productname": "1952 Alpine Renault 1300",
+          "productscale": "1:10",
+          "productvendor": "Classic Metal Creations",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 7305,
+          "buyprice": 98.58,
+          "msrp": 214.3,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_2016",
+        "_score": 1,
+        "_source": {
+          "productcode": "S10_2016",
+          "productname": "1996 Moto Guzzi 1100i",
+          "productscale": "1:10",
+          "productvendor": "Highway 66 Mini Classics",
+          "productdescription": "Official Moto Guzzi logos and insignias, saddle bags located on side of motorcycle, detailed engine, working steering, working suspension, two leather seats, luggage rack, dual exhaust pipes, small saddle bag located on handle bars, two-tone paint with chrome accents, superior die-cast detail , rotating wheels , working kick stand, diecast metal with plastic parts and baked enamel finish.",
+          "quantityinstock": 6625,
+          "buyprice": 68.99,
+          "msrp": 118.94,
+          "productline": "Motorcycles"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_4698",
+        "_score": 1,
+        "_source": {
+          "productcode": "S10_4698",
+          "productname": "2003 Harley-Davidson Eagle Drag Bike",
+          "productscale": "1:10",
+          "productvendor": "Red Start Diecast",
+          "productdescription": """Model features, official Harley Davidson logos and insignias, detachable rear wheelie bar, heavy diecast metal with resin parts, authentic multi-color tampo-printed graphics, separate engine drive belts, free-turning front fork, rotating tires and rear racing slick, certificate of authenticity, detailed engine, display stand\r\n, precision diecast replica, baked enamel finish, 1:10 scale model, removable fender, seat and tank cover piece for displaying the superior detail of the v-twin engine""",
+          "quantityinstock": 5582,
+          "buyprice": 91.02,
+          "msrp": 193.66,
+          "productline": "Motorcycles"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_4757",
+        "_score": 1,
+        "_source": {
+          "productcode": "S10_4757",
+          "productname": "1972 Alfa Romeo GTA",
+          "productscale": "1:10",
+          "productvendor": "Motor City Art Classics",
+          "productdescription": "Features include: Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 3252,
+          "buyprice": 85.68,
+          "msrp": 136,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S10_4962",
+        "_score": 1,
+        "_source": {
+          "productcode": "S10_4962",
+          "productname": "1962 LanciaA Delta 16V",
+          "productscale": "1:10",
+          "productvendor": "Second Gear Diecast",
+          "productdescription": "Features include: Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 6791,
+          "buyprice": 103.42,
+          "msrp": 147.74,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 1,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_1108",
+        "_score": 1,
+        "_source": {
+          "productcode": "S12_1108",
+          "productname": "2001 Ferrari Enzo",
+          "productscale": "1:12",
+          "productvendor": "Second Gear Diecast",
+          "productdescription": "Turnable front wheels; steering function; detailed interior; detailed engine; opening hood; opening trunk; opening doors; and detailed chassis.",
+          "quantityinstock": 3619,
+          "buyprice": 95.59,
+          "msrp": 207.8,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_1666",
+        "_score": 1,
+        "_source": {
+          "productcode": "S12_1666",
+          "productname": "1958 Setra Bus",
+          "productscale": "1:12",
+          "productvendor": "Welly Diecast Productions",
+          "productdescription": "Model features 30 windows, skylights & glare resistant glass, working steering system, original logos",
+          "quantityinstock": 1579,
+          "buyprice": 77.9,
+          "msrp": 136.67,
+          "productline": "Trucks and Buses"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S12_2823",
+        "_score": 1,
+        "_source": {
+          "productcode": "S12_2823",
+          "productname": "2002 Suzuki XREO",
+          "productscale": "1:12",
+          "productvendor": "Unimax Art Galleries",
+          "productdescription": "Official logos and insignias, saddle bags located on side of motorcycle, detailed engine, working steering, working suspension, two leather seats, luggage rack, dual exhaust pipes, small saddle bag located on handle bars, two-tone paint with chrome accents, superior die-cast detail , rotating wheels , working kick stand, diecast metal with plastic parts and baked enamel finish.",
+          "quantityinstock": 9997,
+          "buyprice": 66.27,
+          "msrp": 150.62,
+          "productline": "Motorcycles"
         }
       }
     ]
   },
   "aggregations": {
     "by_productline": {
+      "doc_count_error_upper_bound": 0,
+      "sum_other_doc_count": 0,
       "buckets": [
         {
+          "key": "Classic Cars",
+          "doc_count": 38
+        },
+        {
           "key": "Vintage Cars",
-          "doc_count": 6
+          "doc_count": 24
         },
         {
           "key": "Motorcycles",
-          "doc_count": 4
+          "doc_count": 13
         },
         {
-          "key": "Classic Cars",
-          "doc_count": 1
-        }
-      ]
-    },
-    "price_ranges": {
-      "buckets": [
-        {
-          "key": "*-70.0",
-          "to": 70,
-          "doc_count": 4
+          "key": "Planes",
+          "doc_count": 12
         },
         {
-          "key": "70.0-120.0",
-          "from": 70,
-          "to": 120,
-          "doc_count": 6
+          "key": "Trucks and Buses",
+          "doc_count": 11
         },
         {
-          "key": "120.0-*",
-          "from": 120,
-          "doc_count": 1
+          "key": "Ships",
+          "doc_count": 9
+        },
+        {
+          "key": "Trains",
+          "doc_count": 3
         }
       ]
     }
   }
 }
+
 </EsFacetedSearch>
