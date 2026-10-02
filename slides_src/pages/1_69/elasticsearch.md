@@ -64,6 +64,31 @@ $$
 
 ---
 
+## ตัวอย่าง
+
+- `is` เจอใน 2 เอกสาร จากเอกสารทั้งหมด 2 เอกสาร
+- $\operatorname{IDF}(t) = \ln\left(\frac{2}{2}\right) = 0$
+
+| เอกสาร | เนื้อหา                            | 
+| ------ | -------------------------------- | 
+| Doc 1  | elasticsearch ==is== a search engine |
+| Doc 2  | search search search ==is== fun      |
+
+
+---
+
+## ตัวอย่าง
+
+- `engine` เจอใน 1 เอกสาร จากเอกสารทั้งหมด 2 เอกสาร
+- $\operatorname{IDF}(t) = \ln\left(\frac{2}{1}\right) = 0.6931$
+
+| เอกสาร | เนื้อหา                            | 
+| ------ | -------------------------------- | 
+| Doc 1  | elasticsearch is a search ==engine== |
+| Doc 2  | search search search is fun      |
+
+
+---
 ## What is TF-IDF?
 
 <div class="border border-blue-400 rounded-xl p-2">
@@ -201,22 +226,6 @@ layout: section
 
 ## BM25 add $tf$ saturation ($k1$) and length normalization ($b$)
 
-
-$$
-\operatorname{score}(t,d)
-=
-\operatorname{idf}(t)
-\times
-\frac{
-\operatorname{tf}(t,d)
-}{
-\operatorname{tf}(t,d)
-+
-k_1\left(1-b+b\frac{dl}{\operatorname{avgdl}}\right)
-}
-\times(k_1+1)
-$$
-
 $$
 \operatorname{idf}(t)
 =
@@ -224,6 +233,21 @@ $$
 1+\frac{N-n+0.5}{n+0.5}
 \right)
 $$
+
+$$
+\text{TF}_{\text{component}} = \frac{tf}{tf + k_1 \cdot \left( 1 - b + b \cdot \frac{dl}{avgdl} \right)}
+$$
+
+$$
+\operatorname{score}(t,d)
+=
+\operatorname{idf}(t)
+\times
+\text{TF}_{\text{component}}
+\times(k_1+1)
+$$
+
+
 
 > ($k_1$+1) เป็นค่าคงที่ สามารถคิดทีหลังได้
 
@@ -280,7 +304,7 @@ $$
 
 ---
 
-## Evaluate with BM25 of Doc 1
+## Evaluate with BM25 of Doc 1 - (ค้นคำว่า search)
 
 $$
 \begin{aligned}
@@ -318,7 +342,7 @@ $$
 
 ---
 
-## Evaluate with BM25 of Doc 2
+## Evaluate with BM25 of Doc 2 - (ค้นคำว่า search)
 
 $$
 \begin{aligned}
@@ -356,7 +380,7 @@ $$
 
 ---
 
-## Summary
+## Summary - (ค้นคำว่า search)
 
 | Doc | tf  | TF-IDF | BM25   |
 | --- | --- | ------ | ------ |
@@ -409,7 +433,7 @@ GET demo/_search
 
 ---
 
-## Result
+## Result - ของการค้นคำว่า search ที่ถูก explain โดย Elasticsearch
 
 | Parameter | Document 2 | Document 1 |
 |---|---:|---:|
@@ -2357,6 +2381,106 @@ GET customers/_search
 
 ---
 
+## Exercise
+
+### Query พื้นฐาน
+
+1. หาสินค้าที่ productLine = "Classic Cars"
+2. หาสินค้าที่ชื่อมีคำว่า "Ford" (match)
+3. หาลูกค้าที่ country = "USA" (ตรวจค่าที่เก็บจริงก่อน)
+4. หาลูกค้าจาก USA หรือ France (terms)
+5. หาสินค้าที่ buyPrice อยู่ระหว่าง 50–100 (range)
+
+---
+
+## Solution
+
+### Query พื้นฐาน
+
+1. หาสินค้าที่ productLine = "Classic Cars"
+
+```json
+GET products/_search
+{
+    "query": {
+        "match": {
+            "productline": "Classic Cars"
+        }
+    }
+}
+
+```
+
+2. หาสินค้าที่ชื่อมีคำว่า "Ford" (match)
+
+```json
+
+GET products/_search
+{
+    "query": {
+        "match": {
+          "productname": "Ford"
+        }
+    }
+}
+
+```
+
+---
+
+3. หาลูกค้าที่ country = "USA" (ตรวจค่าที่เก็บจริงก่อน)
+```json
+
+GET customers/_search
+{
+    "query": {
+        "match": {
+          "country": "USA"
+        }
+    }
+}
+
+```
+
+4. หาลูกค้าจาก USA หรือ France (terms)
+
+```json
+
+GET customers/_search
+{
+    "query": {
+        "terms": {
+          "country": [
+            "USA",
+            "France"
+          ]
+        }
+    }
+}
+
+```
+
+---
+
+5. หาสินค้าที่ buyPrice อยู่ระหว่าง 50–100 (range)
+
+```json
+
+GET products/_search
+{
+    "query":{
+        "range": {
+          "buyprice": {
+            "gte": 50,
+            "lte": 100
+          }
+        }
+    }
+}
+```
+
+---
+
 ## bool
 
 - Full-text search จะมีการค้นหาแบบค้นหาตาม 
@@ -2372,18 +2496,39 @@ GET customers/_search
 
 ### Example
 
+
+<div class="flex gap-2 items-start">
+<div>
+
 - `must` อย่างเดียว
+- เคสนี้ใช้ `bool` เพื่อต้องการค้นเงื่อนไขหลายเงื่อนไข
 
 ```json
 GET products/_search
 {
   "query": {
     "bool": {
-      "must": [ { "match": { "productname": "mustang" } } ]
+      "must": { "match": { "productname": "mustang" } }
     }
   }
 }
 ```
+</div>
+
+<div>
+
+- เท่ากันกับตัวอย่างซ้าย
+
+```json
+GET products/_search
+{
+  "query": {
+    "match": { "productname": "mustang" }
+  }
+}
+```
+</div>
+</div>
 
 ---
 
@@ -2446,6 +2591,21 @@ GET products/_search
 
 ---
 
+- ใช้ must โดยมี 2 เงื่อนไขเลยใส่ใน Array
+
+```json
+GET products/_search
+{
+  "query": {
+    "bool": {
+      "must": [ { "match": { "productname": "mustang" } }, { "match": { "productdescription": "trunk" } } ]
+    }
+  }
+}
+```
+
+---
+
 ## Example
 
 - มีการใช้ must กับ should
@@ -2456,7 +2616,7 @@ GET products/_search
   "query": {
     "bool": {
       "must": [ { "match": { "productname": "mustang" } } ],
-      "should": [ { "match": { "productdescription": "wheels" } } ]
+      "should": [ { "match": { "productdescription": "hood" } } ]
     }
   }
 }
@@ -2481,38 +2641,38 @@ GET products/_search
       "value": 2,
       "relation": "eq"
     },
-    "max_score": 5.5237346,
+    "max_score": 5.4610476,
     "hits": [
       {
         "_index": "products",
         "_id": "S12_1099",
-        "_score": 5.5237346,
+        "_score": 5.4610476,
         "_source": {
           "productcode": "S12_1099",
           "productname": "1968 Ford Mustang",
+          "productline": "Classic Cars",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
           "productscale": "1:12",
           "productvendor": "Autoart Studio Design",
-          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
           "quantityinstock": 68,
           "buyprice": 95.34,
-          "msrp": 194.57,
-          "productline": "Classic Cars"
+          "msrp": 194.57
         }
       },
       {
         "_index": "products",
         "_id": "S18_2581",
-        "_score": 5.478362,
+        "_score": 3.796762,
         "_source": {
           "productcode": "S18_2581",
           "productname": "P-51-D Mustang",
+          "productline": "Planes",
+          "productdescription": "Has retractable wheels and comes with a stand",
           "productscale": "1:72",
           "productvendor": "Gearbox Collectibles",
-          "productdescription": "Has retractable wheels and comes with a stand",
           "quantityinstock": 992,
           "buyprice": 49,
-          "msrp": 84.48,
-          "productline": "Planes"
+          "msrp": 84.48
         }
       }
     ]
@@ -3191,119 +3351,6 @@ GET products/_search
 - จะเห็นได้ว่าถ้าใช้ `must` อย่างเดียวจะได้คะแนน **5.2875295** ที่มากกว่า
 - แต่ถ้าใช้ `must/filter` จะได้คะแนน **4.2286577** ที่น้อยกว่า
 
-
----
-
-## match_phrase - ค้นหาทั้งประโยค
-
-```json
-GET products_search/_search
-{
-  "query": {
-    "match_phrase": { "productdescription": "chrome dashboard" }
-  }
-}
-```
-
----
-
-## Result
-
-<EsTable>
-{
-  "took": 28,
-  "timed_out": false,
-  "_shards": {
-    "total": 1,
-    "successful": 1,
-    "skipped": 0,
-    "failed": 0
-  },
-  "hits": {
-    "total": {
-      "value": 1,
-      "relation": "eq"
-    },
-    "max_score": 4.318061,
-    "hits": [
-      {
-        "_index": "products_search",
-        "_id": "S24_4620",
-        "_score": 4.318061,
-        "_source": {
-          "productcode": "S24_4620",
-          "productname": "1961 Chevrolet Impala",
-          "productline": "Classic Cars",
-          "productdescription": "This 1:18 scale precision die-cast reproduction of the 1961 Chevrolet Impala has all the features-doors, hood and trunk that open; detailed 409 cubic-inch engine; chrome dashboard and stick shift, two-tone interior; working steering system; all topped of with a factory baked-enamel finish.",
-          "productlinedescription": "Attention car enthusiasts: Make your wildest car ownership dreams come true. Whether you are looking for classic muscle cars, dream sports cars or movie-inspired miniatures, you will find great choices in this category. These replicas feature superb attention to detail and craftsmanship and offer features such as working steering system, opening forward compartment, opening rear trunk with removable spare wheel, 4-wheel independent spring suspension, and so on. The models range in size from 1:10 to 1:24 scale and include numerous limited edition and several out-of-production vehicles. All models include a certificate of authenticity from their manufacturers and come fully assembled and ready for display in the home or office."
-        }
-      }
-    ]
-  }
-}
-
-</EsTable>
-
----
-
-## Add highlight to the result
-
-```json
-GET products_search/_search
-{
-  "query": {
-    "match_phrase": { "productdescription": "chrome dashboard" }
-  },
-  "highlight": {
-    "fields": { "productdescription": {} }
-  }
-}
-```
-
----
-
-## Result
-
-<EsTable>
-{
-  "took": 59,
-  "timed_out": false,
-  "_shards": {
-    "total": 1,
-    "successful": 1,
-    "skipped": 0,
-    "failed": 0
-  },
-  "hits": {
-    "total": {
-      "value": 1,
-      "relation": "eq"
-    },
-    "max_score": 4.318061,
-    "hits": [
-      {
-        "_index": "products_search",
-        "_id": "S24_4620",
-        "_score": 4.318061,
-        "_source": {
-          "productcode": "S24_4620",
-          "productname": "1961 Chevrolet Impala",
-          "productline": "Classic Cars",
-          "productdescription": "This 1:18 scale precision die-cast reproduction of the 1961 Chevrolet Impala has all the features-doors, hood and trunk that open; detailed 409 cubic-inch engine; chrome dashboard and stick shift, two-tone interior; working steering system; all topped of with a factory baked-enamel finish.",
-          "productlinedescription": "Attention car enthusiasts: Make your wildest car ownership dreams come true. Whether you are looking for classic muscle cars, dream sports cars or movie-inspired miniatures, you will find great choices in this category. These replicas feature superb attention to detail and craftsmanship and offer features such as working steering system, opening forward compartment, opening rear trunk with removable spare wheel, 4-wheel independent spring suspension, and so on. The models range in size from 1:10 to 1:24 scale and include numerous limited edition and several out-of-production vehicles. All models include a certificate of authenticity from their manufacturers and come fully assembled and ready for display in the home or office."
-        },
-        "highlight": {
-          "productdescription": [
-            "Impala has all the features-doors, hood and trunk that open; detailed 409 cubic-inch engine; <em>chrome dashboard</em>"
-          ]
-        }
-      }
-    ]
-  }
-}
-
-</EsTable>
-
 ---
 
 ## range
@@ -3708,6 +3755,437 @@ GET products/_search
 
 </EsTable>
 
+
+---
+
+## Exercise
+
+### bool
+
+1. สินค้า Classic Cars ที่ราคา MSRP > 100 (must + filter)
+2. สินค้าที่รายละเอียดมีคำว่า "model" แต่ไม่ใช่ Motorcycles (must_not)
+3. ลองเปลี่ยน must เป็น filter แล้วเทียบ _score ว่าต่างกันอย่างไร
+4. ใช้ should เพิ่มคะแนนให้สินค้าที่มีคำว่า "vintage" โดยไม่บังคับ
+
+---
+
+## Solution
+
+### C. bool
+1. สินค้า Classic Cars ที่ราคา MSRP > 100 (must + filter)
+
+```json
+GET products/_search
+{
+    "query": {
+        "bool": {
+            "must": {
+                "term":{
+                    "productline":"Classic Cars"
+                }
+            },
+            "filter": {
+                "range": {
+                    "msrp": {
+                        "gt":100
+                    }
+                }
+            }
+        }
+        
+    }
+}
+
+```
+
+---
+
+2. สินค้าที่รายละเอียดมีคำว่า "model" แต่ไม่ใช่ Motorcycles (must_not)
+```json
+
+GET products/_search
+{
+    "query": {
+        "bool": {
+            "must": {
+                "term":{
+                    "productdescription": "model"
+                }
+            },
+            "must_not": {
+                "term":{
+                    "productline":"Motorcycles"
+                }
+            }
+        }
+        
+    }
+}
+
+```
+
+---
+
+3. ลองเปลี่ยน must เป็น filter แล้วเทียบ _score ว่าต่างกันอย่างไร
+
+```json
+GET products/_search
+{
+    "query": {
+        "bool": {
+            "filter": {
+                "term":{
+                    "productdescription": "model"
+                }
+            },
+            "must_not": {
+                "term":{
+                    "productline":"Motorcycles"
+                }
+            }
+        }
+        
+    }
+}
+
+```
+
+---
+
+4. ใช้ should เพิ่มคะแนนให้สินค้าที่มีคำว่า "vintage" โดยไม่บังคับ
+```json
+
+GET products/_search
+{
+    "query": {
+        "bool": {
+            "should": [
+                {
+                    "term": {
+                        "productname": "vintage"
+                    }
+                },
+                {
+                    "term": {
+                        "productdescription": "vintage"
+                    }
+                }
+            ]
+        }
+    }
+}
+
+```
+
+
+---
+
+## match_phrase - ค้นหาทั้งประโยค
+
+```json
+GET products_search/_search
+{
+  "query": {
+    "match_phrase": { "productdescription": "chrome dashboard" }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 28,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": 4.318061,
+    "hits": [
+      {
+        "_index": "products_search",
+        "_id": "S24_4620",
+        "_score": 4.318061,
+        "_source": {
+          "productcode": "S24_4620",
+          "productname": "1961 Chevrolet Impala",
+          "productline": "Classic Cars",
+          "productdescription": "This 1:18 scale precision die-cast reproduction of the 1961 Chevrolet Impala has all the features-doors, hood and trunk that open; detailed 409 cubic-inch engine; chrome dashboard and stick shift, two-tone interior; working steering system; all topped of with a factory baked-enamel finish.",
+          "productlinedescription": "Attention car enthusiasts: Make your wildest car ownership dreams come true. Whether you are looking for classic muscle cars, dream sports cars or movie-inspired miniatures, you will find great choices in this category. These replicas feature superb attention to detail and craftsmanship and offer features such as working steering system, opening forward compartment, opening rear trunk with removable spare wheel, 4-wheel independent spring suspension, and so on. The models range in size from 1:10 to 1:24 scale and include numerous limited edition and several out-of-production vehicles. All models include a certificate of authenticity from their manufacturers and come fully assembled and ready for display in the home or office."
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## Add highlight to the result
+
+```json
+GET products_search/_search
+{
+  "query": {
+    "match_phrase": { "productdescription": "chrome dashboard" }
+  },
+  "highlight": {
+    "fields": { "productdescription": {} }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 59,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": 4.318061,
+    "hits": [
+      {
+        "_index": "products_search",
+        "_id": "S24_4620",
+        "_score": 4.318061,
+        "_source": {
+          "productcode": "S24_4620",
+          "productname": "1961 Chevrolet Impala",
+          "productline": "Classic Cars",
+          "productdescription": "This 1:18 scale precision die-cast reproduction of the 1961 Chevrolet Impala has all the features-doors, hood and trunk that open; detailed 409 cubic-inch engine; chrome dashboard and stick shift, two-tone interior; working steering system; all topped of with a factory baked-enamel finish.",
+          "productlinedescription": "Attention car enthusiasts: Make your wildest car ownership dreams come true. Whether you are looking for classic muscle cars, dream sports cars or movie-inspired miniatures, you will find great choices in this category. These replicas feature superb attention to detail and craftsmanship and offer features such as working steering system, opening forward compartment, opening rear trunk with removable spare wheel, 4-wheel independent spring suspension, and so on. The models range in size from 1:10 to 1:24 scale and include numerous limited edition and several out-of-production vehicles. All models include a certificate of authenticity from their manufacturers and come fully assembled and ready for display in the home or office."
+        },
+        "highlight": {
+          "productdescription": [
+            "Impala has all the features-doors, hood and trunk that open; detailed 409 cubic-inch engine; <em>chrome dashboard</em>"
+          ]
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## Fuzzy search
+
+- การค้นหาคำที่สะกดใกล้เคียง
+
+```json
+GET products/_search
+{
+  "query": {
+    "match": {
+      "productname": { "query": "mustng", "fuzziness": "AUTO" }
+    }
+  }
+}
+```
+
+---
+
+## Result
+
+<EsTable>
+{
+  "took": 14,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 2,
+      "relation": "eq"
+    },
+    "max_score": 3.5238814,
+    "hits": [
+      {
+        "_index": "products",
+        "_id": "S12_1099",
+        "_score": 3.5238814,
+        "_source": {
+          "productcode": "S12_1099",
+          "productname": "1968 Ford Mustang",
+          "productscale": "1:12",
+          "productvendor": "Autoart Studio Design",
+          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
+          "quantityinstock": 68,
+          "buyprice": 95.34,
+          "msrp": 194.57,
+          "productline": "Classic Cars"
+        }
+      },
+      {
+        "_index": "products",
+        "_id": "S18_2581",
+        "_score": 3.163968,
+        "_source": {
+          "productcode": "S18_2581",
+          "productname": "P-51-D Mustang",
+          "productscale": "1:72",
+          "productvendor": "Gearbox Collectibles",
+          "productdescription": "Has retractable wheels and comes with a stand",
+          "quantityinstock": 992,
+          "buyprice": 49,
+          "msrp": 84.48,
+          "productline": "Planes"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+
+## Exercise
+
+### ค้นหาหลายฟิลด์
+
+1. multi_match ค้นคำเดียวใน productName และ productDescription
+2. ใส่ ^3 ที่ productDescription แล้วสังเกตว่าลำดับผลลัพธ์เปลี่ยนไหม
+3. match_phrase เทียบกับ match กับวลีเดียวกัน
+4. พิมพ์ชื่อผิดหนึ่งตัวอักษรแล้วใช้ fuzziness ให้เจอ
+5. ใช้ highlight แสดงคำที่ match
+
+---
+
+## Solution
+
+### ค้นหาหลาย Fields
+
+1. multi_match ค้นคำเดียวใน productName และ productDescription
+
+```json
+GET products/_search
+{
+    "query": {
+        "multi_match": {
+          "query": "ford",
+          "fields": ["productname", "productdescription"]
+        }
+    }
+}
+
+```
+
+---
+
+2. ใส่ ^3 ที่ productDescription แล้วสังเกตว่าลำดับผลลัพธ์เปลี่ยนไหม
+
+```json
+
+GET products/_search
+{
+    "query": {
+        "multi_match": {
+          "query": "ford",
+          "fields": ["productname", "productdescription^3"]
+        }
+    }
+}
+
+```
+
+---
+
+3. match_phrase เทียบกับ match กับวลีเดียวกัน
+
+- match
+```json
+GET products/_search
+{
+    "query": {
+        "match": {
+          "productdescription": "This 1940s"
+        }
+    }
+}
+```
+
+---
+
+- match_phrase
+
+```json
+
+GET products/_search
+{
+    "query": {
+        "match_phrase": {
+          "productdescription": "This 1940s"
+        }
+    }
+}
+
+```
+
+---
+
+4. พิมพ์ชื่อผิดหนึ่งตัวอักษรแล้วใช้ fuzziness ให้เจอ
+
+```json
+
+GET products/_search
+{
+    "query": {
+        "match": {
+          "productname": {"query":"musang", "fuzziness": "1"}
+        }
+    }
+}
+
+```
+
+---
+
+5. ใช้ highlight แสดงคำที่ match
+
+```json
+
+GET products/_search
+{
+    "query": {
+        "match": {
+          "productname": {"query":"musang", "fuzziness": "1"}
+        }
+    },
+    "highlight": {"fields": {"productname": {}}}
+}
+
+```
+
 ---
 
 ## Aggregation
@@ -3918,80 +4396,110 @@ GET products/_search
 
 ---
 
-## Fuzzy search
+## Exercise
 
-- การค้นหาคำที่สะกดใกล้เคียง
+### Aggregation
+
+1. นับสินค้าแต่ละ productLine (terms agg)
+2. หา buyPrice เฉลี่ยของแต่ละ productLine
+3. จากข้อ 2. ให้เรียงราคา buyPrice จากมากไปหาน้อย
+4. ค้นสินค้าที่ชื่อมี "car" พร้อมนับ productLine ของผลลัพธ์ (query + aggs ในคำสั่งเดียว)
+
+---
+
+## Solution
+
+### Aggregations
+
+1. นับสินค้าแต่ละ productLine (terms agg)
+
 
 ```json
 GET products/_search
 {
-  "query": {
-    "match": {
-      "productname": { "query": "mustng", "fuzziness": "AUTO" }
+    "size": 0,
+    "aggs": {
+      "by_productline": {
+        "terms": {"field": "productline"}
+      }
     }
-  }
 }
+
 ```
 
 ---
 
-## Result
+2. หา buyPrice เฉลี่ยของแต่ละ productLine
 
-<EsTable>
+```json
+
+GET products/_search
 {
-  "took": 14,
-  "timed_out": false,
-  "_shards": {
-    "total": 1,
-    "successful": 1,
-    "skipped": 0,
-    "failed": 0
-  },
-  "hits": {
-    "total": {
-      "value": 2,
-      "relation": "eq"
-    },
-    "max_score": 3.5238814,
-    "hits": [
-      {
-        "_index": "products",
-        "_id": "S12_1099",
-        "_score": 3.5238814,
-        "_source": {
-          "productcode": "S12_1099",
-          "productname": "1968 Ford Mustang",
-          "productscale": "1:12",
-          "productvendor": "Autoart Studio Design",
-          "productdescription": "Hood, doors and trunk all open to reveal highly detailed interior features. Steering wheel actually turns the front wheels. Color dark green.",
-          "quantityinstock": 68,
-          "buyprice": 95.34,
-          "msrp": 194.57,
-          "productline": "Classic Cars"
-        }
-      },
-      {
-        "_index": "products",
-        "_id": "S18_2581",
-        "_score": 3.163968,
-        "_source": {
-          "productcode": "S18_2581",
-          "productname": "P-51-D Mustang",
-          "productscale": "1:72",
-          "productvendor": "Gearbox Collectibles",
-          "productdescription": "Has retractable wheels and comes with a stand",
-          "quantityinstock": 992,
-          "buyprice": 49,
-          "msrp": 84.48,
-          "productline": "Planes"
+    "size": 0,
+    "aggs": {
+      "by_productline": {
+        "terms": {"field": "productline"},
+        "aggs": {
+          "avg_price": {
+            "avg": {"field": "buyprice"}
+          }
         }
       }
-    ]
+    }
+}
+
+```
+---
+
+3. จากข้อ 2. ให้เรียงราคา buyPrice จากมากไปหาน้อย
+
+```json
+
+GET products/_search
+{
+  "size": 0,
+  "aggs": {
+    "by_productline": {
+      "terms": {
+        "field": "productline",
+        "order": {
+          "avg_price": "desc"
+        }
+      },
+      "aggs": {
+        "avg_price": {
+          "avg": {
+            "field": "buyprice"
+          }
+        }
+      }
+    }
   }
 }
 
-</EsTable>
+```
+---
 
+4. ค้นสินค้าที่ชื่อมี "car" พร้อมนับ productLine ของผลลัพธ์ (query + aggs ในคำสั่งเดียว)
+
+```json
+
+GET products/_search
+{
+    "query": {
+        "match": {
+          "productname": "car"
+        }
+    },
+    "aggs": {
+      "by_productline": {
+        "terms": {
+            "field": "productline"
+        }
+      }
+    }
+}
+```
 
 ---
 layout: two-cols-title
@@ -5216,3 +5724,26 @@ layout: two-cols-title
 ::right::
 
 ::default::
+
+---
+
+## Demo 1
+
+
+- ดูตัวอย่าง facet search ที่ทำด้วย Spring Boot
+
+- ไปที่ folder webapp
+
+- รัน `./mvnw clean compile spring-boot:run`
+
+- ได้ที่ http://localhost:8080/product-facet-search
+
+---
+
+## Demo2
+
+- ดูตัวอย่าง facet search ที่ทำด้วย JSP
+
+- ไปที่ folder classic-web/jsp
+
+
