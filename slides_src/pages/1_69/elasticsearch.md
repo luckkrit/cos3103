@@ -89,6 +89,7 @@ $$
 
 
 ---
+
 ## What is TF-IDF?
 
 <div class="border border-blue-400 rounded-xl p-2">
@@ -347,7 +348,7 @@ $$
 $$
 \begin{aligned}
 \operatorname{idf}(t) &= 0.6931 \\
-\operatorname{tf}(t,d_1) &= 3 \\
+\operatorname{tf}(t,d_2) &= 3 \\
 dl &= 5 \\
 \operatorname{avgdl} &= 5 \\
 k_1 &= 1.2,\quad b = 0.75
@@ -357,7 +358,7 @@ $$
 แทนค่าในสูตร BM25 ที่เราจัดรูปไว้:
 
 $$
-\operatorname{score}(t,d_1)
+\operatorname{score}(t,d_2)
 =
 0.6931
 \times
@@ -371,7 +372,7 @@ $$
 
 $$
 \begin{aligned}
-\operatorname{score}(t,d_1)
+\operatorname{score}(t,d_2)
 &= 0.6931 \times \frac{3}{3+1.2(1)} \times 2.2 \\[6pt]
 &= 0.6931 \times \frac{3}{4.2} \times 2.2 \\[6pt]
 &= \boxed{1.0892}
@@ -445,7 +446,460 @@ GET demo/_search
 | Boost ($k_1+1$) | 2.2 | 2.2 |
 | **BM25 score** | **1.0892** | **0.6931** |
 
+---
 
+## ถ้าค้นด้วยมากกว่า 1 คำ
+
+- Query ด้วย `search data`
+- และเพิ่ม doc 5 เข้าไป
+
+| Doc | เนื้อหา                            | จำนวนคำ (dl) |
+| --- | -------------------------------- | ----- |
+| 1   | elasticsearch is a search engine | 5     |
+| 2   | search search search is fun      | 5     |
+| 3   | kibana shows data in charts      | 5     |
+| 4   | learn python for data science    | 5     |
+| 5   | search data is so fun            | 5     |
+
+---
+
+`avgdl` = **average document length** ความยาวเฉลี่ยของเอกสารทั้งหมดใน index (นับเป็นจำนวนคำ/token)
+
+$$
+\operatorname{avgdl}
+=
+\frac{dl_1 + dl_2 + \cdots + dl_N}{N}
+$$
+
+`avgdl = (5 + 5 + 5 + 5 + 5) / 5 = 5`
+
+- ทุกเอกสารยาว 5 คำเท่ากัน → `avgdl = 5`
+
+---
+
+## สูตรจะมีการเปลี่ยนไปเล็กน้อย
+
+$$
+\text{score}(Q, d) = \sum_{t \in Q} \text{idf}(t) \times \frac{tf}{tf + k_1 \cdot \left(1 - b + b \cdot \frac{dl}{avgdl}\right)} \times (k_1 + 1)
+$$
+
+---
+
+## Evaluate IDF - ของ search
+
+- เจอในเอกสาร Doc1, Doc2 และ Doc5
+
+$$
+\begin{aligned}
+N &= 5, \quad n = 3, \quad \operatorname{avgdl} = 5 \\
+k_1 &= 1.2, \quad b = 0.75
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\operatorname{idf}(t)
+&= \ln\left(1+\frac{5-3+0.5}{3+0.5}\right) \\
+&= \ln(1+\frac{2.5}{3.5}) \\
+&= \ln(1.7142) \\
+&\approx 0.538946
+\end{aligned}
+$$
+
+---
+
+## Evaluate IDF - ของ data
+
+- เจอในเอกสาร Doc3, Doc4 และ Doc5
+
+$$
+\begin{aligned}
+N &= 5, \quad n = 3, \quad \operatorname{avgdl} = 5 \\
+k_1 &= 1.2, \quad b = 0.75
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\operatorname{idf}(t)
+&= \ln\left(1+\frac{5-3+0.5}{3+0.5}\right) \\
+&= \ln(1+\frac{2.5}{3.5}) \\
+&= \ln(1.7142) \\
+&\approx 0.538946
+\end{aligned}
+$$
+
+---
+
+## Evaluate with BM25 of Doc 1 - (ค้นคำว่า search)
+
+$$
+\begin{aligned}
+\operatorname{idf}(t) &= 0.5390 \\
+\operatorname{tf}(t,d_1) &= 1 \\
+dl &= 5 \\
+\operatorname{avgdl} &= 5 \\
+k_1 &= 1.2,\quad b = 0.75
+\end{aligned}
+$$
+
+แทนค่าในสูตร BM25 ที่เราจัดรูปไว้:
+
+$$
+\operatorname{score}(t,d_1)
+=
+0.5390
+\times
+\frac{1}{
+1+1.2\left(1-0.75+0.75\times\frac{5}{5}\right)
+}
+\times(1.2+1)
+$$
+
+จะได้
+
+$$
+\begin{aligned}
+\operatorname{score}(t,d_1)
+&= 0.5390 \times \frac{1}{1+1.2(1)} \times 2.2 \\[6pt]
+&= 0.5390 \times \frac{1}{2.2} \times 2.2 \\[6pt]
+&= \boxed{0.5390}
+\end{aligned}
+$$
+
+---
+
+## Evaluate with BM25 of Doc 2 - (ค้นคำว่า search)
+
+$$
+\begin{aligned}
+\operatorname{idf}(t) &= 0.5390 \\
+\operatorname{tf}(t,d_1) &= 3 \\
+dl &= 5 \\
+\operatorname{avgdl} &= 5 \\
+k_1 &= 1.2,\quad b = 0.75
+\end{aligned}
+$$
+
+แทนค่าในสูตร BM25 ที่เราจัดรูปไว้:
+
+$$
+\operatorname{score}(t,d_2)
+=
+0.5390
+\times
+\frac{3}{
+3+1.2\left(1-0.75+0.75\times\frac{5}{5}\right)
+}
+\times(1.2+1)
+$$
+
+จะได้
+
+$$
+\begin{aligned}
+\operatorname{score}(t,d_2)
+&= 0.5390 \times \frac{3}{3+1.2(1)} \times 2.2 \\[6pt]
+&= 0.5390 \times \frac{3}{4.2} \times 2.2 \\[6pt]
+&= \boxed{0.8470}
+\end{aligned}
+$$
+
+---
+
+## Evaluate with BM25 of Doc 3 - (ค้นคำว่า data)
+
+$$
+\begin{aligned}
+\operatorname{idf}(t) &= 0.5390 \\
+\operatorname{tf}(t,d_3) &= 1 \\
+dl &= 5 \\
+\operatorname{avgdl} &= 5 \\
+k_1 &= 1.2,\quad b = 0.75
+\end{aligned}
+$$
+
+แทนค่าในสูตร BM25 ที่เราจัดรูปไว้:
+
+$$
+\operatorname{score}(t,d_3)
+=
+0.5390
+\times
+\frac{1}{
+1+1.2\left(1-0.75+0.75\times\frac{5}{5}\right)
+}
+\times(1.2+1)
+$$
+
+จะได้
+
+$$
+\begin{aligned}
+\operatorname{score}(t,d_3)
+&= 0.5390 \times \frac{1}{1+1.2(1)} \times 2.2 \\[6pt]
+&= 0.5390 \times \frac{1}{2.2} \times 2.2 \\[6pt]
+&= \boxed{0.5390}
+\end{aligned}
+$$
+
+---
+
+## Evaluate with BM25 of Doc 4 - (ค้นคำว่า data)
+
+$$
+\begin{aligned}
+\operatorname{idf}(t) &= 0.5390 \\
+\operatorname{tf}(t,d_4) &= 1 \\
+dl &= 5 \\
+\operatorname{avgdl} &= 5 \\
+k_1 &= 1.2,\quad b = 0.75
+\end{aligned}
+$$
+
+แทนค่าในสูตร BM25 ที่เราจัดรูปไว้:
+
+$$
+\operatorname{score}(t,d_4)
+=
+0.5390
+\times
+\frac{1}{
+1+1.2\left(1-0.75+0.75\times\frac{5}{5}\right)
+}
+\times(1.2+1)
+$$
+
+จะได้
+
+$$
+\begin{aligned}
+\operatorname{score}(t,d_4)
+&= 0.5390 \times \frac{1}{1+1.2(1)} \times 2.2 \\[6pt]
+&= 0.5390 \times \frac{1}{2.2} \times 2.2 \\[6pt]
+&= \boxed{0.5390}
+\end{aligned}
+$$
+
+---
+
+## Evaluate with BM25 of Doc 5 - (ค้นคำว่า search)
+
+$$
+\begin{aligned}
+\operatorname{idf}(t) &= 0.5390 \\
+\operatorname{tf}(t,d_5) &= 1 \\
+dl &= 5 \\
+\operatorname{avgdl} &= 5 \\
+k_1 &= 1.2,\quad b = 0.75
+\end{aligned}
+$$
+
+แทนค่าในสูตร BM25 ที่เราจัดรูปไว้:
+
+$$
+\operatorname{score}(t,d_5)
+=
+0.5390
+\times
+\frac{1}{
+1+1.2\left(1-0.75+0.75\times\frac{5}{5}\right)
+}
+\times(1.2+1)
+$$
+
+จะได้
+
+$$
+\begin{aligned}
+\operatorname{score}(t,d_5)
+&= 0.5390 \times \frac{1}{1+1.2(1)} \times 2.2 \\[6pt]
+&= 0.5390 \times \frac{1}{2.2} \times 2.2 \\[6pt]
+&= \boxed{0.5390}
+\end{aligned}
+$$
+
+
+---
+
+## Evaluate with BM25 of Doc 5 - (ค้นคำว่า data)
+
+$$
+\begin{aligned}
+\operatorname{idf}(t) &= 0.5390 \\
+\operatorname{tf}(t,d_5) &= 1 \\
+dl &= 5 \\
+\operatorname{avgdl} &= 5 \\
+k_1 &= 1.2,\quad b = 0.75
+\end{aligned}
+$$
+
+แทนค่าในสูตร BM25 ที่เราจัดรูปไว้:
+
+$$
+\operatorname{score}(t,d_5)
+=
+0.5390
+\times
+\frac{1}{
+1+1.2\left(1-0.75+0.75\times\frac{5}{5}\right)
+}
+\times(1.2+1)
+$$
+
+จะได้
+
+$$
+\begin{aligned}
+\operatorname{score}(t,d_5)
+&= 0.5390 \times \frac{1}{1+1.2(1)} \times 2.2 \\[6pt]
+&= 0.5390 \times \frac{1}{2.2} \times 2.2 \\[6pt]
+&= \boxed{0.5390}
+\end{aligned}
+$$
+
+---
+
+## Summary ของคำว่า `search data`
+
+|Rank | Doc | term                                   |     score     |
+|-----| --- | -------------------------------------- | ------------- |
+| 1   | 5   | `search` `data` is so fun              | 0.5390 + 0.5390 = 1.0780     |
+| 2   | 2   | `search` `search` `search` is fun      | 0.8470     |
+| 3   | 1   | elasticsearch is a `search` engine     | 0.5390     |
+| 4   | 3   | kibana shows `data` in charts          | 0.5390     |
+| 5   | 4   | learn python for `data` science        | 0.5390     |
+
+---
+
+## Test with Elasticsearch
+
+```http
+# Delete Index
+DELETE demo
+
+# Set number of shard to 1
+PUT demo
+{ "settings": { "number_of_shards": 1 } }
+
+# Add data to demo
+POST demo/_bulk?refresh
+{"index":{"_id":"1"}}
+{"content":"elasticsearch is a search engine"}
+{"index":{"_id":"2"}}
+{"content":"search search search is fun"}
+{"index":{"_id":"3"}}
+{"content":"kibana shows data in charts"}
+{"index":{"_id":"4"}}
+{"content":"learn python for data science"}
+{"index":{"_id":"5"}}
+{"content":"search data is so fun"}
+
+```
+
+---
+
+## Let Elasticsearch explain
+
+```http
+
+# Explain
+GET demo/_search
+{
+  "explain": true,
+  "query": { "match": { "content": "search data" } }
+}
+```
+
+<EsTable>{
+  "took": 16,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 5,
+      "relation": "eq"
+    },
+    "max_score": 1.0779929,
+    "hits": [
+      {
+        "_index": "demo",
+        "_id": "5",
+        "_score": 1.0779929,
+        "_source": {
+          "content": "search data is so fun"
+        }
+      },
+      {
+        "_index": "demo",
+        "_id": "2",
+        "_score": 0.8469945,
+        "_source": {
+          "content": "search search search is fun"
+        }
+      },
+      {
+        "_index": "demo",
+        "_id": "1",
+        "_score": 0.53899646,
+        "_source": {
+          "content": "elasticsearch is a search engine"
+        }
+      },
+      {
+        "_index": "demo",
+        "_id": "3",
+        "_score": 0.53899646,
+        "_source": {
+          "content": "kibana shows data in charts"
+        }
+      },
+      {
+        "_index": "demo",
+        "_id": "4",
+        "_score": 0.53899646,
+        "_source": {
+          "content": "learn python for data science"
+        }
+      }
+    ]
+  }
+}
+
+</EsTable>
+
+---
+
+## Example code
+
+```js
+    search(query: string): BM25Response[] {
+        const queryTokens = this.tokenize(query);
+        const results = new Map<number, Omit<BM25Response, "docId">>();
+        const avgdl = this.docs.getAvgdl();
+
+        // loop for each term in each document
+        for (const term of queryTokens) {
+            const postings = this.index.get(term);
+            if (postings.length === 0) continue;
+
+            const idf = this.calculateIdf(term);
+
+            for (const { docId, tf } of postings) {
+                const dl = this.docs.getLength(docId);
+                const score = this.calculateBM25(tf, idf, dl, avgdl);
+                const prev = results.get(docId);
+                // sum score = prev.score + score,
+            }
+        }
+
+    }
+```
 
 
 ---
@@ -5746,4 +6200,18 @@ layout: two-cols-title
 
 - ไปที่ folder classic-web/jsp
 
+- รัน `./mvnw clean package cargo:run`
 
+- ได้ที่ http://localhost:8080/classic-web/product
+
+---
+
+## Demo3
+
+- ดูตัวอย่าง facet search ที่ทำด้วย JSF
+
+- ไปที่ folder classic-web/jsf
+
+- รัน `./mvnw clean package cargo:run`
+
+- ได้ที่ http://localhost:8080/classic-web/products.xhtml
