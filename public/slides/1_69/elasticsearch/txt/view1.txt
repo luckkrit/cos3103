@@ -1,0 +1,30 @@
+PUT products_search
+{
+  "mappings": {
+    "properties": {
+      "productcode":            { "type": "keyword" },
+      "productname":            { "type": "text" },
+      "productline":            { "type": "keyword" },
+      "productdescription":     { "type": "text" },
+      "productlinedescription": { "type": "text" }
+    }
+  }
+}
+
+POST products_search/_bulk?refresh
+{"index":{"_id":"S12_1099"}}
+{"productcode":"S12_1099","productname":"1968 Ford Mustang","productline":"Classic Cars","productdescription":"Hood, doors and trunk all open to reveal highly detailed interior features.","productlinedescription":"Attention car enthusiasts: Make your wildest car ownership dreams come true. Whether you are looking for classic muscle cars, dream sports cars or movie-inspired miniatures, you will find great choices in this category. These replicas feature superb attention to detail and craftsmanship and offer features such as working steering system, opening forward compartment, opening rear trunk with removable spare wheel, 4-wheel independent spring suspension, and so on."}
+{"index":{"_id":"S24_4620"}}
+{"productcode":"S24_4620","productname":"1961 Chevrolet Impala","productline":"Classic Cars","productdescription":"Detailed 409 cubic-inch engine; chrome dashboard and stick shift, two-tone interior.","productlinedescription":"Attention car enthusiasts: Make your wildest car ownership dreams come true. Whether you are looking for classic muscle cars, dream sports cars or movie-inspired miniatures, you will find great choices in this category. These replicas feature superb attention to detail and craftsmanship and offer features such as working steering system, opening forward compartment, opening rear trunk with removable spare wheel, 4-wheel independent spring suspension, and so on."}
+{"index":{"_id":"S18_1589"}}
+{"productcode":"S18_1589","productname":"1965 Aston Martin DB5","productline":"Classic Cars","productdescription":"Die-cast model of the silver 1965 Aston Martin DB5. Includes full wire wheels.","productlinedescription":"Attention car enthusiasts: Make your wildest car ownership dreams come true. Whether you are looking for classic muscle cars, dream sports cars or movie-inspired miniatures, you will find great choices in this category. These replicas feature superb attention to detail and craftsmanship and offer features such as working steering system, opening forward compartment, opening rear trunk with removable spare wheel, 4-wheel independent spring suspension, and so on."}
+{"index":{"_id":"S18_2625"}}
+{"productcode":"S18_2625","productname":"1936 Harley Davidson El Knucklehead","productline":"Motorcycles","productdescription":"Intricately detailed with chrome accents and trim, official die-struck logos.","productlinedescription":"Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic."}
+{"index":{"_id":"S24_2360"}}
+{"productcode":"S24_2360","productname":"1982 Ducati 900 Monster","productline":"Motorcycles","productdescription":"Two-tone paint with chrome accents, rotating wheels, working kick stand.","productlinedescription":"Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic."}
+{"index":{"_id":"S32_4485"}}
+{"productcode":"S32_4485","productname":"1974 Ducati 350 Mk3 Desmo","productline":"Motorcycles","productdescription":"Two-tone paint with chrome accents, rotating wheels, working kick stand.","productlinedescription":"Our motorcycles are state of the art replicas of classic as well as contemporary motorcycle legends such as Harley Davidson, Ducati and Vespa. Models contain stunning details such as official logos, rotating wheels, working kickstand, front suspension, gear-shift lever, footbrake lever, and drive chain. Materials used include diecast and plastic."}
+{"index":{"_id":"S18_2581"}}
+{"productcode":"S18_2581","productname":"P-51-D Mustang","productline":"Planes","productdescription":"Has retractable wheels and comes with a stand.","productlinedescription":"Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on."}
+{"index":{"_id":"S24_1785"}}
+{"productcode":"S24_1785","productname":"1928 British Royal Navy Airplane","productline":"Planes","productdescription":"Official logos and insignias.","productlinedescription":"Unique, diecast airplane and helicopter replicas suitable for collections, as well as home, office or classroom decorations. Models contain stunning details such as official logos and insignias, rotating jet engines and propellers, retractable wheels, and so on."}
