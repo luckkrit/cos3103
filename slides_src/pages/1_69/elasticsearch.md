@@ -589,7 +589,7 @@ $$
 $$
 \begin{aligned}
 \operatorname{idf}(t) &= 0.5390 \\
-\operatorname{tf}(t,d_1) &= 3 \\
+\operatorname{tf}(t,d_2) &= 3 \\
 dl &= 5 \\
 \operatorname{avgdl} &= 5 \\
 k_1 &= 1.2,\quad b = 0.75
@@ -890,7 +890,7 @@ GET demo/_search
 
 ---
 
-## Example code
+## Pseudo code
 
 ```js
     search(query: string): BM25Response[] {
@@ -931,6 +931,8 @@ layout: section
 
 ![elasticsearch_2026-09-23-22-08-15](/images/elasticsearch/elasticsearch_2026-09-23-22-08-15.png){.max-h-100vh}
 </div>
+
+From : Elasticsearch in action
 
 ---
 
@@ -4659,7 +4661,7 @@ GET products/_search
 
 ## Aggregation
 
-- `aggs` ใช้กับ field ประเภท `keyword` กับ `long/integer/short/byte/double/float` เท่านั้น
+- `aggs` ใช้กับ field ประเภท `keyword` กับ `long/integer/short/byte/double/float/date`
 - ใส่ `"size": 0` เพื่อไม่เอาข้อมูลตาราง
 - ยังสามารถ query พร้อมกับ aggregations ได้พร้อมกัน (ดูจากตัวอย่างหลัง view)
 
@@ -4768,7 +4770,7 @@ GET products/_search
 
 - `sort` เทียบเท่า `order by` และ `from/size` เทียบเท่า `offset/limit` 
 - ค่า `default` ของ `sort` โดยปกติจะเรียงตาม `_score` จากมากไปหาน้อย
-- ด้านล่างคือตัวอย่างหน้า 1 ถ้าต้องการหน้า 2 ต้องเปลี่ยน `"form":3` แทน
+- ด้านล่างคือตัวอย่างหน้า 1 ถ้าต้องการหน้า 2 ต้องเปลี่ยน `"from":3` แทน
 
 ```json
 GET products/_search
@@ -5021,7 +5023,7 @@ PUT products_search
 
 ---
 
-## Result
+## Example
 
 - Search `Ducati` from productlinedescription
 
@@ -5355,7 +5357,7 @@ layout: two-cols-title
 ---
 
 ::title::
-[การนำข้อมูลเข้าจาก View custoemr_orders_view]{class="text-2xl"}
+[การนำข้อมูลเข้าจาก View customer_orders_view]{class="text-2xl"}
 
 ::left::
 
@@ -6230,3 +6232,10 @@ layout: two-cols-title
 - รัน `./mvnw clean package cargo:run`
 
 - ได้ที่ http://localhost:8080/classic-web/products.xhtml
+
+
+---
+
+## Further research
+
+- https://www.elastic.co/docs/explore-analyze/query-filter/languages/querydsl
