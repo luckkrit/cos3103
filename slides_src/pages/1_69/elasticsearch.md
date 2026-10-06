@@ -512,6 +512,14 @@ k_1 &= 1.2, \quad b = 0.75
 $$
 
 $$
+\operatorname{idf}(t)
+=
+\ln\left(
+1+\frac{N-n+0.5}{n+0.5}
+\right)
+$$
+
+$$
 \begin{aligned}
 \operatorname{idf}(t)
 &= \ln\left(1+\frac{5-3+0.5}{3+0.5}\right) \\
@@ -532,6 +540,14 @@ $$
 N &= 5, \quad n = 3, \quad \operatorname{avgdl} = 5 \\
 k_1 &= 1.2, \quad b = 0.75
 \end{aligned}
+$$
+
+$$
+\operatorname{idf}(t)
+=
+\ln\left(
+1+\frac{N-n+0.5}{n+0.5}
+\right)
 $$
 
 $$
@@ -916,6 +932,42 @@ GET demo/_search
     }
 ```
 
+---
+
+## Exercise BM25
+
+| Doc | เนื้อหา | dl |
+|---|---|---|
+| A | search is fun | 3 |
+| B | elasticsearch is a search engine | 5 |
+| C | a search engine helps people find data quickly and easily | 10 |
+| D | kibana charts | 2 |
+
+---
+
+- กำหนดเอกสาร 4 ชิ้นดังตาราง (ตารางด้านบน) และพารามิเตอร์ k1 = 1.2, b = 0.75
+- ค้นด้วยคำว่า search
+
+1. หาค่า N, n (จำนวนเอกสารที่มีคำว่า search) และ avgdl
+2. คำนวณ idf ด้วยสูตร BM25
+3. คำนวณคะแนน BM25 ของเอกสารที่มีคำว่า search ทุกชิ้น
+4. เรียงลำดับคะแนนจากมากไปน้อย พร้อมอธิบายสั้น ๆ ว่าทำไมจึงเรียงเช่นนี้
+5. รัน explain: true ใน Elasticsearch แล้วเปรียบเทียบกับที่คำนวณมือ
+
+---
+
+## Solution
+
+| อันดับ | Doc | dl | tf | avgdl | dl / avgdl | TF component | idf | (k₁ + 1) | BM25 score |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | A | 3 | 1 | 5 | 0.6 | 0.5435 | 0.3567 | 2.2 | 0.4265 |
+| 2 | B | 5 | 1 | 5 | 1.0 | 0.4545 | 0.3567 | 2.2 | 0.3567 |
+| 3 | C | 10 | 1 | 5 | 2.0 | 0.3226 | 0.3567 | 2.2 | 0.2531 |
+| – | D | 2 | 0 | 5 | 0.4 | 0 | 0.3567 | 2.2 | 0 (ไม่ติดผลลัพธ์) |
+
+- N = 4, n = 3
+- dl/avgdl น้อย (สั้นกว่าค่าเฉลี่ย) → คะแนนสูงขึ้น
+- dl/avgdl มาก (ยาวกว่าค่าเฉลี่ย) → คะแนนลดลง
 
 ---
 layout: section
