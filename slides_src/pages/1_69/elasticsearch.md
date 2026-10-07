@@ -3673,7 +3673,7 @@ GET products/_search
 
 ---
 
-แต่ถ้าใช้ must/should พร้อมกัน เปรียบเสมือนเงื่อนไขใน `bool` คือ `OR`
+แต่ถ้าใช้ must/should พร้อมกัน เปรียบเสมือนเงื่อนไขใน `bool` จะมองว่า `should` เป็น optional 
 
 ```json
 GET products/_search
@@ -3682,6 +3682,22 @@ GET products/_search
     "bool": {
       "must": [ { "match": { "productname": "mustang" } } ],
       "should": [ { "term": { "productline": "Classic Cars" } } ]
+    }
+  }
+}
+```
+
+แต่ถ้าใช้ should อย่างเดียว เปรียบเสมือนเงื่อนไขใน `bool` จะมองว่า `should` เป็นเหมือน `OR`
+
+```json
+GET products/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        { "match": { "productname": "mustang" } },
+        { "term": { "productline": "Classic Cars" } }
+      ]
     }
   }
 }
