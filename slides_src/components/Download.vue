@@ -19,7 +19,7 @@ const props = defineProps({
 })
 
 const fileUrl = computed(() =>
-    `${import.meta.env.BASE_URL}${props.file.replace(/^\/+/, '')}`
+    `${import.meta.env.BASE_URL}txt/${props.file.replace(/^\/+/, '')}`
 )
 
 const downloadName = computed(() =>
