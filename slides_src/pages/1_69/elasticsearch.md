@@ -977,6 +977,15 @@ layout: section
 
 ---
 
+## Elasticsearch diagram
+
+<div class="w-fit mx-auto">
+
+![elasticsearch_2026-10-12-08-06-05](/images/elasticsearch/elasticsearch_2026-10-12-08-06-05.png){.max-h-45vh}
+</div>
+
+---
+
 ## Elasticsearch's request and response flow
 
 <div class="w-fit mx-auto">
